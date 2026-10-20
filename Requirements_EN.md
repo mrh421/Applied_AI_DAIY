@@ -77,6 +77,7 @@ The app provides easy-to-understand instructions, including the required tools a
 #### FR-04 · Product Search and Materials List
 
 The app creates a bill of materials from the instructions and suggests suitable new products as well as second-hand alternatives.
+The app also offers a material stock list where the user can input the current available stocks in the user's posession. 
 
 **Priority:** MVP — using sample data
 
@@ -158,9 +159,9 @@ I would therefore define dedicated safety requirements rather than treating safe
 
 Every case is checked for recognizable risk signals before instructions are provided. When a case is unclear, the app takes a conservative approach.
 
-#### SAF-02 · Dangerous Repairs
+#### SAF-02 · Dangerous Repairs & Legal Requirements
 
-In cases involving a gas smell, damaged electrical wiring, or other immediate hazards, the app does not provide an improvised repair guide. Instead, it directs users to appropriate safety measures and qualified professionals.
+In cases involving a gas smell, damaged electrical wiring, or other immediate hazards, the app does not provide an improvised repair guide. Instead, it directs users to appropriate safety measures and qualified professionals. Repairs shall be subject to legal requirements and industry standards. 
 
 #### SAF-03 · Validation
 
