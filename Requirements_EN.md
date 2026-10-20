@@ -52,8 +52,9 @@ As a starting point, you can use the following product vision:
 
 These are the specific functions the system should provide.
 
-#### FR-01 · Problem Input
+#### FR-01 · User Skill Identification Problem Input
 
+Users skill is assessed, AI answeres based on expertise. This includes checking the inventory in user's posession. 
 Users can describe a repair problem in plain language and optionally upload a photo.
 
 **Priority:** MVP — Must-have
