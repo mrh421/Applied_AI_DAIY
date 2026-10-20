@@ -112,39 +112,6 @@ This follows a MoSCoW-style prioritization:
 - Could-have: 3D print suggestions
 - Not in MVP: in-app purchasing, user accounts, long-term project history
 
----
-
-## Example User Stories
-
-### User Story 1: Understand a repair
-As a user with limited technical experience, I want to describe my household problem in simple words so that I can get a suitable guide without needing specialist knowledge.
-
-Acceptance criteria:
-- The input accepts free-text descriptions
-- Missing information triggers useful follow-up questions
-- Repair instructions include tools, materials, numbered steps, and safety warnings
-- Technical terms are explained or avoided
-
-### User Story 2: Find the right materials
-As a budget-conscious user, I want to compare suitable new and second-hand products so that I can carry out the repair affordably and as sustainably as possible.
-
-Acceptance criteria:
-- The app creates a materials list from the repair instructions
-- Product suggestions are filtered by concrete requirements
-- Price, condition, and data source are presented transparently
-- Unverified compatibility is labeled as uncertain
-
-### User Story 3: Avoid unsafe repairs
-As a user without hands-on repair experience, I want to be warned when a repair could be dangerous so that I do not put myself or others at risk.
-
-Acceptance criteria:
-- High-risk test cases trigger warnings or escalation
-- Unsafe DIY instructions are not provided
-- The app clearly explains why it is not giving repair advice
-- Unclear cases are not automatically classified as safe
-
----
-
 ## Non-Functional Requirements
 
 The project aims to deliver a product that is:
