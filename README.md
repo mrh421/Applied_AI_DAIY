@@ -56,7 +56,8 @@ This project aims to provide an accessible, guided, and safety-conscious repair 
 
 ## Core Features
 
-### 1. Problem input
+### 1. User skill assessment & Problem input
+App asks users about their knowledge and skills in certain areas to adjust its answers accordinlgy. In addition, app checks for existing inventory. If user is electrician, app gives more expert support on electrical installations, but might give more junior instructions on car repairs. 
 Users can describe a repair issue in plain language and optionally upload a photo.
 
 ### 2. Interactive diagnosis
