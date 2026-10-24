@@ -177,6 +177,8 @@ Planned next steps:
 - validate safety and reliability requirements
 - build the first end-to-end MVP
 
+Sprints, testing and schedule up to 04.11: [Implementation_Plan_EN.md](Implementation_Plan_EN.md).
+
 ---
 
 ## License
