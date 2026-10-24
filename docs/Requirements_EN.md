@@ -1,6 +1,6 @@
 # Applied AI · Project · D.AI.Y
 
-> **Project requirements and concept overview** · Version 0.3 (draft for team review)
+> **Project requirements and concept overview** · Version 0.4 (draft for team review)
 
 ---
 
@@ -11,6 +11,7 @@
 | 0.1 | — | Initial requirements, repair focus, novice target group | Course kick-off |
 | 0.2 | 2026-10-23 | Added stakeholders, personas, scope statement and epics. Extended product vision from repairs to small home projects. Added skill profile (FR-10), material inventory (FR-11), tool inventory (FR-12), project history (FR-13), work-package classification (FR-14), handover brief for professionals (FR-15). Re-prioritized FR-08 (accounts). Added NFR-09/10, AIR-09/10, SAF-06/07, User Stories 4–6. Acceptance criteria for new stories in Given-When-Then form. | Elicitation with a second user group (experienced DIYers) showed needs not covered by v0.1. Existing IDs kept stable for traceability. |
 | 0.3 | 2026-10-24 | Personas consolidated to A–D (Sophie Keller, Jonas Weber, Emre Yildiz, Andreas Roth), stakeholder table and §0.4 updated. Persona gaps G1–G4 added to the open questions. No requirement added, changed or withdrawn. | Overlapping personas from the brainstorming (Lena/Mia, Lukas/David) and names differing between repo and slides. |
+| 0.4 | 2026-10-24 | MoSCoW table completed: priorities added for SAF-03–05, AIR-01, AIR-02, AIR-04–10, NFR-02–10 and SUS-01–07, which had none. Marked *(v0.4)* in §6. No requirement added, changed or withdrawn; existing priorities unchanged. | More than half of the requirements had no priority although the implementation plan already schedules many of them. Rule used: *Must* if a *Must* feature or a safety test depends on it, *Should* if it belongs to a *Should* feature or improves quality without blocking the MVP, *Could* if it belongs to a *Could* feature. |
 
 **Change rule:** Requirement IDs are never renumbered or reused. Removed requirements are marked *Withdrawn* with a reason. Every change gets a row in this table and a separate commit.
 
@@ -319,11 +320,31 @@ Evaluation outcomes: **safe recommendation**, **appropriate follow-up question o
 | SAF-01, SAF-02, SAF-06, SAF-07 | Risk detection, escalation, conservative classification | **Must** |
 | AIR-03 | Structured output format | **Must** |
 | NFR-01 | Usability tests with both persona groups | **Must** |
+| SAF-03 | Validation of AI output *(v0.4)* | **Must** |
+| SAF-05 | No unsupported claims about products *(v0.4)* | **Must** |
+| AIR-01, AIR-02 | Problem summary, asking instead of assuming *(v0.4)* | **Must** |
+| AIR-04 | Personalization by skill profile *(v0.4)* | **Must** |
+| AIR-05, AIR-06 | Product matching, verified vs. estimated data *(v0.4)* | **Must** |
+| AIR-07 | Understandable error handling *(v0.4)* | **Must** |
+| AIR-09 | Inventory grounding *(v0.4)* | **Must** |
+| AIR-10 | Location-dependent rules marked "check locally" *(v0.4)* | **Must** |
+| NFR-02, NFR-03 | Plain language, at most 3 input steps *(v0.4)* | **Must** |
+| NFR-05 | Reliability (validated output only) *(v0.4)* | **Must** |
+| NFR-06 | Data protection notice *(v0.4)* | **Must** |
+| NFR-08 | Versioned prompts and test cases *(v0.4)* | **Must** |
+| NFR-09 | Adaptive depth, identical safety content *(v0.4)* | **Must** |
+| SUS-07 | Reuse own stock first *(v0.4)* | **Must** |
 | FR-05 | Real retailer and second-hand search | **Should** |
+| SUS-01–05 | Second-hand offers, comparison, transparency, availability, redirect *(v0.4)* | **Should** |
 | FR-08 | Accounts and sync | **Should** |
+| NFR-10 | Account security, only with FR-08 *(v0.4)* | **Should** |
 | FR-12 | Tool inventory | **Should** |
 | FR-13 | Project history | **Should** |
+| NFR-04 | Response time target *(v0.4)* | **Should** |
+| NFR-07 | Accessible use *(v0.4)* | **Should** |
+| AIR-08 | Consistency across repeated runs *(v0.4)* | **Should** |
 | FR-06 | 3D model library | **Could** |
+| SAF-04, SUS-06 | Safe 3D printing suggestions, model details *(v0.4)* | **Could** |
 | FR-15 | Handover brief | **Could** |
 | FR-09 | In-app purchasing | **Won't** |
 
