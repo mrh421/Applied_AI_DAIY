@@ -22,7 +22,8 @@ Personas are assumptions until validated. Each persona lists the assumptions tha
 |---|---|---|
 | 0.1 | 2026-10-23 | Persona B (Jonas Weber) drafted as secondary power-user persona |
 | 0.2 | 2026-10-23 | Persona A (Lena Hofmann) added as primary persona. Jonas aligned with requirements v0.2 (FR-10–15, SAF-06/07). Traceability and test-case sections added. |
-| 0.3 | 2026-10-24 | Persona C (Lena Weber, author: Amos) added with user story, acceptance criteria and user journey. |
+| 0.3 | 2026-10-24 | Persona C (Mia Schneider, author: Amos) added with user story, acceptance criteria and user journey. |
+| 0.4 | 2026-10-24 | Renamed Persona C to Mia Schneider and the student persona to Lukas Brandt to avoid name clashes with Lena Hofmann and Jonas Weber. |
 
 ---
 
@@ -166,7 +167,7 @@ Jonas assumes that a qualified electrician will inspect and approve his preparat
 
 ---
 
-## Persona C · Lena Weber — the cautious first-time repairer
+## Persona C · Mia Schneider — the cautious first-time repairer
 *Author: Amos*
 
 > "I'd love to fix it myself – I just don't want to flood my kitchen or get in trouble with my landlord."
@@ -186,7 +187,7 @@ Jonas assumes that a qualified electrician will inspect and approve his preparat
 
 ### Background
 
-Lena moved into her flat a year ago. The building is older, and small things break regularly. Her landlord is friendly but slow: simple requests often take weeks. She grew up in a household where her father fixed everything, but she never learned it herself. She now wants to become more independent, but she is unsure where her limits are.
+Mia moved into her flat a year ago. The building is older, and small things break regularly. Her landlord is friendly but slow: simple requests often take weeks. She grew up in a household where her father fixed everything, but she never learned it herself. She now wants to become more independent, but she is unsure where her limits are.
 
 ### Current problem
 
@@ -234,7 +235,7 @@ The kitchen faucet has been dripping for two weeks. The constant noise keeps her
 
 **Example acceptance test (Given–When–Then)**
 
-- **Given** Lena has stated "beginner" and owns no wrench,
+- **Given** Mia has stated "beginner" and owns no wrench,
 - **when** she uploads a photo of a dripping single-lever faucet,
 - **then** the app returns a guide starting with "shut off the water", lists the seal set and a wrench as missing items, and shows at least one second-hand option.
 
@@ -242,7 +243,7 @@ The kitchen faucet has been dripping for two weeks. The constant noise keeps her
 
 ### Desired User Journey
 
-| Phase | What Lena does | What the app does | How she feels |
+| Phase | What Mia does | What the app does | How she feels |
 |---|---|---|---|
 | **Discover** | Notices the dripping, searches YouTube, finds nothing matching her faucet | – | Frustrated, unsure |
 | **Diagnose** | Opens D.AI.Y, answers questions about her skills and tools, uploads a photo | Asks one follow-up question, identifies a worn cartridge seal | Relieved, curious |
@@ -252,30 +253,30 @@ The kitchen faucet has been dripping for two weeks. The constant noise keeps her
 
 ```mermaid
 journey
-    title Lena fixes her dripping kitchen faucet
+    title Mia fixes her dripping kitchen faucet
     section Discover
-      Notices dripping, cannot sleep: 1: Lena
-      Searches YouTube, finds nothing matching: 2: Lena
-      Opens D.AI.Y: 3: Lena
+      Notices dripping, cannot sleep: 1: Mia
+      Searches YouTube, finds nothing matching: 2: Mia
+      Opens D.AI.Y: 3: Mia
     section Diagnose
-      Answers skill and tools questions: 4: Lena, App
-      Uploads photo of faucet: 4: Lena
+      Answers skill and tools questions: 4: Mia, App
+      Uploads photo of faucet: 4: Mia
       App asks one follow-up question: 4: App
       App identifies worn cartridge seal: 5: App
     section Prepare
       Gets safety note to shut off water first: 4: App
       Sees materials list, owned tools ticked: 5: App
-      Buys seal set for 6 euros, wrench second-hand: 4: Lena
+      Buys seal set for 6 euros, wrench second-hand: 4: Mia
     section Repair
-      Follows numbered steps, ticks them off: 4: Lena, App
-      Gets stuck, asks app to explain step 4 again: 3: Lena, App
-      Faucet stops dripping: 5: Lena
+      Follows numbered steps, ticks them off: 4: Mia, App
+      Gets stuck, asks app to explain step 4 again: 3: Mia, App
+      Faucet stops dripping: 5: Mia
     section After
-      Gives feedback on the guide: 4: Lena
-      Saves about 75 euros vs. plumber: 5: Lena
+      Gives feedback on the guide: 4: Mia
+      Saves about 75 euros vs. plumber: 5: Mia
 ```
 
-*(Scores 1–5 show how Lena feels at each step: 1 = frustrated, 5 = happy.)*
+*(Scores 1–5 show how Mia feels at each step: 1 = frustrated, 5 = happy.)*
 
 ### Requirements this persona tests
 
@@ -324,7 +325,7 @@ Each case is run once with a beginner profile and once with an advanced profile 
 
 # Persona: The Budget-Conscious Student
 
-Lukas Weber
+Lukas Brandt
 The first-time DIY room builder
 22 years old
 University student
@@ -430,7 +431,7 @@ Imagine Lukas wants a desk and storage for his new room but only has €60 to sp
    He has a functional workspace, stays within budget and gains confidence to tackle his next DIY project.
 6. Persona statement
 “I want to make my room look great without spending all my money on furniture. I just need someone to show me what I can build myself, what materials I actually need, and how to do it without messing things up.”
-— Lukas Weber, budget-conscious student and DIY beginner
+— Lukas Brandt, budget-conscious student and DIY beginner
 
 ## 2. ...
 
