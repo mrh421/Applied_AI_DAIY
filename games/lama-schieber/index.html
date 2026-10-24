@@ -74,6 +74,11 @@ select:focus-visible, button:focus-visible, canvas:focus-visible { outline: 3px 
 .score small { font-size: 14px; color: var(--muted); font-weight: 500; }
 .bar { height: 8px; border-radius: 99px; background: var(--well); overflow: hidden; }
 .bar i { display: block; height: 100%; width: 0; background: var(--pc); border-radius: 99px; transition: width .35s; }
+.piece { display: flex; align-items: center; gap: 10px; padding-top: 6px; border-top: 1px solid var(--line); }
+.piece canvas { width: 40px; height: 40px; flex: none; }
+.piece span { display: grid; font-size: 12px; line-height: 1.3; color: var(--muted); }
+.piece b { font-size: 14px; color: var(--ink); }
+@media (max-width: 860px) { .piece canvas { width: 32px; height: 32px; } }
 #card0 { --pc: var(--p1); }
 #card1 { --pc: var(--p2); }
 .board-box { position: relative; min-width: 0; }
@@ -140,6 +145,7 @@ kbd { font: 600 12px var(--body); border: 1px solid var(--line); border-bottom-w
       <div class="who"><span class="name" id="name0">Orange</span><span class="chip" id="chip0">Am Zug</span></div>
       <div class="score" id="score0">0 <small>/ 500</small></div>
       <div class="bar"><i id="bar0"></i></div>
+      <div class="piece" id="piece0"><canvas id="pc0" width="80" height="80"></canvas><span><span id="pl0">Hält</span><b id="pn0"></b></span></div>
     </div>
     <div class="board-box">
       <canvas id="board" tabindex="0" aria-label="Spielfeld. Mit Pfeiltasten das Lama bewegen, Leertaste zum Einschieben."></canvas>
@@ -156,6 +162,7 @@ kbd { font: 600 12px var(--body); border: 1px solid var(--line); border-bottom-w
       <div class="who"><span class="name" id="name1">Lama-KI</span><span class="chip" id="chip1" hidden>Am Zug</span></div>
       <div class="score" id="score1">0 <small>/ 500</small></div>
       <div class="bar"><i id="bar1"></i></div>
+      <div class="piece" id="piece1"><canvas id="pc1" width="80" height="80"></canvas><span><span id="pl1">Bekommt als Nächstes</span><b id="pn1"></b></span></div>
     </div>
   </section>
 
@@ -667,11 +674,22 @@ kbd { font: 600 12px var(--body); border: 1px solid var(--line); border-bottom-w
       $('card' + p).dataset.active = String(!st.over && st.turn === p);
       $('chip' + p).hidden = st.over || st.turn !== p;
     }
+    for (const p of [0, 1]) {
+      // While a piece is held, the player on turn holds queue[0] and the other gets queue[1]; mid-move the queue has already advanced.
+      const mine = st.held ? (p === st.turn ? 0 : 1) : (p === st.turn ? 1 : 0);
+      const t = st.queue[mine];
+      $('piece' + p).hidden = st.over || !t;
+      if (!t) continue;
+      $('pl' + p).textContent = st.held && p === st.turn ? 'Hält gerade' : 'Bekommt als Nächstes';
+      $('pn' + p).textContent = `${TYPES[t.type].name} · ${TYPES[t.type].val} P.`;
+      const c = $('pc' + p), x = c.getContext('2d');
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); x.scale(c.width, c.height); paintTile(x, t.type);
+    }
     const nxt = st.queue[1] ? TYPES[st.queue[1].type].name : '';
     if (st.over) statusEl.innerHTML = 'Spiel vorbei.';
     else if (isAI(st.turn)) statusEl.innerHTML = '<b>Lama-KI</b> überlegt …';
     else if (armed >= 0) statusEl.innerHTML = `<b>${pname(st.turn)}</b>: nochmal tippen zum Einschieben`;
-    else statusEl.innerHTML = `<b>${pname(st.turn)}</b> ist am Zug · danach kommt: ${nxt}`;
+    else statusEl.innerHTML = `<b>${pname(st.turn)}</b> ist am Zug · ${pname(1 - st.turn)} bekommt danach: ${nxt}`;
   }
 
   function slotAt(px, py) {
