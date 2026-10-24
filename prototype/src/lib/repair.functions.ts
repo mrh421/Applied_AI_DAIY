@@ -5,6 +5,7 @@ import {
   caseInputSchema,
   detectHazards,
   enforceSafety,
+  hazardEscalation,
   repairResultSchema,
   type RepairResult,
 } from "./repair.schema";
@@ -44,27 +45,8 @@ export type AssessResponse = { ok: true; result: RepairResult; source: "ai" | "s
 export const assessCase = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => caseInputSchema.parse(d))
   .handler(async ({ data }): Promise<AssessResponse> => {
-    const hazards = detectHazards(`${data.problem} ${data.answers.map((a) => a.a).join(" ")}`);
-    if (hazards.length) {
-      return {
-        ok: true,
-        source: "safety_rule",
-        result: {
-          outcome: "escalate",
-          summary: "Your description contains warning signs that make a DIY repair unsafe.",
-          risk: { level: "critical", signals: hazards, reason: "Immediate danger to people or property is possible." },
-          questions: [],
-          guide: null,
-          escalation: {
-            message: "Please do not try to repair this yourself. Your safety comes first.",
-            immediateActions: hazards.some((h) => h.includes("gas"))
-              ? ["Do not use switches, flames or phones inside", "Open windows and leave the building", "Call the gas emergency line from outside"]
-              : ["Switch off power at the fuse box if safe to reach", "Unplug the device and stop using it", "Keep children and pets away"],
-            professional: hazards.some((h) => h.includes("gas")) ? "Gas emergency service / licensed gas fitter" : "Licensed electrician",
-          },
-        },
-      };
-    }
+    const escalation = hazardEscalation(`${data.problem} ${data.answers.map((a) => a.a).join(" ")}`);
+    if (escalation) return { ok: true, source: "safety_rule", result: escalation };
     const { runStructured, AiError } = await import("./ai.server");
     for (let attempt = 0; attempt < 2; attempt++) {
       try {

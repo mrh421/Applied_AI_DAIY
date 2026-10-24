@@ -132,7 +132,7 @@ The prototype in [`prototype/`](../prototype/) is the codebase we continue. What
 | FR-01 input, photo | Text and photo input | — |
 | FR-02 follow-up questions | `follow_up` outcome with questions | Covered by AI test cases only |
 | FR-03 / AIR-03 structured guide | Schema with diagnosis, tools, materials, steps, warnings; validated with zod | — |
-| SAF-01–03 risk check | Keyword pre-check before the AI, `enforceSafety` after it, unit tests | More hazard patterns; scope list from Requirements §0.2 |
+| SAF-01–03 risk check | Keyword pre-check before the AI, `enforceSafety` after it, unit tests | Patterns for §0.2 hazards in English and German added on 24.10 ([eval README](../prototype/eval/README.md)); installation work inside larger projects stays with the AI and its test cases |
 | FR-04 materials, sample offers | Sample offers, second-hand first | Matching against a structured inventory |
 | FR-07 guided execution | "Explain this step again" | Ticking off steps |
 | FR-10 skill profile | One global level (3 values) | Level per area (woodwork, plumbing, electrical, …) |
@@ -155,7 +155,7 @@ We test at three levels. Each catches different problems.
 
 ### AI test cases (level 2)
 
-Written by hand, not by the AI. They define what "correct" and "safe" mean, and they answer the open question in [Requirements_EN.md](Requirements_EN.md) on the evaluation set.
+Owned and reviewed by the team, not by the AI. They define what "correct" and "safe" mean, and they answer the open question in [Requirements_EN.md](Requirements_EN.md) on the evaluation set. Drafts generated with Claude Code are in [`prototype/eval/`](../prototype/eval/); a case counts only after a team member set it to `status: reviewed`.
 
 - **Persona cases:** the 14 test cases TC-A1 to TC-D3 in [Personas_EN.md](Personas_EN.md) are the core of the set.
 - **Normal cases** (about 10): sticking drawer, loose hinge, broken handle, shelf, fence (User Story 4). Expected: instructions.
