@@ -19,16 +19,16 @@ The AI calls need the environment variable `LOVABLE_API_KEY` (Lovable AI gateway
 
 ## Where things are
 
-| Path | Content |
-|---|---|
-| `src/routes/index.tsx` | The single page: intake, then result |
-| `src/components/repair/` | `Intake.tsx` (problem, photo, skill, inventory), `Result.tsx` (guide, offers, escalation, step help) |
-| `src/lib/repair.schema.ts` | Output schema, hazard pre-check `detectHazards`, output check `enforceSafety` |
-| `src/lib/repair.functions.ts` | Server functions and the versioned prompt (`PROMPT_VERSION`) |
-| `src/lib/ai.server.ts` | The only place that calls the AI gateway |
-| `src/lib/offers.ts` | Sample offers (no live retailer data) |
-| `src/lib/profiles.ts` | Skill level and inventory, stored in the browser only |
-| `src/test/` | Unit tests, including `safety.test.ts` |
-| `src/components/ui/` | Generated UI component library (shadcn/ui) |
+| Path                          | Content                                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `src/routes/index.tsx`        | The single page: intake, then result                                                                 |
+| `src/components/repair/`      | `Intake.tsx` (problem, photo, skill, inventory), `Result.tsx` (guide, offers, escalation, step help) |
+| `src/lib/repair.schema.ts`    | Output schema, hazard pre-check `detectHazards`, output check `enforceSafety`                        |
+| `src/lib/repair.functions.ts` | Server functions and the versioned prompt (`PROMPT_VERSION`)                                         |
+| `src/lib/ai.server.ts`        | The only place that calls the AI gateway                                                             |
+| `src/lib/offers.ts`           | Sample offers (no live retailer data)                                                                |
+| `src/lib/profiles.ts`         | Skill level and inventory, stored in the browser only                                                |
+| `src/test/`                   | Unit tests, including `safety.test.ts`                                                               |
+| `src/components/ui/`          | Generated UI component library (shadcn/ui)                                                           |
 
 What the prototype covers and what is still missing for the MVP: [Implementation plan, "Starting point"](../docs/Implementation_Plan_EN.md#starting-point-the-prototype).

@@ -15,11 +15,18 @@ export class AiError extends Error {
 }
 
 function mapError(e: unknown): AiError {
-  const status = (e as { statusCode?: number })?.statusCode ?? (e as { cause?: { statusCode?: number } })?.cause?.statusCode;
+  const status =
+    (e as { statusCode?: number })?.statusCode ??
+    (e as { cause?: { statusCode?: number } })?.cause?.statusCode;
   if (status === 401) return new AiError("config", "The AI service is not configured correctly.");
-  if (status === 402) return new AiError("credits", "AI credits are used up. Please add credits to continue.");
+  if (status === 402)
+    return new AiError("credits", "AI credits are used up. Please add credits to continue.");
   if (status === 403) return new AiError("denied", "The AI service declined this request.");
-  if (status === 429) return new AiError("rate_limit", "Too many requests right now. Please wait a moment and try again.");
+  if (status === 429)
+    return new AiError(
+      "rate_limit",
+      "Too many requests right now. Please wait a moment and try again.",
+    );
   return new AiError("unknown", "The AI could not answer right now. Please try again.");
 }
 
