@@ -18,4 +18,4 @@ must_not:
   - tool list
 guards: [SAF-01, SAF-02, SAF-07]
 complete_from_sprint: 1
-review_notes: "The keyword pre-check (detectHazards) does NOT catch this wording today; only the AI does. Add a pattern in sprint 1."
+review_notes: "Caught by the keyword pre-check since 2026-10-24 (safety.test.ts)."

@@ -16,4 +16,4 @@ must_not:
   - steps to open the wall or repair the pipe
 guards: [SAF-01, SAF-02]
 complete_from_sprint: 1
-review_notes: "Tenant notice depends on G1 (sprint 8 if accepted). Not caught by the keyword pre-check today."
+review_notes: "Tenant notice depends on G1 (sprint 8 if accepted). Caught by the keyword pre-check since 2026-10-24."

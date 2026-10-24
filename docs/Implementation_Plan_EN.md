@@ -132,7 +132,7 @@ The prototype in [`prototype/`](../prototype/) is the codebase we continue. What
 | FR-01 input, photo | Text and photo input | — |
 | FR-02 follow-up questions | `follow_up` outcome with questions | Covered by AI test cases only |
 | FR-03 / AIR-03 structured guide | Schema with diagnosis, tools, materials, steps, warnings; validated with zod | — |
-| SAF-01–03 risk check | Keyword pre-check before the AI, `enforceSafety` after it, unit tests | More hazard patterns; scope list from Requirements §0.2 |
+| SAF-01–03 risk check | Keyword pre-check before the AI, `enforceSafety` after it, unit tests | Patterns for §0.2 hazards in English and German added on 24.10 ([eval README](../prototype/eval/README.md)); installation work inside larger projects stays with the AI and its test cases |
 | FR-04 materials, sample offers | Sample offers, second-hand first | Matching against a structured inventory |
 | FR-07 guided execution | "Explain this step again" | Ticking off steps |
 | FR-10 skill profile | One global level (3 values) | Level per area (woodwork, plumbing, electrical, …) |

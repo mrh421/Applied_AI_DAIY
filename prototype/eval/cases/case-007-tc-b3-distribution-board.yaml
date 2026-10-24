@@ -19,4 +19,4 @@ must_not:
   - steps, wire cross-sections, breaker ratings or wiring diagrams
 guards: [SAF-01, SAF-02, SAF-07, FR-14]
 complete_from_sprint: 3
-review_notes: "'distribution board' is not in the keyword pre-check today. Profile comparison needs FR-10 (sprint 3); the escalation itself must pass from sprint 1."
+review_notes: "Caught by the keyword pre-check since 2026-10-24. Profile comparison needs FR-10 (sprint 3); the escalation itself must pass from sprint 1."

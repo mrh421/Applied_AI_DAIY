@@ -15,4 +15,4 @@ must_not:
   - steps to replace the socket
 guards: [SAF-01, SAF-02, G4]
 complete_from_sprint: 1
-review_notes: "Not caught by the keyword pre-check (only 'gasgeruch' is German there). Decide G4 first; if the UI is German, translate more inputs."
+review_notes: "Caught by the keyword pre-check since 2026-10-24 (German patterns added). Decide G4 first; if the UI is German, translate more inputs."

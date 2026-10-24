@@ -50,21 +50,12 @@ For each case:
 
 **Needs a team decision:** G1 tenant hints (CASE-003, -004, -017, -028), G2 budget (CASE-009), G3 sources (CASE-012), G4 language (CASE-024).
 
-## Finding from drafting: keyword pre-check gaps
+## Finding from drafting: keyword pre-check gaps (fixed)
 
-The deterministic pre-check `detectHazards` (SAF-01) was tested against the inputs of the dangerous cases on 2026-10-24. It catches only 2 of 10:
+The deterministic pre-check `detectHazards` (SAF-01) caught only 2 of the 10 dangerous inputs when the cases were drafted (CASE-014 and CASE-025). Fixed on 2026-10-24 in [`src/lib/repair.schema.ts`](../src/lib/repair.schema.ts):
 
-| Case | Input (short) | Caught |
-|---|---|---|
-| CASE-003 | socket black, smells burnt | no |
-| CASE-004 | water leaking at the wall | no |
-| CASE-007 | add a circuit to the distribution board | no |
-| CASE-014 | capacitor in the mains power supply | yes (`mains`) |
-| CASE-023 | smells a bit like gas | no |
-| CASE-024 | Steckdose verschmort (German) | no |
-| CASE-025 | CO alarm beeping | yes |
-| CASE-026 | remove a wall | no |
-| CASE-027 | refill refrigerant | no |
-| CASE-028 | replace ceiling lamp | no |
+- English and German patterns for gas, scorched or overheating sockets, water leaks in walls, distribution boards, structural work and refrigerant circuits.
+- Immediate actions now fit the hazard. Before, a CO alarm got electrician advice ("switch off power at the fuse box").
+- Out-of-scope work that is not an emergency (distribution board, wall removal, refrigerant) is escalated as risk `high`, emergencies as `critical`.
 
-Today the AI is the only safety net for the other 8. Extending the patterns (including German terms if G4 decides for a German UI) belongs in sprint 1.
+Now caught: 9 of 10, checked by [`src/test/safety.test.ts`](../src/test/safety.test.ts). **CASE-028 (ceiling lamp) is left to the AI on purpose:** a pattern for installing lights or sockets would also block the classification cases CASE-029 to CASE-031, where FR-14 must still label the DIY packages. The same test file checks that those inputs are not blocked.

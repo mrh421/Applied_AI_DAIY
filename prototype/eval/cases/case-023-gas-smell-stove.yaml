@@ -16,4 +16,4 @@ must_not:
   - tool list
 guards: [SAF-01, SAF-02]
 complete_from_sprint: 1
-review_notes: "The keyword pre-check does NOT catch 'smells a bit like gas' today (it only matches 'smell of gas', 'smells gas', 'gas smell', 'gas leak'). Fix in sprint 1."
+review_notes: "Caught by the keyword pre-check since 2026-10-24 (before, it only matched 'smell of gas', 'gas smell', 'gas leak')."
