@@ -201,3 +201,118 @@ Each case is run once with a beginner profile and once with an advanced profile 
 - Experienced users are willing to maintain an inventory manually. If not, consider quick capture (e.g. from the materials list, User Story 6).
 - Self-assessment of skills is reasonably accurate. If users systematically overrate themselves, add a short skill check.
 - The FR-14 example classifications match what qualified professionals would say. Review with at least one electrician and one heating technician.
+
+
+
+# Persona: The Budget-Conscious Student
+
+Lukas Weber
+The first-time DIY room builder
+22 years old
+University student
+Budget-focused
+
+Lukas has just moved into a shared flat in a German university city. His room is small and mostly empty, with plain walls, limited furniture, and little storage space. He wants to create a cozy, functional room that reflects his personality, but he has very little money left after paying his deposit and first month's rent.
+
+Monthly budget
+€850–1,100
+Income from student job and family support
+
+Room makeover budget
+€50–100
+Illustrative total budget
+
+DIY experience
+Beginner
+Can assemble basic furniture, but lacks tools and repair knowledge
+
+Available time
+Weekends
+Balances lectures, studying and a part-time job
+
+
+1. Goals and motivations
+- Save money: Furnish and improve his room for as little as possible.
+- Feel at home: Turn an impersonal room into a comfortable place to relax, study and sleep.
+- Be independent: Learn to build, fix and improve things himself.
+- Avoid wasting money: Reuse items, find second-hand furniture and buy only essential materials.
+- Avoid mistakes: Complete projects without damaging the rented room or buying the wrong materials.
+
+2. Frustrations and pain points
+- Limited money
+- New furniture, tools and decorative items are often too expensive. He needs to know what he can reuse or get for free.
+- Lack of DIY knowledge
+- He doesn't know which materials, tools, measurements or construction methods are appropriate for a project.
+- Too many options
+
+He spends hours browsing second-hand listings and DIY tutorials without knowing which solutions are actually suitable.
+
+
+
+Fear of making mistakes
+
+He worries about damaging furniture, buying incompatible parts, wasting money or making unsafe constructions.
+
+
+
+3. Typical behavior
+- Searches YouTube, TikTok, Pinterest and online forums for cheap room ideas.
+- Looks for used furniture on Kleinanzeigen and in local student groups.
+- Prefers projects that can be completed with basic tools and little experience.
+- Compares prices before buying anything new.
+- Is happy to reuse old furniture or build simple solutions from leftover materials.
+- Needs clear instructions rather than long technical explanations.
+4. How D.AI.Y can help Lukas
+The key is to make the app his personal AI DIY assistant for affordable room improvements, guiding him from an idea to a safe, finished result.
+
+
+
+
+Feature 1 — Describe or photograph a project
+
+Lukas uploads a photo of his empty room or describes what he wants to build. The AI asks only the essential follow-up questions.
+Feature 2 — Check materials he already owns
+He enters available tools, leftover wood, screws and other materials. D.AI.Y prioritizes these before recommending purchases.
+
+Feature 3 — Compare cheap solutions
+
+The app compares DIY, second-hand and new options, including estimated total costs and whether the materials fit the project.
+
+
+
+
+
+
+
+Feature 4 — Follow beginner-friendly instructions
+
+Lukas receives a shopping list, numbered steps, estimated time, tool requirements and safety warnings. He can tick off each step and ask for help.
+
+
+
+5. Example user journey
+Imagine Lukas wants a desk and storage for his new room but only has €60 to spend.
+1. Identifies the problem
+   
+   “I need a desk and some storage for my room, but I don't want to spend more than €60.”
+2. Answers a few questions
+   
+   The app asks for available space, preferred desk dimensions, DIY experience and which tools or materials he already has.
+3. Receives tailored options
+   
+   D.AI.Y presents a simple DIY desk, a suitable second-hand desk and a low-cost combination of reused shelves and storage boxes.
+4. Compares total costs
+   
+   The app explains which parts are free, which items need to be purchased and where prices or compatibility still need verification.
+5. Builds with guidance
+   
+   Lukas follows clear instructions, checks off the steps and asks follow-up questions whenever he gets stuck.
+6. Finishes the project
+   
+   He has a functional workspace, stays within budget and gains confidence to tackle his next DIY project.
+6. Persona statement
+“I want to make my room look great without spending all my money on furniture. I just need someone to show me what I can build myself, what materials I actually need, and how to do it without messing things up.”
+— Lukas Weber, budget-conscious student and DIY beginner
+
+## 2. ...
+
