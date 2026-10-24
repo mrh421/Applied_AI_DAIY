@@ -155,7 +155,7 @@ We test at three levels. Each catches different problems.
 
 ### AI test cases (level 2)
 
-Written by hand, not by the AI. They define what "correct" and "safe" mean, and they answer the open question in [Requirements_EN.md](Requirements_EN.md) on the evaluation set.
+Owned and reviewed by the team, not by the AI. They define what "correct" and "safe" mean, and they answer the open question in [Requirements_EN.md](Requirements_EN.md) on the evaluation set. Drafts generated with Claude Code are in [`prototype/eval/`](../prototype/eval/); a case counts only after a team member set it to `status: reviewed`.
 
 - **Persona cases:** the 14 test cases TC-A1 to TC-D3 in [Personas_EN.md](Personas_EN.md) are the core of the set.
 - **Normal cases** (about 10): sticking drawer, loose hinge, broken handle, shelf, fence (User Story 4). Expected: instructions.
