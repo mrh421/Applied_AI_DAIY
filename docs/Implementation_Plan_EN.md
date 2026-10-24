@@ -1,6 +1,6 @@
 # Applied AI · Project · D.AI.Y — Implementation Plan
 
-> **How we build the MVP from 24.10 to 04.11.2026.** Based on [Requirements_EN.md](Requirements_EN.md) v0.2.
+> **How we build the MVP from 24.10 to 04.11.2026.** Based on [Requirements_EN.md](Requirements_EN.md) v0.3 and [Personas_EN.md](Personas_EN.md) v0.5.
 
 ---
 
@@ -10,6 +10,7 @@ We build the D.AI.Y MVP in 12 days (Sat 24.10 to Wed 04.11) with [Agent M](https
 
 - **What:** the *Must* items of the MoSCoW table in [Requirements_EN.md](Requirements_EN.md) §6. Users describe a problem or project, get follow-up questions, step-by-step instructions, a materials list matched against their inventory, and a DIY/professional label per work package. Dangerous work is escalated, never explained.
 - **How:** Agent M runs sources, requirements, use cases and architecture first. Then we implement in short sprints, each ending in a working demo.
+- **Starting point:** the clickable prototype in [`prototype/`](../prototype/) (built with Lovable, now developed only in this repository). It already covers part of the *Must* items; see [Starting point](#starting-point-the-prototype).
 - **Why so fast:** Claude Code implements a sprint in hours. Our own reviews and feedback from test users set the pace, not the coding.
 - **Biggest risk:** AI quality and safety, not the features. So we write the test cases by hand first and run them every sprint.
 
@@ -36,7 +37,7 @@ We declare Agent M's **scrum-wip** model plus the **prototyping** practice.
 | Product Owner | mrh |
 | Scrum Master | mrh |
 | Developers | Claude Code (implementation); a second Claude Code session (release tests) |
-| Usability testers | Non-technical people for Persona A, experienced DIYers for Persona B; not from the course |
+| Usability testers | Beginners like Personas A and C, experienced users like Personas B and D; not from the course |
 
 ---
 
@@ -64,7 +65,7 @@ gantt
 | Sprint | Dates | Goal | Requirements |
 |---|---|---|---|
 | 0 · Foundations | Sat 24.10 – Sun 25.10 | Agent M stages 1–4 accepted, test cases written, output format and Definition of Done agreed | AIR-03, NFR-08 |
-| 1 · Prototype | Mon 26.10 – Wed 28.10 | "Describe a problem, get a checked plan" — built Monday, tried by 2–3 people Tue/Wed | FR-01, FR-03, AIR-01, AIR-03, SAF-03, NFR-05 |
+| 1 · Prototype | Mon 26.10 – Wed 28.10 | Take over the existing prototype: own AI access instead of the Lovable gateway, output format agreed, tried by 2–3 people Tue/Wed | FR-01, FR-03, AIR-01, AIR-03, SAF-03, NFR-05 |
 | 2 · Diagnose and classify | Thu 29.10 | The app asks before it answers, labels each work package and escalates dangerous work | FR-02, FR-14, SAF-01, SAF-02, SAF-06, AIR-02, AIR-07, AIR-10 |
 | 3 · Profile and guidance | Fri 30.10 | Users work through the steps; detail adapts to the skill profile, safety does not | FR-07, FR-10, AIR-04, SAF-07, NFR-02, NFR-09 |
 | 4 · Inventory and materials | Sat 31.10 | Materials list checked against own stock; sample products only for what is missing | FR-04, FR-11, SUS-07, AIR-05, AIR-06, AIR-09, SAF-05 |
@@ -72,6 +73,26 @@ gantt
 | 6 · Release and demo | Tue 03.11 – Wed 04.11 | Repeated test runs, version tag, manual, presentation | AIR-08, NFR-04 |
 
 Only the two feedback points move slowly: the prototype check (Tue 27.10 – Wed 28.10) and the usability test (Sun 01.11 – Mon 02.11). Testers are booked this weekend. Sprints 2–4 take about one day each, because Claude Code does the implementation.
+
+---
+
+## Starting point: the prototype
+
+The prototype in [`prototype/`](../prototype/) is the codebase we continue. What it already does, checked against the *Must* items on 2026-10-24:
+
+| Requirement | Prototype today | Gap for the sprints |
+|---|---|---|
+| FR-01 input, photo | Text and photo input | — |
+| FR-02 follow-up questions | `follow_up` outcome with questions | Covered by AI test cases only |
+| FR-03 / AIR-03 structured guide | Schema with diagnosis, tools, materials, steps, warnings; validated with zod | — |
+| SAF-01–03 risk check | Keyword pre-check before the AI, `enforceSafety` after it, unit tests | More hazard patterns; scope list from Requirements §0.2 |
+| FR-04 materials, sample offers | Sample offers, second-hand first | Matching against a structured inventory |
+| FR-07 guided execution | "Explain this step again" | Ticking off steps |
+| FR-10 skill profile | One global level (3 values) | Level per area (woodwork, plumbing, electrical, …) |
+| FR-11 material inventory | Free text | Items with quantity and unit (needed for AIR-09) |
+| FR-14 work packages | Missing | Packages with the four labels and a reason |
+| SAF-06 / SAF-07 | Missing | Stricter label when unsure; same labels for every skill level |
+| AI access | Lovable AI gateway (`LOVABLE_API_KEY`) | Architecture decision in sprint 0: which model and provider |
 
 ---
 
@@ -83,12 +104,13 @@ We test at three levels. Each catches different problems.
 |---|---|---|---|
 | 1 · Code tests | Logic around the AI: output-format checks, risk rules, inventory matching, error handling | Unit tests with recorded model answers, no live AI calls | Every pull request, in CI |
 | 2 · AI test cases | What the AI actually does: diagnosis, follow-up questions, classification, safety | 25–30 fixed cases sent to the real model, 3–5 runs each | End of every sprint, and on every prompt or model change |
-| 3 · Usability test | Whether both personas can use it | 3 tasks, think-aloud, we only watch | Prototype check (2–3 people) and final test (both persona groups) |
+| 3 · Usability test | Whether both persona groups can use it | 3 tasks, think-aloud, we only watch | Prototype check (2–3 people) and final test (both persona groups) |
 
 ### AI test cases (level 2)
 
 Written by hand, not by the AI. They define what "correct" and "safe" mean, and they answer the open question in [Requirements_EN.md](Requirements_EN.md) on the evaluation set.
 
+- **Persona cases:** the 14 test cases TC-A1 to TC-D3 in [Personas_EN.md](Personas_EN.md) are the core of the set.
 - **Normal cases** (about 10): sticking drawer, loose hinge, broken handle, shelf, fence (User Story 4). Expected: instructions.
 - **Unclear cases** (about 6): missing model, missing dimensions. Expected: a follow-up question (e.g. the heat pump model in User Story 5).
 - **Dangerous cases** (about 6): gas smell, damaged wiring, load-bearing parts, refrigerant circuit. Expected: escalation, never steps.
@@ -154,7 +176,7 @@ Every backlog item:
 
 | Risk | Fallback |
 |---|---|
-| NFR-01 needs 5 testers per persona group, 10 in total | Recruit now. If short, run 3 + 3 and say so in the presentation |
+| NFR-01 needs 5 testers per persona group (beginners A/C, experienced B/D), 10 in total | Recruit now. If short, run 3 + 3 and say so in the presentation |
 | Reviews pile up at the gates | At most 4 items in progress, small pull requests |
 | The AI gives an unsafe answer late in the plan | A fixed risk check in code runs before the AI and blocks known dangerous cases |
 | FR-14 labels are wrong for real projects | Use the User Story 5 expectations as test cases; ask a qualified professional to check the examples |
@@ -164,6 +186,7 @@ Every backlog item:
 
 ## What we need from the team
 
-- [ ] Name 2 testers each (one per persona group) for Sun 01.11 or Mon 02.11
+- [ ] Name 2 testers each (one beginner, one experienced) for Sun 01.11 or Mon 02.11
+- [ ] Decide the open questions G1–G4 in [Requirements_EN.md](Requirements_EN.md) before sprint 0 ends
 - [ ] Review the AI test cases on Sat 24.10 / Sun 25.10, especially the dangerous and classification cases
 - [ ] Join the final demo on Wed 04.11

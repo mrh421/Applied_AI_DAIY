@@ -2,7 +2,7 @@
 
 An AI-powered DIY platform that helps people, regardless of their technical skills, safely repair household items and carry out small home projects themselves.
 
-> This README is a summary. The binding source is [`Requirements_EN.md`](Requirements_EN.md) (v0.2). Full personas, traceability and test cases: [`Personas_EN.md`](Personas_EN.md).
+> This README is a summary. The binding source is [`docs/Requirements_EN.md`](docs/Requirements_EN.md) (v0.3). Full personas, traceability and test cases: [`docs/Personas_EN.md`](docs/Personas_EN.md).
 
 ## Overview
 
@@ -69,10 +69,12 @@ This project aims to provide an accessible, guided, and safety-conscious assista
 
 | Persona | Role in product | Needs |
 |---|---|---|
-| **A · Lena Hofmann**, 27, rents a flat, beginner | Primary (default experience) | Simple language, photo input, clear stop when something is dangerous |
+| **A · Sophie Keller**, 28, rents a flat, beginner | Primary (default experience) | Simple language, photo input, clear stop when something is dangerous |
 | **B · Jonas Weber**, 35, homeowner, advanced DIYer | Secondary (extended depth) | Inventory, skill-based depth, clear DIY vs. professional split with reasons |
+| **C · Emre Yildiz**, 22, student in a shared flat, beginner | Secondary (budget and reuse) | Low total cost, own and second-hand items first, beginner instructions |
+| **D · Andreas Roth**, 45, professor, expert in another field | Secondary (critical expert) | Exact parts for a specific device, verified and sourced data, fast answers |
 
-Both personas use the same flow. A higher skill level changes detail and language, never the safety limits.
+All personas use the same flow. A higher skill level changes detail and language, never the safety limits.
 
 ---
 
@@ -186,26 +188,23 @@ It should:
 
 ## Project Status
 
-This repository is in an early project stage. Requirements v0.2 and personas v0.2 are drafted for team review.
+Requirements v0.3, personas v0.5 and a clickable prototype exist. **Next step: sprint planning with Agent M** (sprint 0 in the implementation plan): register the requirements as a source, derive use cases and architecture, write the AI test cases, decide open questions G1–G4.
 
-Planned next steps:
-- validate open questions and persona assumptions (see the end of each document)
-- define the evaluation set of test cases, including high-risk cases
-- define the architecture and system components
-- prototype the user workflow
-- implement the AI diagnosis and work-package classification flow
-- build the first end-to-end MVP
-
-Sprints, testing and schedule up to 04.11: [Implementation_Plan_EN.md](Implementation_Plan_EN.md).
+Plan, sprints and testing up to 04.11: [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md).
 
 ---
 
-## Repository Contents
+## Repository Structure
 
-| File | Content |
+| Path | Content |
 |---|---|
-| [`Requirements_EN.md`](Requirements_EN.md) | Requirements v0.2: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories |
-| [`Personas_EN.md`](Personas_EN.md) | Personas v0.2: full profiles, traceability, persona-based test cases |
+| [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | **Binding.** Requirements v0.3: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
+| [`docs/Personas_EN.md`](docs/Personas_EN.md) | Personas A–D: profiles, user journeys, traceability, persona test cases, coverage gaps |
+| [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), schedule, testing, Definition of Done, prototype gap list |
+| [`prototype/`](prototype/) | Clickable prototype (TanStack Start, React); the codebase the MVP is built on. How to run: [`prototype/README.md`](prototype/README.md) |
+| [`presentation/`](presentation/) | Team slide deck and the list of slides to update |
+
+**Rules:** requirements change only in `docs/Requirements_EN.md`, with a change-log row and its own commit. Everything else refers to requirement IDs instead of repeating them.
 
 ---
 
@@ -217,6 +216,4 @@ This project does not yet specify a license. Add a license file and update this 
 
 ## Contributing
 
-This project is still in the planning and prototyping phase. Contributions are welcome once the MVP scope and architecture are defined.
-
-If you want to contribute, start by reviewing the requirements and personas and suggesting improvements to the user experience, AI logic, safety checks, or workflow.
+Start with `docs/Requirements_EN.md` and `docs/Personas_EN.md`. Code changes go through the sprint process in `docs/Implementation_Plan_EN.md`.
