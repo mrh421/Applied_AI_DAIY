@@ -39,6 +39,21 @@ We declare Agent M's **scrum-wip** model plus the **prototyping** practice.
 | Developers | Claude Code (implementation); a second Claude Code session (release tests) |
 | Usability testers | Beginners like Personas A and C, experienced users like Personas B and D; not from the course |
 
+### Our Agent M instance
+
+| What | Link |
+|---|---|
+| Dashboard (review and accept at the gates) | [mrh421.github.io/agent-m](https://mrh421.github.io/agent-m/) |
+| Agent M repository (our fork) | [github.com/mrh421/agent-m](https://github.com/mrh421/agent-m) |
+| Original project and docs | [github.com/akmaier/agent-m](https://github.com/akmaier/agent-m) |
+
+How to work with it:
+
+1. Open the dashboard. It has no server or account; it reads and writes this repository through the GitHub API.
+2. Create a GitHub token with access to `mrh421/Applied_AI_DAIY` and enter it on the dashboard. The token stays in your browser and is never committed.
+3. Review open drafts (requirements, use cases, architecture, pull requests) on the dashboard. Acceptance at a gate is the Product Owner's decision.
+4. Changes to Agent M itself go through mrh as an issue or pull request on the fork, not as direct pushes.
+
 ---
 
 ## Schedule
