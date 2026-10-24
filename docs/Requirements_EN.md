@@ -1,6 +1,6 @@
 # Applied AI · Project · D.AI.Y
 
-> **Project requirements and concept overview** · Version 0.2 (draft for team review)
+> **Project requirements and concept overview** · Version 0.3 (draft for team review)
 
 ---
 
@@ -10,6 +10,7 @@
 |---|---|---|---|
 | 0.1 | — | Initial requirements, repair focus, novice target group | Course kick-off |
 | 0.2 | 2026-10-23 | Added stakeholders, personas, scope statement and epics. Extended product vision from repairs to small home projects. Added skill profile (FR-10), material inventory (FR-11), tool inventory (FR-12), project history (FR-13), work-package classification (FR-14), handover brief for professionals (FR-15). Re-prioritized FR-08 (accounts). Added NFR-09/10, AIR-09/10, SAF-06/07, User Stories 4–6. Acceptance criteria for new stories in Given-When-Then form. | Elicitation with a second user group (experienced DIYers) showed needs not covered by v0.1. Existing IDs kept stable for traceability. |
+| 0.3 | 2026-10-24 | Personas consolidated to A–D (Sophie Keller, Jonas Weber, Emre Yildiz, Andreas Roth), stakeholder table and §0.4 updated. Persona gaps G1–G4 added to the open questions. No requirement added, changed or withdrawn. | Overlapping personas from the brainstorming (Lena/Mia, Lukas/David) and names differing between repo and slides. |
 
 **Change rule:** Requirement IDs are never renumbered or reused. Removed requirements are marked *Withdrawn* with a reason. Every change gets a row in this table and a separate commit.
 
@@ -85,8 +86,9 @@ flowchart TD
 
 | Stakeholder | Interest | Influence | Motivation | Strategy |
 |---|---|---|---|---|
-| Novice users (Persona A) | Simple, safe guidance | Low | High | Keep informed, usability tests |
+| Novice users (Personas A, C) | Simple, safe, affordable guidance | Low | High | Keep informed, usability tests |
 | Experienced DIYers (Persona B) | Depth, inventory, efficiency | Low | High | Keep informed, usability tests |
+| Experts from other fields (Persona D) | Exact parts, verified and sourced information | Low | Medium | Keep informed, usability tests |
 | Course instructor / examiner | Structured, traceable RE process | High | High | Close cooperation |
 | Project team (developers, testers) | Realistic, testable scope | High | High | Close cooperation |
 | Qualified professionals (e.g. electricians) | Clear handover, no liability for unclear DIY work | Low | Medium | Observe, validate FR-14/15 examples |
@@ -96,39 +98,18 @@ flowchart TD
 
 ### 0.4 Personas
 
-Short profiles below. Full profiles, traceability to user stories and persona-based test cases: [`Personas_EN.md`](Personas_EN.md).
+Short profiles below. Full profiles, user journeys, traceability and persona-based test cases: [`Personas_EN.md`](Personas_EN.md).
 
-#### Persona A · Lena Hofmann — "Show me how, step by step"
+| Persona | Who | Experience | Typical case | Role in product |
+|---|---|---|---|---|
+| **A · Sophie Keller** | 28, marketing assistant, rents a flat | Beginner, basic toolbox | Dripping faucet, sticking drawer; photo on the phone | Primary (default experience) |
+| **B · Jonas Weber** | 35, IT admin, owns a house from 1978 | Advanced, area-dependent | Fence, heat pump integration; DIY vs. professional split | Secondary (extended depth) |
+| **C · Emre Yildiz** | 22, student, room in a shared flat | Beginner, no tools | Desk and storage for €60; second-hand first | Secondary (budget and reuse) |
+| **D · Andreas Roth** | 45, professor of pattern recognition | Medium in electronics, beginner in mechanics | Vintage record player; exact parts, verified data | Secondary (critical expert) |
 
-| Attribute | Value |
-|---|---|
-| Age | 27 |
-| Situation | Single, rented 2-room flat, early career (marketing) |
-| Technical experience | Low. Owns a basic tool set (screwdriver set, hammer, cordless drill received as a gift) |
-| Goal | Fix small things without calling the landlord or paying a handyman |
-| Frustration | Tutorials assume knowledge she does not have, she is afraid of breaking something |
-| Usage | Smartphone, short sessions, often in the moment the problem occurs |
-| Quote | "I don't even know what this part is called." |
+**Relevant requirements:** A: FR-01–03, FR-07, NFR-01–03, SAF-01–03, AIR-02 · B: FR-04, FR-08, FR-10–15, AIR-04, AIR-09/10, SAF-06/07 · C: FR-04, FR-05, FR-11, FR-12, SUS-01–05, SUS-07 · D: FR-06, AIR-05–08, SAF-04, SAF-05, SAF-07, SUS-06.
 
-**Relevant requirements:** FR-01–03, FR-07, NFR-01–03, SAF-01–03, AIR-02, AIR-04.
-
-#### Persona B · Jonas Weber — "Tell me when and why, I'll do the rest"
-
-| Attribute | Value |
-|---|---|
-| Age | 35 |
-| Situation | Married, one small child, owns a detached house built around 1978, partially renovated |
-| Profession | IT system administrator, hybrid work |
-| Technical experience | Advanced in woodwork, drywall, garden construction. Expert in networking and smart home. Medium in plumbing (fittings only). Electrical: low-voltage and preparatory work only, fixed installations always by a qualified electrician. Heating: control and data interface only. |
-| Inventory | Cordless and hammer drill, mitre and plunge saw, laser level, two-pole voltage tester, multimeter, leftover larch boards, stainless screws, quick-set concrete, conduit, network cable |
-| Goals | Improve the house step by step with as much own work as possible. Know per project what he may do himself and why. Use what he already owns before buying. |
-| Frustrations | Contradicting tutorials and forums, duplicate purchases, unclear legal limits of DIY, AI answers that either forbid everything or hide risks |
-| Usage | Plans on a laptop in the evening, executes with the smartphone in the workshop or garden |
-| Quote | "I don't want the app to tell me to call a professional. I want it to tell me *when* and *why*." |
-
-**Relevant requirements:** FR-04, FR-08, FR-10–15, AIR-04, AIR-09/10, SAF-06/07.
-
-**Design consequence:** Both personas use the same flow. Persona A is the default (NFR-01/02). Persona B gets more depth through the skill profile (FR-10), never fewer safety checks (SAF-07).
+**Design consequence:** All personas use the same flow. Persona A is the default (NFR-01/02). Higher skill (B, D) gets more depth through the skill profile (FR-10), never fewer safety checks (SAF-07). For NFR-01, A and C form the beginner group, B and D the experienced group.
 
 ---
 
@@ -433,7 +414,11 @@ As a first-time user, I want to start a case immediately without filling in a pr
 
 ## Open Questions for Validation
 
+- **G1 · Tenant rules:** should the app point out what tenants may change or must report (Personas A, C)? Candidate SAF/FR.
+- **G2 · Budget:** should users be able to set a budget and get a total cost estimate (Personas C, A)? Candidate FR.
+- **G3 · Sources:** should verified data always name its source (Personas D, B)? Candidate extension of AIR-06.
+- **G4 · Language:** which language does the app use? Candidate NFR (German UI).
 - Is local storage without an account sufficient for the prototype, or does the examiner expect FR-08?
-- Which 10–15 test cases (both personas, including high-risk cases) form the evaluation set for SAF and AIR requirements?
+- Which 10–15 test cases (all four personas, including high-risk cases) form the evaluation set for SAF and AIR requirements?
 - Have qualified professionals reviewed the FR-14 example classifications?
 - Can the team deliver all *Must* items in the remaining time? If not, which one moves to *Should*?
