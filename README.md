@@ -190,7 +190,7 @@ It should:
 
 Requirements v0.3, personas v0.5 and a clickable prototype exist. **Next step: sprint planning with Agent M** (sprint 0 in the implementation plan): register the requirements as a source, derive use cases and architecture, write the AI test cases, decide open questions G1–G4.
 
-Plan, sprints and testing up to 04.11: [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md).
+Plan, sprints and testing (implementation from Wed 28.10, MVP demo 04.11, remaining features after that): [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md).
 
 ---
 
@@ -200,7 +200,7 @@ Plan, sprints and testing up to 04.11: [`docs/Implementation_Plan_EN.md`](docs/I
 |---|---|
 | [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | **Binding.** Requirements v0.3: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
 | [`docs/Personas_EN.md`](docs/Personas_EN.md) | Personas A–D: profiles, user journeys, traceability, persona test cases, coverage gaps |
-| [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), schedule, testing, Definition of Done, prototype gap list |
+| [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), schedule (phase 1 MVP, phase 2 remaining features), use-case coverage, testing, Definition of Done, prototype gap list |
 | [`prototype/`](prototype/) | Clickable prototype (TanStack Start, React); the codebase the MVP is built on. How to run: [`prototype/README.md`](prototype/README.md) |
 | [`presentation/`](presentation/) | Team slide deck and the list of slides to update |
 
