@@ -2,7 +2,7 @@
 
 An AI-powered DIY platform that helps people, regardless of their technical skills, safely repair household items and carry out small home projects themselves.
 
-> This README is a summary. The binding source is [`docs/Requirements_EN.md`](docs/Requirements_EN.md) (v0.3). Full personas, traceability and test cases: [`docs/Personas_EN.md`](docs/Personas_EN.md).
+> This README is a summary. The binding source is [`docs/Requirements_EN.md`](docs/Requirements_EN.md) (v0.4). Full personas, traceability and test cases: [`docs/Personas_EN.md`](docs/Personas_EN.md).
 
 ## Overview
 
@@ -198,7 +198,7 @@ Plan, sprints and testing (implementation from Wed 28.10, MVP demo 04.11, remain
 
 | Path | Content |
 |---|---|
-| [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | **Binding.** Requirements v0.3: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
+| [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | **Binding.** Requirements v0.4: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
 | [`docs/Personas_EN.md`](docs/Personas_EN.md) | Personas A–D: profiles, user journeys, traceability, persona test cases, coverage gaps |
 | [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), schedule (phase 1 MVP, phase 2 remaining features), use-case coverage, testing, Definition of Done, prototype gap list |
 | [`prototype/`](prototype/) | Clickable prototype (TanStack Start, React); the codebase the MVP is built on. How to run: [`prototype/README.md`](prototype/README.md) |

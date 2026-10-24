@@ -1,6 +1,6 @@
 # Applied AI · Project · D.AI.Y — Personas
 
-> Version 0.5 · Companion document to [`Requirements_EN.md`](Requirements_EN.md) v0.3
+> Version 0.5 · Companion document to [`Requirements_EN.md`](Requirements_EN.md) v0.4
 
 ---
 

@@ -1,6 +1,6 @@
 # Applied AI · Project · D.AI.Y — Implementation Plan
 
-> **How we build D.AI.Y: preparation from 24.10, implementation from Wed 28.10, MVP demo on Wed 04.11.2026, remaining features after that.** Based on [Requirements_EN.md](Requirements_EN.md) v0.3 and [Personas_EN.md](Personas_EN.md) v0.5.
+> **How we build D.AI.Y: preparation from 24.10, implementation from Wed 28.10, MVP demo on Wed 04.11.2026, remaining features after that.** Based on [Requirements_EN.md](Requirements_EN.md) v0.4 and [Personas_EN.md](Personas_EN.md) v0.5.
 
 ---
 
@@ -87,7 +87,7 @@ gantt
 | Sprint | Dates | Goal | Requirements | Use cases |
 |---|---|---|---|---|
 | 0 · Preparation | Sat 24.10 – Tue 27.10 | Agent M stages 1–4 accepted, AI test cases written, AI model and provider chosen, output format and Definition of Done agreed, G1–G4 decided. Mon 26.10 / Tue 27.10: 2–3 people try the **existing** prototype | AIR-03, NFR-08 | — |
-| 1 · Takeover and safety core | Wed 28.10 – Thu 29.10 | Own AI access instead of the Lovable gateway. The app asks before it answers and escalates dangerous work; findings from the prototype check are fixed | FR-01, FR-02, FR-03, SAF-01, SAF-02, SAF-03, AIR-01, AIR-02, AIR-03, AIR-07, NFR-05 | US-1, US-3 |
+| 1 · Takeover and safety core | Wed 28.10 – Thu 29.10 | Own AI access instead of the Lovable gateway, with a privacy notice on what is sent to it. The app asks before it answers and escalates dangerous work; findings from the prototype check are fixed | FR-01, FR-02, FR-03, SAF-01, SAF-02, SAF-03, AIR-01, AIR-02, AIR-03, AIR-07, NFR-05, NFR-06 | US-1, US-3 |
 | 2 · Work packages | Fri 30.10 | Each work package gets one of the four labels with a reason, the stricter one when unsure | FR-14, SAF-06, AIR-10 | US-5 |
 | 3 · Profile and guidance | Sat 31.10 | Skill level per area; users tick off steps; detail adapts to the profile, safety and labels do not | FR-07, FR-10, AIR-04, SAF-07, NFR-02, NFR-09 | US-5, US-6 |
 | 4 · Inventory and materials | Sun 01.11 | Structured inventory; materials list checked against own stock; sample products only for what is missing | FR-04, FR-11, SUS-07, AIR-05, AIR-06, AIR-09, SAF-05 | US-2, US-4, US-6 |
@@ -211,7 +211,7 @@ Every backlog item:
 
 ## Scope
 
-**Phase 1, by 04.11:** all *Must* items of [Requirements_EN.md](Requirements_EN.md) §6 — FR-01, FR-02, FR-03, FR-04 (sample products), FR-07, FR-10, FR-11, FR-14, SAF-01, SAF-02, SAF-06, SAF-07, AIR-03, NFR-01. Profile and inventory are stored locally, without accounts.
+**Phase 1, by 04.11:** all *Must* items of [Requirements_EN.md](Requirements_EN.md) §6 (completed in v0.4). The sprint table above assigns each of them to a sprint. *Should* items already scheduled in phase 1 (NFR-04, NFR-07, AIR-08) are done if time allows and move to phase 2 first when a sprint slips. Profile and inventory are stored locally, without accounts.
 
 **Pulled forward if sprints 2–4 finish early:** the first item of sprint 7 (FR-12 tool inventory), then the next. Nothing is pulled forward while a *Must* item or an unsafe test answer is open.
 
