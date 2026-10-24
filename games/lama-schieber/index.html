@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body style="margin:0">
+<title>Lama-Schieber</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: arcade cabinet on the altiplano — board canvas in the middle, a player card on each side (stacked above the board on phones). Deliberately single dark theme. */
+:root {
+  --bg: #16252a;
+  --surface: #20343a;
+  --well: #0c171b;
+  --line: #34514f;
+  --ink: #f3ecdb;
+  --muted: #9cb1aa;
+  --p1: #ff8a3d;
+  --p2: #52c7e0;
+  --leaf: #8fd14f;
+  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+[hidden] { display: none !important; }
+body {
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1060px; margin: 0 auto; display: grid; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px; }
+.brand { display: grid; gap: 2px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--leaf); font-weight: 700; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1; margin: 0; text-wrap: balance; }
+h1 span { color: var(--p1); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls label { display: grid; gap: 2px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+select, button {
+  font: 600 14px var(--body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 7px 12px;
+}
+button { cursor: pointer; }
+button.primary { background: var(--leaf); color: #14240f; border-color: transparent; }
+button:hover { filter: brightness(1.1); }
+select:focus-visible, button:focus-visible, canvas:focus-visible { outline: 3px solid var(--leaf); outline-offset: 2px; }
+.stage { display: grid; grid-template-columns: 190px minmax(0, 1fr) 190px; gap: 18px; align-items: start; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+  transition: box-shadow .2s, border-color .2s;
+}
+.card[data-active="true"] { border-color: var(--pc); box-shadow: 0 0 0 2px var(--pc) inset; }
+.card .who { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card .name { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--pc); }
+.chip { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--pc); color: #10201f; border-radius: 99px; padding: 2px 8px; }
+.score { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+.score small { font-size: 14px; color: var(--muted); font-weight: 500; }
+.bar { height: 8px; border-radius: 99px; background: var(--well); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--pc); border-radius: 99px; transition: width .35s; }
+#card0 { --pc: var(--p1); }
+#card1 { --pc: var(--p2); }
+.board-box { position: relative; min-width: 0; }
+canvas#board { display: block; width: 100%; max-width: 640px; aspect-ratio: 8.8 / 7.65; margin: 0 auto; touch-action: manipulation; cursor: pointer; border-radius: 18px; }
+.status { text-align: center; font-weight: 600; color: var(--muted); min-height: 1.5em; margin-top: 6px; }
+.status b { color: var(--ink); }
+.overlay {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: rgba(12, 23, 27, .72); border-radius: 18px;
+}
+.overlay .box { text-align: center; display: grid; gap: 10px; justify-items: center; padding: 20px; }
+.overlay h2 { font-family: var(--display); font-size: clamp(28px, 5vw, 42px); margin: 0; line-height: 1.05; text-wrap: balance; }
+.overlay p { margin: 0; color: var(--muted); }
+.info { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; min-width: 0; }
+.panel h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 0 0 8px; }
+.legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; }
+.legend div { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.legend canvas { width: 34px; height: 34px; flex: none; }
+.legend span { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+.rules { margin: 0; padding-left: 18px; color: var(--muted); max-width: 65ch; }
+.rules li + li { margin-top: 4px; }
+.rules b { color: var(--ink); }
+kbd { font: 600 12px var(--body); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink); }
+@media (max-width: 860px) {
+  .stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .board-box { grid-column: 1 / -1; order: 3; }
+  .card { padding: 10px 12px; gap: 4px; }
+  .score { font-size: 32px; }
+  .info { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) { .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="eyebrow">Der ICQ-Klassiker, nachgebaut</div>
+      <h1>Lama-<span>Schieber</span></h1>
+    </div>
+    <div class="controls">
+      <label for="mode">Gegner
+        <select id="mode">
+          <option value="pvp">2 Spieler (ein Gerät)</option>
+          <option value="ai0">Lama-KI · leicht</option>
+          <option value="ai1" selected>Lama-KI · normal</option>
+          <option value="ai2">Lama-KI · schwer</option>
+        </select>
+      </label>
+      <label for="target">Ziel
+        <select id="target">
+          <option value="300">300 Punkte</option>
+          <option value="500" selected>500 Punkte</option>
+          <option value="1000">1000 Punkte</option>
+        </select>
+      </label>
+      <label for="mute">Ton<button id="mute" type="button">An</button></label>
+      <label for="restart">&nbsp;<button id="restart" class="primary" type="button">Neues Spiel</button></label>
+    </div>
+  </header>
+
+  <section class="stage">
+    <div class="card" id="card0" data-active="true">
+      <div class="who"><span class="name" id="name0">Orange</span><span class="chip" id="chip0">Am Zug</span></div>
+      <div class="score" id="score0">0 <small>/ 500</small></div>
+      <div class="bar"><i id="bar0"></i></div>
+    </div>
+    <div class="board-box">
+      <canvas id="board" tabindex="0" aria-label="Spielfeld. Mit Pfeiltasten das Lama bewegen, Leertaste zum Einschieben."></canvas>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div class="overlay" id="overlay" hidden>
+        <div class="box">
+          <h2 id="winTitle">Orange gewinnt!</h2>
+          <p id="winText"></p>
+          <button class="primary" id="again" type="button">Nochmal spielen</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="card1" data-active="false">
+      <div class="who"><span class="name" id="name1">Lama-KI</span><span class="chip" id="chip1" hidden>Am Zug</span></div>
+      <div class="score" id="score1">0 <small>/ 500</small></div>
+      <div class="bar"><i id="bar1"></i></div>
+    </div>
+  </section>
+
+  <section class="info">
+    <div class="panel">
+      <h3>Steine und Punkte</h3>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="panel">
+      <h3>So wird gespielt</h3>
+      <ul class="rules">
+        <li>Das Lama hält den nächsten Stein. Schieb ihn <b>von oben, links oder rechts</b> ins Feld.</li>
+        <li>Ist die Reihe voll, fliegt der Stein am anderen Ende raus. Alles fällt nach unten.</li>
+        <li><b>3 oder mehr Gleiche</b> waagrecht oder senkrecht verschwinden: Wert × Anzahl Punkte. Kettenreaktionen zählen doppelt, dreifach …</li>
+        <li>Wer zuerst das Ziel erreicht, gewinnt. Maus: zeigen und klicken. Handy: zweimal tippen. Tastatur: <kbd>←</kbd> <kbd>→</kbd> und <kbd>Leertaste</kbd>.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const N = 5, W = 8.8, H = 7.65, BX = 1.9, BY = 2.3;
+  const TYPES = [
+    { name: 'Blatt',   val: 5,   w: 28, fg: '#4c9a2c', bg: '#d6eec2' },
+    { name: 'Kirsche', val: 10,  w: 24, fg: '#d23a36', bg: '#f8d2cb' },
+    { name: 'Zitrone', val: 20,  w: 20, fg: '#e5b210', bg: '#fbefbd' },
+    { name: 'Traube',  val: 30,  w: 14, fg: '#7a4cc0', bg: '#e2d5f5' },
+    { name: 'Stern',   val: 50,  w: 9,  fg: '#2e7dd6', bg: '#cde2f8' },
+    { name: 'Lama',    val: 100, w: 5,  fg: '#7d5236', bg: '#f6cde0' },
+  ];
+  const TOTALW = TYPES.reduce((a, t) => a + t.w, 0);
+  const PCOL = ['#ff8a3d', '#52c7e0'];
+  const MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0.35 : 1;
+
+  // Ring order for the keyboard: left side bottom→top, top left→right, right side top→bottom.
+  const SLOTS = [];
+  for (let r = N - 1; r >= 0; r--) SLOTS.push({ side: 'left', i: r });
+  for (let c = 0; c < N; c++) SLOTS.push({ side: 'top', i: c });
+  for (let r = 0; r < N; r++) SLOTS.push({ side: 'right', i: r });
+  const slotCell = s => { const S = SLOTS[s]; return S.side === 'top' ? { r: -1, c: S.i } : S.side === 'left' ? { r: S.i, c: -1 } : { r: S.i, c: N }; };
+  const llamaHome = s => {
+    const S = SLOTS[s];
+    if (S.side === 'top') return { x: BX + S.i + 0.5, y: 0.74 };
+    if (S.side === 'left') return { x: 0.46, y: BY + S.i + 0.5 };
+    return { x: W - 0.46, y: BY + S.i + 0.5 };
+  };
+
+  let nextId = 1;
+  function newTile() {
+    let x = Math.random() * TOTALW, t = 0;
+    for (; t < TYPES.length - 1; t++) { x -= TYPES[t].w; if (x < 0) break; }
+    return { id: nextId++, type: t };
+  }
+
+  // ---------- pure game logic ----------
+  const emptyGrid = () => Array.from({ length: N }, () => Array(N).fill(null));
+  function snap(g) {
+    const m = {};
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const t = g[r][c]; if (t) m[t.id] = { r, c }; }
+    return m;
+  }
+  function gravity(g) {
+    let moved = false;
+    for (let c = 0; c < N; c++) {
+      let w = N - 1;
+      for (let r = N - 1; r >= 0; r--) {
+        if (g[r][c]) { if (w !== r) { g[w][c] = g[r][c]; g[r][c] = null; moved = true; } w--; }
+      }
+    }
+    return moved;
+  }
+  function findRuns(g) {
+    const runs = [];
+    const scan = (get) => {
+      for (let a = 0; a < N; a++) {
+        let b = 0;
+        while (b < N) {
+          const t = get(a, b);
+          if (!t) { b++; continue; }
+          let e = b;
+          while (e + 1 < N && get(a, e + 1) && get(a, e + 1).type === t.type) e++;
+          if (e - b >= 2) {
+            const cells = [];
+            for (let k = b; k <= e; k++) cells.push(get === rowGet ? [a, k] : [k, a]);
+            runs.push({ type: t.type, cells });
+          }
+          b = e + 1;
+        }
+      }
+    };
+    const rowGet = (r, c) => g[r][c];
+    const colGet = (c, r) => g[r][c];
+    scan(rowGet); scan(colGet);
+    return runs;
+  }
+  function simulate(grid, s, tile) {
+    const g = grid.map(r => r.slice());
+    const S = SLOTS[s], phases = [], off = [], enter = slotCell(s);
+    if (S.side === 'top') {
+      const c = S.i;
+      if (g[0][c]) { off.push({ id: g[N - 1][c].id, r: N, c }); for (let r = N - 1; r > 0; r--) g[r][c] = g[r - 1][c]; }
+      g[0][c] = tile;
+    } else if (S.side === 'left') {
+      const r = S.i; let e = g[r].indexOf(null);
+      if (e < 0) { off.push({ id: g[r][N - 1].id, r, c: N }); e = N - 1; }
+      for (let c = e; c > 0; c--) g[r][c] = g[r][c - 1];
+      g[r][0] = tile;
+    } else {
+      const r = S.i; let e = g[r].lastIndexOf(null);
+      if (e < 0) { off.push({ id: g[r][0].id, r, c: -1 }); e = 0; }
+      for (let c = e; c < N - 1; c++) g[r][c] = g[r][c + 1];
+      g[r][N - 1] = tile;
+    }
+    phases.push({ kind: 'push', pos: snap(g), off, enter: { id: tile.id, type: tile.type, ...enter } });
+    if (gravity(g)) phases.push({ kind: 'fall', pos: snap(g) });
+    let score = 0, chain = 0;
+    for (;;) {
+      const runs = findRuns(g);
+      if (!runs.length) break;
+      chain++;
+      const ids = new Set(), parts = [];
+      let pts = 0;
+      for (const run of runs) {
+        const p = TYPES[run.type].val * run.cells.length * chain;
+        pts += p;
+        let sr = 0, sc = 0;
+        for (const [r, c] of run.cells) { ids.add(g[r][c].id); sr += r; sc += c; }
+        parts.push({ p, r: sr / run.cells.length, c: sc / run.cells.length, type: run.type });
+      }
+      for (const run of runs) for (const [r, c] of run.cells) g[r][c] = null;
+      score += pts;
+      phases.push({ kind: 'pop', ids: [...ids], parts, chain, pts });
+      if (gravity(g)) phases.push({ kind: 'fall', pos: snap(g) });
+    }
+    return { grid: g, score, phases, chain };
+  }
+  function startGrid() {
+    // Two bottom rows pre-filled, without any ready-made triple.
+    const g = emptyGrid();
+    for (let r = N - 2; r < N; r++) for (let c = 0; c < N; c++) {
+      let t, tries = 0;
+      do { t = newTile(); g[r][c] = t; tries++; } while (findRuns(g).length && tries < 30);
+    }
+    return g;
+  }
+
+  // ---------- state ----------
+  const st = { gen: 0, grid: emptyGrid(), scores: [0, 0], turn: 0, queue: [], mode: 'ai1', target: 500, over: false, busy: false, held: true };
+  const disp = new Map();
+  const llama = { x: 0, y: 0, tx: 0, ty: 0, face: 1, walk: 0, moving: false, slot: 7, waiters: [] };
+  const particles = [], floats = [], tweens = [];
+  let armed = -1, hoverSlot = -1;
+
+  const isAI = p => p === 1 && st.mode !== 'pvp';
+  const aiLevel = () => +st.mode.slice(2);
+  const pname = p => p === 0 ? 'Orange' : (st.mode === 'pvp' ? 'Blau' : 'Lama-KI');
+
+  // ---------- AI ----------
+  function chooseMove() {
+    const level = aiLevel(), tile = st.queue[0], nxt = st.queue[1];
+    let best = 0, bestV = -Infinity;
+    for (let s = 0; s < SLOTS.length; s++) {
+      const res = simulate(st.grid, s, tile);
+      let v = res.score;
+      if (st.scores[st.turn] + res.score >= st.target) v += 1e6;
+      if (level >= 2) {
+        let opp = 0;
+        for (let s2 = 0; s2 < SLOTS.length; s2++) { const r2 = simulate(res.grid, s2, nxt); if (r2.score > opp) opp = r2.score; }
+        v -= 0.8 * opp;
+      }
+      v += Math.random() * (level === 0 ? 45 : 0.5);
+      if (v > bestV) { bestV = v; best = s; }
+    }
+    return best;
+  }
+
+  // ---------- canvas ----------
+  const cv = document.getElementById('board');
+  const ctx = cv.getContext('2d');
+  let U = 60, dpr = 1, tileCache = [];
+
+  function rr(x, X, Y, w, h, r) {
+    x.beginPath();
+    x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r);
+    x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath();
+  }
+  function circle(x, cx, cy, r, fill) { x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fillStyle = fill; x.fill(); }
+
+  function paintTile(x, type) {
+    const T = TYPES[type];
+    rr(x, 0.03, 0.03, 0.94, 0.94, 0.2); x.fillStyle = T.bg; x.fill();
+    const gr = x.createLinearGradient(0, 0, 0, 1);
+    gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(0.45, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(0,0,0,.14)');
+    x.fillStyle = gr; x.fill();
+    x.lineWidth = 0.035; x.strokeStyle = 'rgba(0,0,0,.28)'; x.stroke();
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    const hi = 'rgba(255,255,255,.7)';
+    if (type === 0) {
+      x.save(); x.translate(0.5, 0.52); x.rotate(-0.65);
+      x.beginPath(); x.moveTo(0, -0.31); x.quadraticCurveTo(0.26, 0, 0, 0.29); x.quadraticCurveTo(-0.26, 0, 0, -0.31);
+      x.fillStyle = T.fg; x.fill();
+      x.beginPath(); x.moveTo(0, -0.24); x.lineTo(0, 0.38); x.strokeStyle = 'rgba(255,255,255,.6)'; x.lineWidth = 0.03; x.stroke();
+      x.restore();
+    } else if (type === 1) {
+      x.strokeStyle = '#4d7a2a'; x.lineWidth = 0.04;
+      x.beginPath(); x.moveTo(0.35, 0.6); x.quadraticCurveTo(0.4, 0.32, 0.58, 0.2); x.stroke();
+      x.beginPath(); x.moveTo(0.65, 0.64); x.quadraticCurveTo(0.62, 0.38, 0.58, 0.2); x.stroke();
+      x.save(); x.translate(0.62, 0.2); x.rotate(0.4);
+      x.beginPath(); x.ellipse(0.08, 0, 0.09, 0.04, 0, 0, Math.PI * 2); x.fillStyle = '#5fa336'; x.fill(); x.restore();
+      circle(x, 0.35, 0.66, 0.14, T.fg); circle(x, 0.65, 0.69, 0.14, T.fg);
+      circle(x, 0.31, 0.62, 0.035, hi); circle(x, 0.61, 0.65, 0.035, hi);
+    } else if (type === 2) {
+      x.beginPath(); x.ellipse(0.5, 0.53, 0.28, 0.19, -0.35, 0, Math.PI * 2); x.fillStyle = T.fg; x.fill();
+      circle(x, 0.25, 0.64, 0.05, T.fg); circle(x, 0.75, 0.42, 0.05, T.fg);
+      x.beginPath(); x.ellipse(0.43, 0.48, 0.1, 0.04, -0.35, 0, Math.PI * 2); x.fillStyle = hi; x.fill();
+    } else if (type === 3) {
+      x.strokeStyle = '#4d7a2a'; x.lineWidth = 0.04;
+      x.beginPath(); x.moveTo(0.5, 0.33); x.lineTo(0.54, 0.16); x.stroke();
+      const pts = [[0.37, 0.42], [0.5, 0.42], [0.63, 0.42], [0.43, 0.55], [0.57, 0.55], [0.5, 0.68]];
+      for (const [px, py] of pts) { circle(x, px, py, 0.085, T.fg); circle(x, px - 0.025, py - 0.025, 0.022, hi); }
+    } else if (type === 4) {
+      x.beginPath();
+      for (let k = 0; k < 10; k++) {
+        const a = -Math.PI / 2 + k * Math.PI / 5, rad = k % 2 ? 0.14 : 0.32;
+        x.lineTo(0.5 + Math.cos(a) * rad, 0.54 + Math.sin(a) * rad);
+      }
+      x.closePath(); x.fillStyle = T.fg; x.fill(); x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 0.03; x.stroke();
+    } else {
+      const wool = '#fbf3e4';
+      x.fillStyle = wool; x.strokeStyle = T.fg; x.lineWidth = 0.028;
+      for (const s of [-1, 1]) {
+        x.beginPath(); x.ellipse(0.5 + s * 0.15, 0.24, 0.05, 0.12, s * 0.35, 0, Math.PI * 2); x.fill(); x.stroke();
+      }
+      x.beginPath(); x.ellipse(0.5, 0.52, 0.2, 0.25, 0, 0, Math.PI * 2); x.fill(); x.stroke();
+      for (const [px, py] of [[0.41, 0.3], [0.5, 0.27], [0.59, 0.3]]) circle(x, px, py, 0.06, wool);
+      x.beginPath(); x.ellipse(0.5, 0.65, 0.12, 0.09, 0, 0, Math.PI * 2); x.fillStyle = '#ead8bd'; x.fill();
+      circle(x, 0.42, 0.49, 0.03, '#2b1d14'); circle(x, 0.58, 0.49, 0.03, '#2b1d14');
+      circle(x, 0.47, 0.64, 0.014, '#5a3d29'); circle(x, 0.53, 0.64, 0.014, '#5a3d29');
+      x.beginPath(); x.moveTo(0.46, 0.7); x.quadraticCurveTo(0.5, 0.73, 0.54, 0.7); x.strokeStyle = '#5a3d29'; x.lineWidth = 0.02; x.stroke();
+    }
+  }
+  function buildTileCache() {
+    const px = Math.max(8, Math.ceil(0.92 * U * dpr));
+    tileCache = TYPES.map((_, t) => {
+      const c = document.createElement('canvas'); c.width = c.height = px;
+      const x = c.getContext('2d'); x.scale(px, px); paintTile(x, t); return c;
+    });
+  }
+  function drawTile(type, cx, cy, s = 1, a = 1, size = 0.92) {
+    if (a <= 0 || s <= 0) return;
+    const d = size * s;
+    ctx.globalAlpha = Math.max(0, Math.min(1, a));
+    ctx.drawImage(tileCache[type], cx - d / 2, cy - d / 2, d, d);
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLlama(x, y, sz, face, walk, moving, blanket) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(face * sz, sz);
+    const bob = moving ? Math.sin(walk * 2) * 0.018 : 0;
+    const wool = '#f4ead8', edge = '#6b4b33';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#cdb795'; ctx.lineWidth = 0.065;
+    const legs = [-0.3, -0.18, 0.06, 0.17];
+    legs.forEach((lx, k) => {
+      const sw = moving ? Math.sin(walk + (k % 2 ? Math.PI : 0)) * 0.06 : 0;
+      ctx.beginPath(); ctx.moveTo(lx, 0.16); ctx.lineTo(lx + sw, 0.44); ctx.stroke();
+    });
+    ctx.translate(0, bob);
+    ctx.fillStyle = wool; ctx.strokeStyle = edge; ctx.lineWidth = 0.025;
+    ctx.beginPath(); ctx.arc(-0.37, 0.0, 0.065, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(-0.07, 0.07, 0.31, 0.16, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    rr(ctx, -0.22, -0.07, 0.28, 0.2, 0.05); ctx.fillStyle = blanket; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillRect(-0.22, 0.0, 0.28, 0.025); ctx.fillRect(-0.22, 0.06, 0.28, 0.015);
+    ctx.beginPath(); ctx.moveTo(0.07, 0.06); ctx.lineTo(0.13, -0.36); ctx.lineTo(0.27, -0.36); ctx.lineTo(0.25, 0.04); ctx.closePath();
+    ctx.fillStyle = wool; ctx.fill(); ctx.strokeStyle = edge; ctx.stroke();
+    for (const ex of [0.17, 0.24]) {
+      ctx.beginPath(); ctx.moveTo(ex - 0.03, -0.44); ctx.lineTo(ex - 0.01, -0.58); ctx.lineTo(ex + 0.04, -0.45); ctx.closePath();
+      ctx.fillStyle = wool; ctx.fill(); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.ellipse(0.25, -0.39, 0.12, 0.09, 0, 0, Math.PI * 2); ctx.fillStyle = wool; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0.36, -0.355, 0.075, 0.06, 0, 0, Math.PI * 2); ctx.fillStyle = '#e6d3b6'; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0.27, -0.41, 0.022, 0, Math.PI * 2); ctx.fillStyle = '#2b1d14'; ctx.fill();
+    ctx.restore();
+  }
+
+  const MOUNTAINS = [[0, 1.3], [0.6, 0.75], [1.3, 1.05], [2.3, 0.35], [3.2, 0.95], [4.1, 0.55], [5.0, 1.0], [6.0, 0.25], [7.0, 0.9], [7.8, 0.6], [8.8, 1.1], [8.8, 1.3]];
+
+  function draw(now) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.setTransform(U * dpr, 0, 0, U * dpr, 0, 0);
+    // backdrop
+    rr(ctx, 0, 0, W, H, 0.3); ctx.fillStyle = '#1b2f35'; ctx.fill();
+    ctx.beginPath(); MOUNTAINS.forEach(([mx, my], k) => k ? ctx.lineTo(mx, my) : ctx.moveTo(mx, my)); ctx.closePath();
+    ctx.fillStyle = '#233c42'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(2.3, 0.35); ctx.lineTo(2.55, 0.5); ctx.lineTo(2.1, 0.5); ctx.closePath();
+    ctx.moveTo(6.0, 0.25); ctx.lineTo(6.28, 0.42); ctx.lineTo(5.78, 0.42); ctx.closePath();
+    ctx.fillStyle = '#3d5a5d'; ctx.fill();
+    // board well
+    rr(ctx, BX - 0.1, BY - 0.1, N + 0.2, N + 0.2, 0.22); ctx.fillStyle = '#0c171b'; ctx.fill();
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      rr(ctx, BX + c + 0.06, BY + r + 0.06, 0.88, 0.88, 0.16); ctx.fillStyle = '#132428'; ctx.fill();
+    }
+    const human = !st.over && !isAI(st.turn);
+    const pc = PCOL[st.turn];
+    // lane preview
+    if (!st.over && st.held) {
+      const S = SLOTS[llama.slot];
+      ctx.fillStyle = pc; ctx.globalAlpha = 0.13;
+      if (S.side === 'top') rr(ctx, BX + S.i + 0.04, BY + 0.04, 0.92, N - 0.08, 0.16);
+      else rr(ctx, BX + 0.04, BY + S.i + 0.04, N - 0.08, 0.92, 0.16);
+      ctx.fill(); ctx.globalAlpha = 1;
+    }
+    // slot arrows
+    for (let s = 0; s < SLOTS.length; s++) {
+      if (st.held && s === llama.slot) continue;
+      const { r, c } = slotCell(s), cx = BX + c + 0.5, cy = BY + r + 0.5, S = SLOTS[s];
+      ctx.save(); ctx.translate(cx, cy);
+      ctx.rotate(S.side === 'top' ? Math.PI / 2 : S.side === 'left' ? 0 : Math.PI);
+      ctx.beginPath(); ctx.moveTo(0.12, 0); ctx.lineTo(-0.08, -0.13); ctx.lineTo(-0.08, 0.13); ctx.closePath();
+      ctx.fillStyle = s === hoverSlot && human ? pc : '#3f5c5e'; ctx.fill();
+      ctx.restore();
+    }
+    // tiles
+    for (const d of disp.values()) drawTile(d.type, BX + d.x + 0.5, BY + d.y + 0.5, d.s, d.a);
+    // held piece
+    if (st.held && !st.over && st.queue.length) {
+      const { r, c } = slotCell(llama.slot);
+      const bob = Math.sin(now / 320) * 0.04 * MOTION;
+      const settled = !llama.moving;
+      drawTile(st.queue[0].type, BX + c + 0.5, BY + r + 0.5 + bob, settled ? 0.88 : 0.8, settled ? 1 : 0.75);
+    }
+    // llama
+    drawLlama(llama.x, llama.y, 0.95, llama.face, llama.walk, llama.moving, pc);
+    // particles
+    for (const p of particles) {
+      ctx.globalAlpha = Math.max(0, p.life); circle(ctx, p.x, p.y, p.r, p.col);
+    }
+    ctx.globalAlpha = 1;
+    // floating texts in pixel space for crisp fonts
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const f of floats) {
+      const k = (now - f.t0) / (1100 * Math.max(MOTION, 0.6));
+      if (k > 1) continue;
+      ctx.globalAlpha = k < 0.75 ? 1 : 1 - (k - 0.75) / 0.25;
+      ctx.font = `700 ${Math.round(U * f.size)}px Fredoka, "Trebuchet MS", sans-serif`;
+      const fx = f.x * U, fy = (f.y - k * 0.7) * U;
+      ctx.lineWidth = Math.max(3, U * 0.08); ctx.strokeStyle = '#0c171b'; ctx.strokeText(f.text, fx, fy);
+      ctx.fillStyle = f.col; ctx.fillText(f.text, fx, fy);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---------- animation loop ----------
+  const easeOut = k => 1 - Math.pow(1 - k, 3);
+  const easeIn = k => k * k;
+  function tween(dur, fn, ease = easeOut) {
+    return new Promise(res => tweens.push({ t0: performance.now(), dur: Math.max(1, dur * MOTION), fn, ease, res }));
+  }
+  function tweenMoves(moves, dur, ease) {
+    const st0 = moves.map(([d]) => ({ x: d.x, y: d.y }));
+    return tween(dur, k => moves.forEach(([d, tx, ty, fade], i) => {
+      d.x = st0[i].x + (tx - st0[i].x) * k; d.y = st0[i].y + (ty - st0[i].y) * k; if (fade) d.a = 1 - k;
+    }), ease);
+  }
+  const sleep = ms => new Promise(r => setTimeout(r, ms * MOTION));
+
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (let i = tweens.length - 1; i >= 0; i--) {
+      const t = tweens[i], k = Math.min(1, (now - t.t0) / t.dur);
+      t.fn(t.ease(k));
+      if (k >= 1) { tweens.splice(i, 1); t.res(); }
+    }
+    const dx = llama.tx - llama.x, dy = llama.ty - llama.y, dist = Math.hypot(dx, dy), step = 7 * dt / MOTION;
+    if (dist <= step || dist < 0.001) {
+      llama.x = llama.tx; llama.y = llama.ty; llama.moving = false;
+      const S = SLOTS[llama.slot];
+      if (S.side === 'left') llama.face = 1; else if (S.side === 'right') llama.face = -1;
+      if (llama.waiters.length) { const w = llama.waiters; llama.waiters = []; w.forEach(f => f()); }
+    } else {
+      llama.x += dx / dist * step; llama.y += dy / dist * step; llama.moving = true;
+      llama.walk += dt * 16; if (Math.abs(dx) > 0.01) llama.face = dx < 0 ? -1 : 1;
+    }
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i]; p.vy += 9 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt * 1.4;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = floats.length - 1; i >= 0; i--) if (now - floats[i].t0 > 1300) floats.splice(i, 1);
+    draw(now);
+    requestAnimationFrame(frame);
+  }
+  function walkTo(s) {
+    llama.slot = s;
+    const h = llamaHome(s); llama.tx = h.x; llama.ty = h.y;
+    return new Promise(r => llama.waiters.push(r));
+  }
+
+  async function playPhases(phases) {
+    const gen = st.gen;
+    for (const ph of phases) {
+      if (gen !== st.gen) return;
+      if (ph.kind === 'push') {
+        const e = ph.enter;
+        disp.set(e.id, { x: e.c, y: e.r, s: 1, a: 1, type: e.type });
+        const moves = [];
+        for (const [id, p] of Object.entries(ph.pos)) { const d = disp.get(+id); if (d) moves.push([d, p.c, p.r]); }
+        for (const o of ph.off) { const d = disp.get(o.id); if (d) moves.push([d, o.c, o.r, true]); }
+        sfx('push');
+        await tweenMoves(moves, 210, easeOut);
+        for (const o of ph.off) disp.delete(o.id);
+      } else if (ph.kind === 'fall') {
+        const moves = []; let maxd = 0;
+        for (const [id, p] of Object.entries(ph.pos)) {
+          const d = disp.get(+id); if (!d) continue;
+          maxd = Math.max(maxd, Math.abs(p.r - d.y)); moves.push([d, p.c, p.r]);
+        }
+        await tweenMoves(moves, 110 + 70 * Math.sqrt(maxd), easeIn);
+        sfx('land');
+      } else {
+        sfx('pop', ph.chain);
+        const ds = ph.ids.map(id => disp.get(id)).filter(Boolean);
+        await tween(340, k => ds.forEach(d => {
+          d.s = k < 0.35 ? 1 + 0.25 * (k / 0.35) : 1.25 * (1 - (k - 0.35) / 0.65);
+          d.a = k < 0.5 ? 1 : 1 - (k - 0.5) / 0.5;
+        }), k => k);
+        for (const d of ds) {
+          if (MOTION < 1) break;
+          for (let i = 0; i < 7; i++) {
+            const a = Math.random() * Math.PI * 2, v = 1.5 + Math.random() * 2.5;
+            particles.push({ x: BX + d.x + 0.5, y: BY + d.y + 0.5, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, r: 0.04 + Math.random() * 0.05, life: 1, col: TYPES[d.type].fg });
+          }
+        }
+        ph.ids.forEach(id => disp.delete(id));
+        const now = performance.now();
+        for (const p of ph.parts) floats.push({ text: '+' + p.p, x: BX + p.c + 0.5, y: BY + p.r + 0.5, col: PCOL[st.turn], size: 0.5, t0: now });
+        if (ph.chain > 1) floats.push({ text: 'Kette ×' + ph.chain, x: BX + N / 2, y: BY + 1.2, col: '#8fd14f', size: 0.6, t0: now });
+        st.scores[st.turn] += ph.pts;
+        updateUI();
+      }
+    }
+  }
+
+  // ---------- flow ----------
+  function rebuildDisp() {
+    disp.clear();
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      const t = st.grid[r][c]; if (t) disp.set(t.id, { x: c, y: r, s: 1, a: 1, type: t.type });
+    }
+  }
+  function newGame() {
+    st.gen++;
+    tweens.splice(0).forEach(t => t.res());
+    st.grid = startGrid(); st.scores = [0, 0]; st.turn = 0; st.queue = [newTile(), newTile()];
+    st.over = false; st.busy = false; st.held = true; armed = -1;
+    st.mode = modeSel.value; st.target = +targetSel.value;
+    rebuildDisp();
+    overlay.hidden = true;
+    walkTo(7);
+    updateUI();
+  }
+  async function performMove(s) {
+    if (st.busy || st.over) return;
+    st.busy = true; armed = -1;
+    const gen = st.gen;
+    await walkTo(s);
+    await sleep(60);
+    if (gen !== st.gen) return;
+    st.held = false;
+    const tile = st.queue.shift(); st.queue.push(newTile());
+    const res = simulate(st.grid, s, tile);
+    st.grid = res.grid;
+    updateUI();
+    await playPhases(res.phases);
+    if (gen !== st.gen) return;
+    if (st.scores[st.turn] >= st.target) {
+      st.over = true; st.busy = false;
+      winTitle.textContent = pname(st.turn) + ' gewinnt!';
+      winText.textContent = `${st.scores[st.turn]} zu ${st.scores[1 - st.turn]} Punkten`;
+      overlay.hidden = false; sfx('win'); updateUI();
+      return;
+    }
+    st.turn ^= 1; st.held = true; st.busy = false;
+    updateUI();
+    maybeAI();
+  }
+  async function maybeAI() {
+    if (st.over || !isAI(st.turn) || st.busy) return;
+    st.busy = true;
+    const gen = st.gen;
+    await sleep(420);
+    if (gen !== st.gen) return;
+    const s = chooseMove();
+    st.busy = false;
+    performMove(s);
+  }
+
+  // ---------- UI ----------
+  const $ = id => document.getElementById(id);
+  const modeSel = $('mode'), targetSel = $('target'), overlay = $('overlay'), winTitle = $('winTitle'), winText = $('winText'), statusEl = $('status');
+  function updateUI() {
+    for (const p of [0, 1]) {
+      $('name' + p).textContent = pname(p);
+      $('score' + p).innerHTML = `${st.scores[p]} <small>/ ${st.target}</small>`;
+      $('bar' + p).style.width = Math.min(100, st.scores[p] / st.target * 100) + '%';
+      $('card' + p).dataset.active = String(!st.over && st.turn === p);
+      $('chip' + p).hidden = st.over || st.turn !== p;
+    }
+    const nxt = st.queue[1] ? TYPES[st.queue[1].type].name : '';
+    if (st.over) statusEl.innerHTML = 'Spiel vorbei.';
+    else if (isAI(st.turn)) statusEl.innerHTML = '<b>Lama-KI</b> überlegt …';
+    else if (armed >= 0) statusEl.innerHTML = `<b>${pname(st.turn)}</b>: nochmal tippen zum Einschieben`;
+    else statusEl.innerHTML = `<b>${pname(st.turn)}</b> ist am Zug · danach kommt: ${nxt}`;
+  }
+
+  function slotAt(px, py) {
+    const x = px / U, y = py / U;
+    const c = Math.floor(x - BX), r = Math.floor(y - BY);
+    if (y < BY && c >= 0 && c < N) return N + c;
+    if (r >= 0 && r < N) {
+      if (x < BX) return N - 1 - r;
+      if (x >= BX + N) return 2 * N + r;
+      const dT = r, dL = c, dR = N - 1 - c, m = Math.min(dT, dL, dR);
+      if (m === dT) return N + c;
+      if (m === dL) return N - 1 - r;
+      return 2 * N + r;
+    }
+    return -1;
+  }
+  const canAct = () => !st.busy && !st.over && !isAI(st.turn);
+  const local = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  cv.addEventListener('pointermove', e => {
+    const s = slotAt(...local(e)); hoverSlot = s;
+    if (e.pointerType === 'mouse' && canAct() && s >= 0 && s !== llama.slot) walkTo(s);
+  });
+  cv.addEventListener('pointerleave', () => { hoverSlot = -1; });
+  cv.addEventListener('pointerup', e => {
+    initAudio();
+    if (!canAct()) return;
+    const s = slotAt(...local(e)); if (s < 0) return;
+    if (e.pointerType === 'mouse' || s === armed) performMove(s);
+    else { armed = s; walkTo(s); updateUI(); }
+  });
+  window.addEventListener('keydown', e => {
+    if (/^(SELECT|INPUT|BUTTON|TEXTAREA)$/.test(e.target.tagName)) return;
+    const k = e.key;
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Enter'].includes(k)) return;
+    e.preventDefault(); initAudio();
+    if (!canAct()) return;
+    if (k === ' ' || k === 'Enter' || k === 'ArrowDown') { performMove(llama.slot); return; }
+    const dir = (k === 'ArrowRight' || k === 'ArrowUp') ? 1 : -1;
+    walkTo((llama.slot + dir + SLOTS.length) % SLOTS.length);
+  });
+  modeSel.addEventListener('change', newGame);
+  targetSel.addEventListener('change', newGame);
+  $('restart').addEventListener('click', () => { initAudio(); newGame(); });
+  $('again').addEventListener('click', () => { initAudio(); newGame(); });
+
+  // ---------- sound ----------
+  let actx = null, muted = false;
+  try { muted = localStorage.getItem('lama-muted') === '1'; } catch (_) {}
+  const muteBtn = $('mute');
+  const showMute = () => { muteBtn.textContent = muted ? 'Aus' : 'An'; };
+  showMute();
+  muteBtn.addEventListener('click', () => {
+    muted = !muted; showMute(); initAudio();
+    try { localStorage.setItem('lama-muted', muted ? '1' : '0'); } catch (_) {}
+  });
+  function initAudio() {
+    if (actx) return;
+    try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) { actx = null; }
+  }
+  function tone(f, d, type = 'triangle', vol = 0.1, when = 0) {
+    if (!actx || muted) return;
+    const t = actx.currentTime + when, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + 0.02);
+  }
+  function sfx(kind, n = 1) {
+    if (kind === 'push') tone(190, 0.09, 'square', 0.04);
+    else if (kind === 'land') tone(110, 0.07, 'sine', 0.09);
+    else if (kind === 'pop') { const b = 523 * Math.pow(1.12, n - 1); [1, 1.26, 1.5].forEach((m, i) => tone(b * m, 0.16, 'triangle', 0.09, i * 0.06)); }
+    else if (kind === 'win') [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.3, 'triangle', 0.1, i * 0.12));
+  }
+
+  // ---------- legend ----------
+  const legend = $('legend');
+  TYPES.forEach((T, t) => {
+    const row = document.createElement('div');
+    const c = document.createElement('canvas'), px = Math.ceil(34 * (window.devicePixelRatio || 1));
+    c.width = c.height = px; const x = c.getContext('2d'); x.scale(px, px); paintTile(x, t);
+    row.append(c, Object.assign(document.createElement('b'), { textContent: T.name }));
+    row.append(Object.assign(document.createElement('span'), { textContent: ` ${T.val} P.` }));
+    legend.append(row);
+  });
+
+  // ---------- sizing ----------
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    const cw = cv.clientWidth || 600;
+    U = cw / W;
+    cv.width = Math.round(cw * dpr); cv.height = Math.round(cw * H / W * dpr);
+    buildTileCache();
+  }
+  new ResizeObserver(resize).observe(cv);
+  resize();
+
+  // ---------- boot (keeps the running game across live page updates) ----------
+  function start(data) {
+    if (data && data.grid) {
+      Object.assign(st, { grid: data.grid, scores: data.scores, turn: data.turn, queue: data.queue, over: data.over, busy: false, held: true });
+      modeSel.value = st.mode = data.mode; targetSel.value = String(st.target = data.target);
+      nextId = data.nextId; rebuildDisp(); walkTo(7);
+      overlay.hidden = !st.over; updateUI(); maybeAI();
+    } else newGame();
+    const h = llamaHome(llama.slot); llama.x = h.x; llama.y = h.y;
+    requestAnimationFrame(frame);
+  }
+  window.claude?.hot?.snapshot?.(() => ({ grid: st.grid, scores: st.scores, turn: st.turn, queue: st.queue, over: st.over, mode: st.mode, target: st.target, nextId }));
+  window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+
+</body>
+</html>
