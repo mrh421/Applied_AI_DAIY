@@ -22,6 +22,7 @@ Personas are assumptions until validated. Each persona lists the assumptions tha
 |---|---|---|
 | 0.1 | 2026-10-23 | Persona B (Jonas Weber) drafted as secondary power-user persona |
 | 0.2 | 2026-10-23 | Persona A (Lena Hofmann) added as primary persona. Jonas aligned with requirements v0.2 (FR-10–15, SAF-06/07). Traceability and test-case sections added. |
+| 0.3 | 2026-10-24 | Persona C (Lena Weber, author: Amos) added with user story, acceptance criteria and user journey. |
 
 ---
 
@@ -162,6 +163,123 @@ Personas are assumptions until validated. Each persona lists the assumptions tha
 ### Important boundary
 
 Jonas assumes that a qualified electrician will inspect and approve his preparatory work. Many electrical businesses refuse liability for work they did not carry out themselves. The app must present this as "agree with the electrician beforehand", not as a standard path.
+
+---
+
+## Persona C · Lena Weber — the cautious first-time repairer
+*Author: Amos*
+
+> "I'd love to fix it myself – I just don't want to flood my kitchen or get in trouble with my landlord."
+
+### Profile
+
+| | |
+|---|---|
+| **Age** | 28 |
+| **Living situation** | Rents a two-room flat in Nuremberg, lives alone |
+| **Job** | Marketing assistant, works hybrid (3 days office, 2 days home) |
+| **Repair experience** | Beginner. Has assembled IKEA furniture and hung pictures, never repaired anything involving water or electricity |
+| **Tools at home** | Small toolbox: screwdriver set, hammer, Allen keys, tape measure. No pliers, no wrench |
+| **Tech affinity** | High. Uses her smartphone for everything, comfortable with apps and ChatGPT |
+| **Budget** | Tight. Prefers cheap or second-hand solutions, buys on Kleinanzeigen regularly |
+| **Values** | Sustainability, independence, not wanting to "bother" others for small things |
+
+### Background
+
+Lena moved into her flat a year ago. The building is older, and small things break regularly. Her landlord is friendly but slow: simple requests often take weeks. She grew up in a household where her father fixed everything, but she never learned it herself. She now wants to become more independent, but she is unsure where her limits are.
+
+### Current problem
+
+The kitchen faucet has been dripping for two weeks. The constant noise keeps her awake at night, and she worries about the water bill. She emailed her landlord ten days ago and has not received a reply. A plumber call-out would cost at least €80, which she considers too much for "just a drip".
+
+### Goals
+
+- Stop the dripping quickly, ideally this weekend
+- Spend as little money as possible
+- Understand what is broken, so she can handle similar problems herself next time
+- Avoid causing additional damage (water damage, broken parts)
+
+### Frustrations and pain points
+
+- She doesn't know which part is broken or what it is called, so she can't search for it.
+- YouTube videos show faucets that look different from hers, and she can't tell which instructions apply.
+- She is afraid of flooding the kitchen and doesn't know where to shut off the water.
+- She doesn't know whether she is allowed to repair it herself as a tenant.
+- In the hardware store she feels overwhelmed by dozens of similar-looking seals and cartridges.
+
+### How D.AI.Y helps her
+
+- Recognises the faucet type from a photo or asks one targeted follow-up question
+- Adjusts the instructions to her beginner level and to the tools she already owns
+- Always starts with safety: shut off the water supply first
+- Lists only the parts she is missing and shows new and second-hand options
+- Tells her clearly when a repair is beyond DIY (e.g. a leak at the wall) and recommends a plumber
+- Points out that tenants should inform the landlord about larger interventions
+
+---
+
+### User Story
+
+> As a **tenant with little repair experience**, I want to **photograph my dripping faucet and get a guide that matches my tools and skill level**, so that **I can fix it myself cheaply and safely without waiting for the landlord**.
+
+**Acceptance criteria**
+
+1. **Skill and inventory check (FR-01):** Before giving instructions, the app asks about her experience level and the tools she already owns.
+2. **Diagnosis from photo (FR-02, AIR-02):** The app identifies the faucet type from the photo. If it is unsure, it asks one understandable follow-up question instead of guessing.
+3. **Safety first (SAF-01):** The first step of every water-related repair guide is: shut off the water supply under the sink.
+4. **Personalised materials list (FR-04, SUS-02):** The list marks what she already owns and suggests only the missing parts, with new and second-hand options and prices.
+5. **Plain language (NFR-02):** Technical terms such as "cartridge" or "O-ring" are explained in one sentence or shown with an image.
+6. **Escalation (SAF-02):** If the leak is at the pipe connection or the wall, the app recommends a plumber instead of a DIY guide and explains why.
+7. **Tenant notice (SAF-02, legal requirements):** The app points out that tenants should check with the landlord before larger interventions.
+
+**Example acceptance test (Given–When–Then)**
+
+- **Given** Lena has stated "beginner" and owns no wrench,
+- **when** she uploads a photo of a dripping single-lever faucet,
+- **then** the app returns a guide starting with "shut off the water", lists the seal set and a wrench as missing items, and shows at least one second-hand option.
+
+---
+
+### Desired User Journey
+
+| Phase | What Lena does | What the app does | How she feels |
+|---|---|---|---|
+| **Discover** | Notices the dripping, searches YouTube, finds nothing matching her faucet | – | Frustrated, unsure |
+| **Diagnose** | Opens D.AI.Y, answers questions about her skills and tools, uploads a photo | Asks one follow-up question, identifies a worn cartridge seal | Relieved, curious |
+| **Prepare** | Reads the safety note, checks the materials list, buys a €6 seal set and a used wrench | Shows safety note first, ticks off tools she already owns, compares new vs. used | Confident |
+| **Repair** | Follows the numbered steps, gets stuck at step 4 and asks for a simpler explanation | Explains step 4 again with an image | Briefly unsure, then motivated |
+| **After** | The faucet stops dripping, she gives feedback | Asks for feedback, saves the repair | Proud, saved about €75 |
+
+```mermaid
+journey
+    title Lena fixes her dripping kitchen faucet
+    section Discover
+      Notices dripping, cannot sleep: 1: Lena
+      Searches YouTube, finds nothing matching: 2: Lena
+      Opens D.AI.Y: 3: Lena
+    section Diagnose
+      Answers skill and tools questions: 4: Lena, App
+      Uploads photo of faucet: 4: Lena
+      App asks one follow-up question: 4: App
+      App identifies worn cartridge seal: 5: App
+    section Prepare
+      Gets safety note to shut off water first: 4: App
+      Sees materials list, owned tools ticked: 5: App
+      Buys seal set for 6 euros, wrench second-hand: 4: Lena
+    section Repair
+      Follows numbered steps, ticks them off: 4: Lena, App
+      Gets stuck, asks app to explain step 4 again: 3: Lena, App
+      Faucet stops dripping: 5: Lena
+    section After
+      Gives feedback on the guide: 4: Lena
+      Saves about 75 euros vs. plumber: 5: Lena
+```
+
+*(Scores 1–5 show how Lena feels at each step: 1 = frustrated, 5 = happy.)*
+
+### Requirements this persona tests
+
+FR-01 · FR-02 · FR-03 · FR-04 · FR-07 · NFR-02 · AIR-02 · SAF-01 · SAF-02 · SUS-02
 
 ---
 
