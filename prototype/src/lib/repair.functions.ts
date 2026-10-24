@@ -26,7 +26,11 @@ For guides: adapt to the skill level (beginner = more explanation, explain every
 Set unused fields to null / empty arrays.`;
 
 function buildMessages(input: z.infer<typeof caseInputSchema>): ModelMessage[] {
-  const skillLabel = { beginner: "beginner", some_experience: "some experience", experienced: "experienced" }[input.skill];
+  const skillLabel = {
+    beginner: "beginner",
+    some_experience: "some experience",
+    experienced: "experienced",
+  }[input.skill];
   const qa = input.answers.length
     ? `\n\nFollow-up answers so far (${input.answers.length}):\n` +
       input.answers.map((x, i) => `${i + 1}. Q: ${x.q}\n   A: ${x.a || "(no answer)"}`).join("\n")
@@ -40,22 +44,35 @@ function buildMessages(input: z.infer<typeof caseInputSchema>): ModelMessage[] {
   return [{ role: "user", content } as ModelMessage];
 }
 
-export type AssessResponse = { ok: true; result: RepairResult; source: "ai" | "safety_rule" } | { ok: false; error: string };
+export type AssessResponse =
+  { ok: true; result: RepairResult; source: "ai" | "safety_rule" } | { ok: false; error: string };
 
 export const assessCase = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => caseInputSchema.parse(d))
   .handler(async ({ data }): Promise<AssessResponse> => {
-    const escalation = hazardEscalation(`${data.problem} ${data.answers.map((a) => a.a).join(" ")}`);
+    const escalation = hazardEscalation(
+      `${data.problem} ${data.answers.map((a) => a.a).join(" ")}`,
+    );
     if (escalation) return { ok: true, source: "safety_rule", result: escalation };
     const { runStructured, AiError } = await import("./ai.server");
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const raw = await runStructured({ instructions: INSTRUCTIONS, messages: buildMessages(data), schema: repairResultSchema });
+        const raw = await runStructured({
+          instructions: INSTRUCTIONS,
+          messages: buildMessages(data),
+          schema: repairResultSchema,
+        });
         return { ok: true, source: "ai", result: enforceSafety(raw) };
       } catch (e) {
         const retryable = !(e instanceof AiError) || e.code === "invalid";
         if (attempt === 1 || !retryable) {
-          return { ok: false, error: e instanceof AiError && e.code !== "invalid" ? e.message : "We couldn't produce a reliable answer for this case. Please add a few more details and try again." };
+          return {
+            ok: false,
+            error:
+              e instanceof AiError && e.code !== "invalid"
+                ? e.message
+                : "We couldn't produce a reliable answer for this case. Please add a few more details and try again.",
+          };
         }
       }
     }
@@ -72,25 +89,36 @@ const explainInput = z.object({
 
 export const explainStep = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => explainInput.parse(d))
-  .handler(async ({ data }): Promise<{ ok: true; text: string; escalate: boolean } | { ok: false; error: string }> => {
-    if (data.question && detectHazards(data.question).length) {
-      return { ok: true, escalate: true, text: "That sounds dangerous. Stop now, make the area safe and contact a professional." };
-    }
-    const { runStructured, AiError } = await import("./ai.server");
-    try {
-      const r = await runStructured({
-        instructions:
-          "You help someone during a home repair. Answer in short, simple sentences (max 6), explain any technical term. If the situation sounds unsafe, set escalate=true and tell them to stop. If you don't know, say so honestly.",
-        messages: [
-          {
-            role: "user",
-            content: `Repair: ${data.problem}\nSkill: ${data.skill}\nStep: ${data.stepTitle} — ${data.stepDetail}\n${data.question ? `My problem/question: ${data.question}` : "Please explain this step again more simply."}`,
-          },
-        ],
-        schema: z.object({ text: z.string(), escalate: z.boolean() }),
-      });
-      return { ok: true, ...r };
-    } catch (e) {
-      return { ok: false, error: e instanceof AiError ? e.message : "Couldn't get an explanation." };
-    }
-  });
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: true; text: string; escalate: boolean } | { ok: false; error: string }> => {
+      if (data.question && detectHazards(data.question).length) {
+        return {
+          ok: true,
+          escalate: true,
+          text: "That sounds dangerous. Stop now, make the area safe and contact a professional.",
+        };
+      }
+      const { runStructured, AiError } = await import("./ai.server");
+      try {
+        const r = await runStructured({
+          instructions:
+            "You help someone during a home repair. Answer in short, simple sentences (max 6), explain any technical term. If the situation sounds unsafe, set escalate=true and tell them to stop. If you don't know, say so honestly.",
+          messages: [
+            {
+              role: "user",
+              content: `Repair: ${data.problem}\nSkill: ${data.skill}\nStep: ${data.stepTitle} — ${data.stepDetail}\n${data.question ? `My problem/question: ${data.question}` : "Please explain this step again more simply."}`,
+            },
+          ],
+          schema: z.object({ text: z.string(), escalate: z.boolean() }),
+        });
+        return { ok: true, ...r };
+      } catch (e) {
+        return {
+          ok: false,
+          error: e instanceof AiError ? e.message : "Couldn't get an explanation.",
+        };
+      }
+    },
+  );

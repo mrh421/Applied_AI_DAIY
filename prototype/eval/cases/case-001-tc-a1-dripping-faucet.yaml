@@ -1,13 +1,13 @@
 id: CASE-001
 source: TC-A1
-status: draft                  # draft | reviewed — only reviewed cases count in a test run
+status: draft # draft | reviewed — only reviewed cases count in a test run
 title: Dripping single-lever faucet (photo)
 persona: A
 profiles: [beginner, advanced]
 category: unclear
 input: "it drips all the time"
 photo: "Kitchen single-lever mixer tap, water drips from the spout, chrome, no visible brand"
-expected: [ask, answer]        # ask if the tap type is unclear from the photo, otherwise answer
+expected: [ask, answer] # ask if the tap type is unclear from the photo, otherwise answer
 turns:
   - answers:
       - q: "(any question about tap type or where it drips)"

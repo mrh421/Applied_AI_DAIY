@@ -13,7 +13,7 @@ expected_labels:
   - package: mount the mirror cabinet
     label: DIY
   - package: connect the cabinet lighting
-    label: professional only   # stricter label until it is known whether it plugs in or is hard-wired
+    label: professional only # stricter label until it is known whether it plugs in or is hard-wired
   - package: add a socket next to the mirror
     label: professional only
 must:

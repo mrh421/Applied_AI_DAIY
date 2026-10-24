@@ -12,7 +12,7 @@ turns:
       - q: "(any question about manufacturer, model or interface)"
         a: "Air-to-water heat pump, the installer fitted the manufacturer's official LAN gateway with Modbus TCP. I run Home Assistant."
     expected: answer
-expected_labels:               # FR-14 labels; identical for both profiles (SAF-07)
+expected_labels: # FR-14 labels; identical for both profiles (SAF-07)
   - package: network and Home Assistant integration via the gateway
     label: DIY
   - package: wiring inside the unit's control cabinet at mains voltage

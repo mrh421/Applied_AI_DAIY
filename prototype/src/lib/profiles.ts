@@ -44,13 +44,26 @@ function writeProfiles(profiles: RepairProfile[]) {
 }
 
 /** Create a new profile, or update the existing one when `id` is given. Returns the saved profile. */
-export function saveProfile(input: { id?: string; name: string; skill: SkillLevel; inventory: string }): RepairProfile {
+export function saveProfile(input: {
+  id?: string;
+  name: string;
+  skill: SkillLevel;
+  inventory: string;
+}): RepairProfile {
   const profiles = readProfiles();
   const existing = input.id ? profiles.find((p) => p.id === input.id) : undefined;
   const profile: RepairProfile = existing
     ? { ...existing, name: input.name, skill: input.skill, inventory: input.inventory }
-    : { id: crypto.randomUUID(), name: input.name, skill: input.skill, inventory: input.inventory, createdAt: Date.now() };
-  writeProfiles(existing ? profiles.map((p) => (p.id === profile.id ? profile : p)) : [...profiles, profile]);
+    : {
+        id: crypto.randomUUID(),
+        name: input.name,
+        skill: input.skill,
+        inventory: input.inventory,
+        createdAt: Date.now(),
+      };
+  writeProfiles(
+    existing ? profiles.map((p) => (p.id === profile.id ? profile : p)) : [...profiles, profile],
+  );
   setLastProfileId(profile.id);
   return profile;
 }
