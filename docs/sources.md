@@ -6,7 +6,7 @@ Agent M's library takes them over when the sources are registered on the dashboa
 | Source | Version | Hash | Part |
 |---|---|---|---|
 | SRC-po-daiy | 2026-10-25 | 7568fdfdfe99c937c2fd093aee85e0eeefd6cdd88daf63f8d212651a5c82f4ed |  |
-| SRC-daiy-team-docs | 2026-10-25 | c64c2c7061f2e4c19bdad61d2d20edbeb31d562b3c651f5ed4e0d5f36db961f4 |  |
+| SRC-daiy-team-docs | 2026-10-25 | ab3bc674a5f5306b2df0bf0ce580acb9554fc7f60e291c34ebfc5f8a3ad5eb67 |  |
 | SRC-daiy-prototype | 2026-10-25 | 02f93192c4b46e494fe2103992c95099e0501e5ba73e8d9757e13f6a7bc99a0b |  |
 | SRC-eu-gdpr | 2026-10-25 | e5f873c753c3caa90259dea365371a3ab244c162796b31246500a8b8bbfe34c5 | Art. 4 (points 1, 2, 7, 8, 11), 5, 6, 7, 12, 13, 15, 16, 17, 20, 25, 32 |
 | SRC-eu-ai-act | 2026-10-25 | 6c1d2ae072759694489ed5765ef2f814adb280fca6339b36459c7654ba017ff8 | Art. 3 (points 1, 3, 4), 4, 5, 6, 50, Annex III |
