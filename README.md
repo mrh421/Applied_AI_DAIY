@@ -2,7 +2,7 @@
 
 An AI-powered DIY platform that helps people, regardless of their technical skills, safely repair household items and carry out small home projects themselves.
 
-> This README is a summary. The binding source is [`docs/Requirements_EN.md`](docs/Requirements_EN.md) (v0.4). Full personas, traceability and test cases: [`docs/Personas_EN.md`](docs/Personas_EN.md).
+> This README is a summary. [`docs/Requirements_EN.md`](docs/Requirements_EN.md) (v0.4) and [`docs/Personas_EN.md`](docs/Personas_EN.md) are the team's input and are registered as sources for Agent M, which produces the binding requirements (see the implementation plan). Until those are accepted, v0.4 is the working draft. Full personas, traceability and test cases: [`docs/Personas_EN.md`](docs/Personas_EN.md).
 
 ## Overview
 
@@ -117,7 +117,7 @@ Users can mark steps as complete, request repeat or simpler explanations, and as
 
 ---
 
-## MVP Prioritization (MoSCoW)
+## Prioritization (MoSCoW)
 
 - **Must:** problem and project input, follow-up questions, structured instructions, materials list matched against inventory (sample product data), guided execution, local skill profile, local material inventory, work-package classification, risk detection and escalation
 - **Should:** real retailer and second-hand search, user accounts and sync, tool inventory, project history
@@ -188,9 +188,9 @@ It should:
 
 ## Project Status
 
-Requirements v0.3, personas v0.5 and a clickable prototype exist. **Next step: sprint planning with Agent M** (sprint 0 in the implementation plan): register the requirements as a source, derive use cases and architecture, write the AI test cases, decide open questions G1–G4.
+Requirements v0.4, personas v0.5, a clickable prototype and the requirement sources ([`docs/sources.md`](docs/sources.md): the team's documents, the prototype, and the laws and standards that apply) exist. **Next step: sprint 0 with Agent M** (see the implementation plan): register the sources, derive the requirements, use cases and architecture, write the AI test cases, decide open questions G1–G4.
 
-Plan, sprints and testing (implementation from Wed 28.10, MVP demo 04.11, remaining features after that): [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md).
+Plan, sprints and testing (one run through the whole Agent M cycle: implementation from Wed 28.10, release Wed 04.11, closing Thu 05.11): [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md).
 
 ---
 
@@ -198,13 +198,14 @@ Plan, sprints and testing (implementation from Wed 28.10, MVP demo 04.11, remain
 
 | Path | Content |
 |---|---|
-| [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | **Binding.** Requirements v0.4: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
+| [`docs/Requirements_EN.md`](docs/Requirements_EN.md) | Input for Agent M, frozen as a source version. Requirements v0.4: scope, stakeholders, FR/NFR/AIR/SAF/SUS, MoSCoW, epics, user stories, open questions |
 | [`docs/Personas_EN.md`](docs/Personas_EN.md) | Personas A–D: profiles, user journeys, traceability, persona test cases, coverage gaps |
-| [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), schedule (phase 1 MVP, phase 2 remaining features), use-case coverage, testing, Definition of Done, prototype gap list |
-| [`prototype/`](prototype/) | Clickable prototype (TanStack Start, React); the codebase the MVP is built on. How to run: [`prototype/README.md`](prototype/README.md) |
+| [`docs/Implementation_Plan_EN.md`](docs/Implementation_Plan_EN.md) | Process (Agent M), requirements approach, schedule (sprints 0–9 to 05.11), use-case coverage, testing, Definition of Done, prototype gap list |
+| [`prototype/`](prototype/) | Clickable prototype (TanStack Start, React); the codebase the product is built on. How to run: [`prototype/README.md`](prototype/README.md) |
+| [`docs/sources.md`](docs/sources.md), [`docs/sources/`](docs/sources/) | Requirement sources for Agent M: the links with versions and hashes, the register entries, and extracts of the laws and standards (third-party terms apply, see License) |
 | [`presentation/`](presentation/) | Team slide deck and the list of slides to update |
 
-**Rules:** requirements change only in `docs/Requirements_EN.md`, with a change-log row and its own commit. Everything else refers to requirement IDs instead of repeating them.
+**Rules:** new and changed requirements go through Agent M (the SPEC) once it exists. Until then, a change to `docs/Requirements_EN.md` needs a change-log row and its own commit. Everything else refers to requirement IDs instead of repeating them.
 
 ---
 
@@ -218,4 +219,4 @@ The extracts in `docs/sources/` come from third parties (EU and German law, W3C,
 
 ## Contributing
 
-Start with `docs/Requirements_EN.md` and `docs/Personas_EN.md`. Code changes go through the sprint process in `docs/Implementation_Plan_EN.md`.
+Start with `docs/Implementation_Plan_EN.md`, `docs/Requirements_EN.md`, `docs/Personas_EN.md` and `docs/sources.md`. Code changes go through the sprint process in `docs/Implementation_Plan_EN.md`.
