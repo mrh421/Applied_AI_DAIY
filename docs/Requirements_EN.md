@@ -1,6 +1,8 @@
 # Applied AI · Project · D.AI.Y
 
 > **Project requirements and concept overview** · Version 0.4 (draft for team review)
+>
+> **Status:** input for Agent M, registered as a source. The binding requirements are produced in Agent M from this document, the personas and the prototype (see the [implementation plan](Implementation_Plan_EN.md)). Once those are accepted, this document is frozen as source version 0.4.
 
 ---
 
@@ -12,6 +14,7 @@
 | 0.2 | 2026-10-23 | Added stakeholders, personas, scope statement and epics. Extended product vision from repairs to small home projects. Added skill profile (FR-10), material inventory (FR-11), tool inventory (FR-12), project history (FR-13), work-package classification (FR-14), handover brief for professionals (FR-15). Re-prioritized FR-08 (accounts). Added NFR-09/10, AIR-09/10, SAF-06/07, User Stories 4–6. Acceptance criteria for new stories in Given-When-Then form. | Elicitation with a second user group (experienced DIYers) showed needs not covered by v0.1. Existing IDs kept stable for traceability. |
 | 0.3 | 2026-10-24 | Personas consolidated to A–D (Sophie Keller, Jonas Weber, Emre Yildiz, Andreas Roth), stakeholder table and §0.4 updated. Persona gaps G1–G4 added to the open questions. No requirement added, changed or withdrawn. | Overlapping personas from the brainstorming (Lena/Mia, Lukas/David) and names differing between repo and slides. |
 | 0.4 | 2026-10-24 | MoSCoW table completed: priorities added for SAF-03–05, AIR-01, AIR-02, AIR-04–10, NFR-02–10 and SUS-01–07, which had none. Marked *(v0.4)* in §6. No requirement added, changed or withdrawn; existing priorities unchanged. | More than half of the requirements had no priority although the implementation plan already schedules many of them. Rule used: *Must* if a *Must* feature or a safety test depends on it, *Should* if it belongs to a *Should* feature or improves quality without blocking the MVP, *Could* if it belongs to a *Could* feature. |
+| 0.4 (status) | 2026-10-25 | Status note added: this document is input for Agent M, no longer the binding document. No requirement added, changed or withdrawn. | The requirements are produced in Agent M from this document, the personas and the prototype. |
 
 **Change rule:** Requirement IDs are never renumbered or reused. Removed requirements are marked *Withdrawn* with a reason. Every change gets a row in this table and a separate commit.
 
