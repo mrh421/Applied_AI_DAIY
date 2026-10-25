@@ -212,6 +212,8 @@ Plan, sprints and testing (implementation from Wed 28.10, MVP demo 04.11, remain
 
 This project does not yet specify a license. Add a license file and update this section once the project direction is finalized.
 
+The extracts in `docs/sources/` come from third parties (EU and German law, W3C, Wikipedia) and keep their own terms; a license chosen for this project does not cover them.
+
 ---
 
 ## Contributing
