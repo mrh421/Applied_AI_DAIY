@@ -1,0 +1,1 @@
+This folder holds the use cases of mrh421/Applied_AI_DAIY, one file per use case named `UC-<nnn>-<slug>.md`. A use case counts as accepted only while an approval record in `docs/approvals/` names its current text: its status is derived from the approval records and is kept nowhere else.
