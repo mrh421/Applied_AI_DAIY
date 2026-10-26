@@ -49,7 +49,7 @@ The safety content of an answer is identical for every skill profile.
 *Check:* no automatic check; at review. A reviewer runs each evaluation case with a beginner profile and with an advanced profile and verifies that the safety content and safety outcome are identical.
 
 **SKILL-DOES-NOT-UNLOCK** *(SRC-daiy-project, SAF-07; SRC-daiy-prototype, The safety outcome and the FR-14 labels must be identical in both runs (SAF-07).)*
-The work package labels are identical for every skill profile.
+A high self-assessed skill level never changes which work is classified as "professional only" or "not recommended".
 *Check:* no automatic check; at review. A reviewer runs each classification case with a beginner and an advanced profile and verifies that every package gets the same label in both runs.
 
 **MATERIALS-LIST** *(SRC-daiy-project, FR-04)*
@@ -213,7 +213,7 @@ Without a skill profile, the app treats the user as a beginner.
 *Check:* no automatic check; at review. A reviewer runs a case without a profile and verifies that the answer equals the one for an explicit beginner profile.
 
 **PROFILE-ON-DEVICE** *(SRC-daiy-project, FR-10; SRC-daiy-prototype, User profiles (skill level + tool inventory) live in `src/lib/profiles.ts`, stored in localStorage only)*
-User profiles are stored only in the browser's localStorage.
+The skill profile is stored on the device.
 *Check:* no automatic check; at review. A reviewer inspects the storage code and the network traffic and verifies that profiles are written to localStorage and sent to no server for storage.
 
 **MATERIAL-INVENTORY** *(SRC-daiy-project, FR-11)*
@@ -285,7 +285,7 @@ Rules that depend on location are marked "check locally" instead of being stated
 *Check:* no automatic check; at review. A reviewer uses cases that involve location-dependent rules and verifies that each such rule is marked "check locally".
 
 **RISK-CHECK-FIRST** *(SRC-daiy-project, SAF-01; SRC-daiy-prototype, Safety is enforced in code (`detectHazards` before AI, `enforceSafety` after) in `src/lib/repair.schema.ts`)*
-A deterministic hazard check in code runs on every case before any AI call.
+Every case is checked for risk signals before instructions are given.
 *Check:* no automatic check; at review. A reviewer submits hazard inputs to the case assessment and verifies that it returns an escalation without calling the AI.
 
 **UNCLEAR-CASES-CONSERVATIVE** *(SRC-daiy-project, SAF-01)*

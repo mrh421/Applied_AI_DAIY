@@ -2,7 +2,7 @@
 
 **The change.** Changed FOLLOW-UP-QUESTIONS; changed SKILL-DOES-NOT-UNLOCK; changed SAMPLE-PRODUCT-DATA; changed PROFILE-ON-DEVICE; changed RISK-CHECK-FIRST; changed HAZARD-SAFETY-MEASURES; added PRECHECK-COVERS-FOLLOW-UP-ANSWERS; added STEP-QUESTION-HAZARD-CHECK; added NO-GUIDE-AT-HIGH-RISK; added PRECHECK-ENGLISH; added PRECHECK-GERMAN; added PRECHECK-SPARES-PROJECT-PACKAGES; added OUT-OF-SCOPE-RISK-HIGH; added EMERGENCY-RISK-CRITICAL; added EMERGENCY-ACTIONS-FIRST; added SECOND-HAND-LISTED-FIRST; the rest of the section is as the person wrote it.
 
-**Why.** Original intent missed.
+**Why.** Orignal Intent missed.
 
 **Impact list.**
 - FOLLOW-UP-QUESTIONS: changed; nothing names it.
