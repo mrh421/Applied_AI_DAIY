@@ -7,4 +7,4 @@ Agent M's library takes them over when the sources are registered on the dashboa
 |---|---|---|---|
 | SRC-daiy-project | 2026-10-26 | a3282aa2f5f81f936c5c393670937507dfc4b9909d553bd4fd9c14533732faab |  |
 | SRC-daiy-legal | 2026-10-26 | 70a17307bc31c8b912e4ab2b7d53c78687e845546535ff5489736da638aa90dd | the extracts as stored, see the entry |
-| SRC-daiy-prototype | 2026-10-25 | 02f93192c4b46e494fe2103992c95099e0501e5ba73e8d9757e13f6a7bc99a0b |  |
+| SRC-daiy-prototype | 2026-10-26 | c815c9be4590dfbaaf5d88a7c4936a45bea3bb4a8d5b7270225ee3f0bd4e0181 |  |
