@@ -17,7 +17,7 @@ If an inventory exists, the app interprets the case input in the context of that
 *Check:* no automatic check; at review. A reviewer submits the same input with and without inventory entries and verifies that the answer reflects the stored inventory.
 
 **FOLLOW-UP-QUESTIONS** *(SRC-daiy-project, FR-02; SRC-daiy-prototype, Ask follow-ups at most twice; after that, give a guide with clearly listed assumptions if safe.)*
-The AI asks follow-up questions in at most two rounds per case.
+The AI asks targeted follow-up questions when it lacks information it needs to find a suitable solution. Keep both sources. Optionally add the two-round limit as a new requirement of its own.
 *Check:* no automatic check; at review. A reviewer answers every follow-up question with "not sure" and verifies that no third round of follow-up questions appears.
 
 **NO-ASSUMPTIONS-AS-FACTS** *(SRC-daiy-project, AIR-02)*

@@ -1,26 +1,26 @@
-# Requirements: changes RISK-CHECK-FIRST; adds PRECHECK-COVERS-FOLLOW-UP-ANSWERS; adds STEP-QUESTION-HAZARD-CHECK; adds NO-GUIDE-AT-HIGH-RISK; adds PRECHECK-ENGLISH; adds PRECHECK-GERMAN; adds PRECHECK-SPARES-PROJECT-PACKAGES; changes HAZARD-SAFETY-MEASURES; adds OUT-OF-SCOPE-RISK-HIGH; adds EMERGENCY-RISK-CRITICAL; adds EMERGENCY-ACTIONS-FIRST; changes FOLLOW-UP-QUESTIONS; adds a source to SAMPLE-PRODUCT-DATA; adds SECOND-HAND-LISTED-FIRST; changes PROFILE-ON-DEVICE; changes SKILL-DOES-NOT-UNLOCK
+# Requirements: FOLLOW-UP-QUESTIONS, SKILL-DOES-NOT-UNLOCK, SAMPLE-PRODUCT-DATA, PROFILE-ON-DEVICE, RISK-CHECK-FIRST, HAZARD-SAFETY-MEASURES, PRECHECK-COVERS-FOLLOW-UP-ANSWERS, STEP-QUESTION-HAZARD-CHECK, NO-GUIDE-AT-HIGH-RISK, PRECHECK-ENGLISH, PRECHECK-GERMAN, PRECHECK-SPARES-PROJECT-PACKAGES, OUT-OF-SCOPE-RISK-HIGH, EMERGENCY-RISK-CRITICAL, EMERGENCY-ACTIONS-FIRST, SECOND-HAND-LISTED-FIRST
 
-**The change.** changes RISK-CHECK-FIRST; adds PRECHECK-COVERS-FOLLOW-UP-ANSWERS; adds STEP-QUESTION-HAZARD-CHECK; adds NO-GUIDE-AT-HIGH-RISK; adds PRECHECK-ENGLISH; adds PRECHECK-GERMAN; adds PRECHECK-SPARES-PROJECT-PACKAGES; changes HAZARD-SAFETY-MEASURES; adds OUT-OF-SCOPE-RISK-HIGH; adds EMERGENCY-RISK-CRITICAL; adds EMERGENCY-ACTIONS-FIRST; changes FOLLOW-UP-QUESTIONS; adds a source to SAMPLE-PRODUCT-DATA; adds SECOND-HAND-LISTED-FIRST; changes PROFILE-ON-DEVICE; changes SKILL-DOES-NOT-UNLOCK. The rest of the section is carried over byte for byte.
+**The change.** Changed FOLLOW-UP-QUESTIONS; changed SKILL-DOES-NOT-UNLOCK; changed SAMPLE-PRODUCT-DATA; changed PROFILE-ON-DEVICE; changed RISK-CHECK-FIRST; changed HAZARD-SAFETY-MEASURES; added PRECHECK-COVERS-FOLLOW-UP-ANSWERS; added STEP-QUESTION-HAZARD-CHECK; added NO-GUIDE-AT-HIGH-RISK; added PRECHECK-ENGLISH; added PRECHECK-GERMAN; added PRECHECK-SPARES-PROJECT-PACKAGES; added OUT-OF-SCOPE-RISK-HIGH; added EMERGENCY-RISK-CRITICAL; added EMERGENCY-ACTIONS-FIRST; added SECOND-HAND-LISTED-FIRST; the rest of the section is as the person wrote it.
 
-**Why.** Drafted from SRC-daiy-prototype: RISK-CHECK-FIRST: A deterministic hazard check in code runs on every case before any AI call. · PRECHECK-COVERS-FOLLOW-UP-ANSWERS: The deterministic hazard check also covers the user's answers to follow-up questions. · STEP-QUESTION-HAZARD-CHECK: A question asked during guided execution that contains a hazard signal is answered with an escalating notice instead of an AI answer. · NO-GUIDE-AT-HIGH-RISK: An AI output with high or critical risk is never shown as a guide. · PRECHECK-ENGLISH: The deterministic hazard pre-check recognises hazards described in English. · PRECHECK-GERMAN: The deterministic hazard pre-check recognises hazards described in German. · PRECHECK-SPARES-PROJECT-PACKAGES: The deterministic pre-check does not escalate installation work that can be one package of a larger project. · HAZARD-SAFETY-MEASURES: The immediate safety actions of an escalation fit the kind of hazard detected. · OUT-OF-SCOPE-RISK-HIGH: Out-of-scope work that is not an emergency is escalated with risk "high". · EMERGENCY-RISK-CRITICAL: An emergency is escalated with risk "critical". · EMERGENCY-ACTIONS-FIRST: When an input combines several hazards, the escalation lists emergency actions before the other actions. · FOLLOW-UP-QUESTIONS: The AI asks follow-up questions in at most two rounds per case. · SAMPLE-PRODUCT-DATA: Product offers come from sample data until real retailer integrations exist. · SECOND-HAND-LISTED-FIRST: Second-hand offers for a missing item are listed before new offers. · PROFILE-ON-DEVICE: User profiles are stored only in the browser's localStorage. · SKILL-DOES-NOT-UNLOCK: The work package labels are identical for every skill profile.
+**Why.** Original intent missed.
 
 **Impact list.**
-- RISK-CHECK-FIRST: nothing names it.
-- PRECHECK-COVERS-FOLLOW-UP-ANSWERS: new; nothing names it yet.
-- STEP-QUESTION-HAZARD-CHECK: new; nothing names it yet.
-- NO-GUIDE-AT-HIGH-RISK: new; nothing names it yet.
-- PRECHECK-ENGLISH: new; nothing names it yet.
-- PRECHECK-GERMAN: new; nothing names it yet.
-- PRECHECK-SPARES-PROJECT-PACKAGES: new; nothing names it yet.
-- HAZARD-SAFETY-MEASURES: nothing names it.
-- OUT-OF-SCOPE-RISK-HIGH: new; nothing names it yet.
-- EMERGENCY-RISK-CRITICAL: new; nothing names it yet.
-- EMERGENCY-ACTIONS-FIRST: new; nothing names it yet.
-- FOLLOW-UP-QUESTIONS: nothing names it.
-- SAMPLE-PRODUCT-DATA: nothing names it.
-- SECOND-HAND-LISTED-FIRST: new; nothing names it yet.
-- PROFILE-ON-DEVICE: nothing names it.
-- SKILL-DOES-NOT-UNLOCK: nothing names it.
+- FOLLOW-UP-QUESTIONS: changed; nothing names it.
+- SKILL-DOES-NOT-UNLOCK: changed; nothing names it.
+- SAMPLE-PRODUCT-DATA: changed; nothing names it.
+- PROFILE-ON-DEVICE: changed; nothing names it.
+- RISK-CHECK-FIRST: changed; nothing names it.
+- HAZARD-SAFETY-MEASURES: changed; nothing names it.
+- PRECHECK-COVERS-FOLLOW-UP-ANSWERS: added; nothing names it.
+- STEP-QUESTION-HAZARD-CHECK: added; nothing names it.
+- NO-GUIDE-AT-HIGH-RISK: added; nothing names it.
+- PRECHECK-ENGLISH: added; nothing names it.
+- PRECHECK-GERMAN: added; nothing names it.
+- PRECHECK-SPARES-PROJECT-PACKAGES: added; nothing names it.
+- OUT-OF-SCOPE-RISK-HIGH: added; nothing names it.
+- EMERGENCY-RISK-CRITICAL: added; nothing names it.
+- EMERGENCY-ACTIONS-FIRST: added; nothing names it.
+- SECOND-HAND-LISTED-FIRST: added; nothing names it.
 
 **Origin.** Source SRC-daiy-prototype, passages: Safety is enforced in code (`detectHazards` before AI, `enforceSafety` after) in `src/lib/repair.schema.ts`; hazardEscalation(`${data.problem} ${data.answers.map((a) => a.a).join(" ")}`); if (data.question && detectHazards(data.question).length) { return { ok: true, escalate: true, ... } }; AI output must never bypass hazard escalation. / Never use "guide" when risk is high or critical.; English and German patterns for gas, scorched or overheating sockets, water leaks in walls, distribution boards, structural work and refrigerant circuits.; Installation work that can be one package of a larger project (new socket, ceiling light, wallbox) is deliberately left to the AI, so FR-14 can still label the DIY packages of that project.; Immediate actions now fit the hazard. Before, a CO alarm got electrician advice ("switch off power at the fuse box").; Out-of-scope work that is not an emergency (distribution board, wall removal, refrigerant) is escalated as risk `high`, emergencies as `critical`.; Escalation for the pre-check, with actions that fit the detected hazards (emergencies first).; Ask follow-ups at most twice; after that, give a guide with clearly listed assumptions if safe.; Product offers are sample data in `src/lib/offers.ts` until real retailer integrations exist. Why: MVP scope.; Sample offers for demonstration — not live prices. Second-hand items are listed first.; User profiles (skill level + tool inventory) live in `src/lib/profiles.ts`, stored in localStorage only; The safety outcome and the FR-14 labels must be identical in both runs (SAF-07)..
 
