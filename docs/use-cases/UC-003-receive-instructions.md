@@ -17,6 +17,8 @@ realises:
   - REPAIR-FIRST
   - REUSE-FIRST
   - NO-UNVALIDATED-OUTPUT
+  - ILLUSTRATIVE-IMAGES
+  - STRICTER-LABEL-IF-UNCERTAIN
 ---
 
 # UC-003 Receive instructions
@@ -40,7 +42,8 @@ A case has been started (UC-001). Missing information has been clarified or has 
 5. The app shows the instructions for the chosen option. They contain the diagnosis, the required tools, the required materials, the numbered steps, the estimated time and the warnings.
 6. The steps are written in short sentences. A technical term is avoided or explained where it first appears.
 7. The level of detail follows the user's skill profile. A user without a profile gets the beginner level.
-8. The user reads the instructions.
+8. Where illustrative images are available for the case, the instructions include them.
+9. The user reads the instructions.
 
 ## Alternative flows
 
@@ -48,11 +51,12 @@ A case has been started (UC-001). Missing information has been clarified or has 
 - A2, beginner profile: the basic explanations are shown in full. The user can collapse them.
 - A3, draft fails validation: the app does not show the draft. It shows an understandable notice instead and invents no solution.
 - A4, no repair or reuse option: the app proposes buying new. It shows this option after any repair or reuse option that exists.
-- A5, uncertain classification: the instructions name the information that would change the label, as for an uncertain classification in UC-002.
+- A5, uncertain classification: if the classification of a work package is uncertain, the app chooses the more restrictive label. The instructions name the information that would change the label, as for an uncertain classification in UC-002.
+- A6, no images available: the instructions are shown without images and the case is not blocked.
 
 ## Postcondition
 
-The user holds a validated answer with a problem summary and a complete, numbered set of instructions at the level of the profile. No AI output reached the user without validation.
+The user holds a validated answer with a problem summary and a complete, numbered set of instructions at the level of the profile, with the available illustrative images. No AI output reached the user without validation. No work package of uncertain classification carries a less restrictive label than the stricter one.
 
 ## Diagram
 
@@ -67,8 +71,9 @@ sequenceDiagram
     App->>App: Validate draft
     alt draft is valid
         App->>App: Rank options, repair and reuse before buying new
+        App->>App: Uncertain classification gets the stricter label
         App-->>User: Problem summary
-        App-->>User: Instructions at the level of the profile
+        App-->>User: Instructions at the level of the profile, with available images
     else draft is not valid
         App-->>User: Understandable notice, no invented solution
     end
