@@ -1,0 +1,7 @@
+# Requirements: adds 25, changes 4, adds SRC-daiy-legal as a source to 8
+
+**The change.** adds NO-BREAKER-ONLY-ISOLATION, CHIMNEY-SWEEP-NOTICE-INSTALLATION, CHIMNEY-SWEEP-NOTICE-DECOMMISSIONING, FIRING-INSTALLATION-INSPECTION-NOTICE, PERMIT-FREE-NOT-RULE-FREE, SHARED-BOUNDARY-CONSENT, PLANTING-BOUNDARY-DISTANCE, TENANT-MODIFICATION-RIGHT, DEVICE-STORAGE-CONSENT, CONSENT-WITHDRAWAL, DATA-RECTIFICATION, PRIVATE-BY-DEFAULT, AI-INTERACTION-DISCLOSED, LARGE-TEXT-CONTRAST, NON-TEXT-CONTRAST, TEXT-ALTERNATIVES, KEYBOARD-OPERABLE, FOCUS-VISIBLE, TARGET-SIZE, REFLOW, REFLOW-NO-TWO-DIMENSIONAL-SCROLLING, STATUS-MESSAGES, ERROR-IDENTIFICATION, REDUNDANT-ENTRY, ACCESSIBLE-AUTHENTICATION; changes PRIVACY-NOTICE, DATA-EXPORT, ADEQUATE-CONTRAST, READABLE-TEXT; adds a source to OUT-OF-SCOPE-NO-INSTRUCTIONS, OUT-OF-SCOPE-NO-INSTRUCTIONS, OUT-OF-SCOPE-NO-INSTRUCTIONS, CHECK-LOCALLY, DATA-MINIMISATION, DELETE-ALL-DATA, NOT-COLOR-ALONE, CLEAR-LABELS. The rest of the section is carried over byte for byte.
+
+**Why.** Drafted from SRC-daiy-legal by job JOB-20261026-1524-4cbc (derive-requirements, claude-bridge, claude-sonnet-5-5) against the accepted SPEC.
+
+**Origin.** Source SRC-daiy-legal; each requirement's passage names its law. The job's own writer refused the draft (two candidates changed the same requirement), so the queue was composed from the final draft in the job's log (daiy-tools/queue-classes-from-log.py): the second change of ADEQUATE-CONTRAST is a new requirement; the 2 candidates that constrain the development process were left out.
