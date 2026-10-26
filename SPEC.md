@@ -32,9 +32,9 @@ If a skill profile exists, the app interprets the case input in the context of t
 If an inventory exists, the app interprets the case input in the context of that inventory.
 *Check:* no automatic check; at review. A reviewer submits the same input with and without inventory entries and verifies that the answer reflects the stored inventory.
 
-**FOLLOW-UP-QUESTIONS** *(SRC-daiy-project, FR-02)*
-The AI asks targeted follow-up questions when it lacks information it needs to find a suitable solution.
-*Check:* no automatic check; at review. A reviewer submits deliberately incomplete cases and verifies that the app asks a follow-up question about the missing information before it gives a solution.
+**FOLLOW-UP-QUESTIONS** *(SRC-daiy-project, FR-02; SRC-daiy-prototype, Ask follow-ups at most twice; after that, give a guide with clearly listed assumptions if safe.)*
+The AI asks targeted follow-up questions when it lacks information it needs to find a suitable solution. Keep both sources. Optionally add the two-round limit as a new requirement of its own.
+*Check:* no automatic check; at review. A reviewer answers every follow-up question with "not sure" and verifies that no third round of follow-up questions appears.
 
 **NO-ASSUMPTIONS-AS-FACTS** *(SRC-daiy-project, AIR-02)*
 The AI does not present assumptions as facts when important information is missing.
@@ -64,9 +64,9 @@ Basic explanations that are collapsed or skipped can always be expanded.
 The safety content of an answer is identical for every skill profile.
 *Check:* no automatic check; at review. A reviewer runs each evaluation case with a beginner profile and with an advanced profile and verifies that the safety content and safety outcome are identical.
 
-**SKILL-DOES-NOT-UNLOCK** *(SRC-daiy-project, SAF-07)*
+**SKILL-DOES-NOT-UNLOCK** *(SRC-daiy-project, SAF-07; SRC-daiy-prototype, The safety outcome and the FR-14 labels must be identical in both runs (SAF-07).)*
 A high self-assessed skill level never changes which work is classified as "professional only" or "not recommended".
-*Check:* no automatic check; at review. A reviewer runs restricted-work cases with an expert profile and with a beginner profile and verifies that the classifications are identical.
+*Check:* no automatic check; at review. A reviewer runs each classification case with a beginner and an advanced profile and verifies that every package gets the same label in both runs.
 
 **MATERIALS-LIST** *(SRC-daiy-project, FR-04)*
 The app creates a bill of materials from the instructions.
@@ -88,7 +88,7 @@ The AI marks an item as "available" only if the inventory holds it in sufficient
 An item that the inventory holds in insufficient quantity is marked "partly available" together with the missing quantity.
 *Check:* no automatic check; at review. A reviewer sets an inventory quantity below the required quantity and verifies the "partly available" mark and the correct missing quantity.
 
-**SAMPLE-PRODUCT-DATA** *(SRC-daiy-project, FR-04 Priority)*
+**SAMPLE-PRODUCT-DATA** *(SRC-daiy-project, FR-04 Priority; SRC-daiy-prototype, Product offers are sample data in `src/lib/offers.ts` until real retailer integrations exist. Why: MVP scope.)*
 The product search of the materials list works on sample product data.
 *Check:* no automatic check; at review. A reviewer verifies that product suggestions come from the sample product data set.
 
@@ -228,9 +228,9 @@ Users can state their experience per area on a simple scale.
 Without a skill profile, the app treats the user as a beginner.
 *Check:* no automatic check; at review. A reviewer runs a case without a profile and verifies that the answer equals the one for an explicit beginner profile.
 
-**PROFILE-ON-DEVICE** *(SRC-daiy-project, FR-10)*
+**PROFILE-ON-DEVICE** *(SRC-daiy-project, FR-10; SRC-daiy-prototype, User profiles (skill level + tool inventory) live in `src/lib/profiles.ts`, stored in localStorage only)*
 The skill profile is stored on the device.
-*Check:* no automatic check; at review. A reviewer works without an account and without a network and verifies that the profile persists across restarts.
+*Check:* no automatic check; at review. A reviewer inspects the storage code and the network traffic and verifies that profiles are written to localStorage and sent to no server for storage.
 
 **MATERIAL-INVENTORY** *(SRC-daiy-project, FR-11)*
 Users can record the materials they own with name, quantity, unit and an optional location.
@@ -300,9 +300,9 @@ Possible effects of the work on warranty or funding are marked "check with manuf
 Rules that depend on location are marked "check locally" instead of being stated as fact.
 *Check:* no automatic check; at review. A reviewer uses cases that involve location-dependent rules and verifies that each such rule is marked "check locally".
 
-**RISK-CHECK-FIRST** *(SRC-daiy-project, SAF-01)*
+**RISK-CHECK-FIRST** *(SRC-daiy-project, SAF-01; SRC-daiy-prototype, Safety is enforced in code (`detectHazards` before AI, `enforceSafety` after) in `src/lib/repair.schema.ts`)*
 Every case is checked for risk signals before instructions are given.
-*Check:* no automatic check; at review. A reviewer runs the high-risk evaluation cases and verifies that no instruction is given before the risk check, and that each case triggers the intended outcome.
+*Check:* no automatic check; at review. A reviewer submits hazard inputs to the case assessment and verifies that it returns an escalation without calling the AI.
 
 **UNCLEAR-CASES-CONSERVATIVE** *(SRC-daiy-project, SAF-01)*
 Unclear cases are not classified as safe.
@@ -312,9 +312,9 @@ Unclear cases are not classified as safe.
 In a case with an immediate hazard, the app gives no DIY instructions.
 *Check:* no automatic check; at review. A reviewer uses hazard cases and verifies that no DIY instruction is given.
 
-**HAZARD-SAFETY-MEASURES** *(SRC-daiy-project, SAF-02)*
-In a case with an immediate hazard, the app directs the user to safety measures.
-*Check:* no automatic check; at review. A reviewer uses hazard cases and verifies that the answer gives immediate safety measures.
+**HAZARD-SAFETY-MEASURES** *(SRC-daiy-project, SAF-02; SRC-daiy-prototype, Immediate actions now fit the hazard. Before, a CO alarm got electrician advice ("switch off power at the fuse box").)*
+The immediate safety actions of an escalation fit the kind of hazard detected.
+*Check:* `src/test/safety.test.ts` feeds hazard inputs of different kinds to the pre-check escalation and verifies that the immediate actions and the named professional belong to the detected hazard kind and to no other.
 
 **HAZARD-PROFESSIONAL** *(SRC-daiy-project, SAF-02)*
 In a case with an immediate hazard, the app directs the user to a qualified professional.
@@ -447,3 +447,43 @@ Controls of the user interface carry clear labels.
 **NOT-COLOR-ALONE** *(SRC-daiy-project, NFR-07)*
 No information is conveyed by color alone.
 *Check:* no automatic check; at review. An accessibility review in grayscale verifies that all states and labels can still be told apart.
+
+**PRECHECK-COVERS-FOLLOW-UP-ANSWERS** *(SRC-daiy-prototype, hazardEscalation(`${data.problem} ${data.answers.map((a) => a.a).join(" ")}`))*
+The deterministic hazard check also covers the user's answers to follow-up questions.
+*Check:* no automatic check; at review. A reviewer submits a harmless problem with a follow-up answer that contains a hazard and verifies an escalation without an AI call.
+
+**STEP-QUESTION-HAZARD-CHECK** *(SRC-daiy-prototype, if (data.question && detectHazards(data.question).length) { return { ok: true, escalate: true, ... } })*
+A question asked during guided execution that contains a hazard signal is answered with an escalating notice instead of an AI answer.
+*Check:* no automatic check; at review. A reviewer asks a step question that contains a hazard and verifies an escalating answer without an AI call.
+
+**NO-GUIDE-AT-HIGH-RISK** *(SRC-daiy-prototype, AI output must never bypass hazard escalation. / Never use "guide" when risk is high or critical.)*
+An AI output with high or critical risk is never shown as a guide.
+*Check:* `src/test/safety.test.ts` feeds an AI output that combines a guide with high risk into the safety enforcement and verifies that it becomes an escalation without a guide.
+
+**PRECHECK-ENGLISH** *(SRC-daiy-prototype, English and German patterns for gas, scorched or overheating sockets, water leaks in walls, distribution boards, structural work and refrigerant circuits.)*
+The deterministic hazard pre-check recognises hazards described in English.
+*Check:* `src/test/safety.test.ts` feeds English hazard descriptions to the pre-check and verifies that each is detected with its expected hazard label.
+
+**PRECHECK-GERMAN** *(SRC-daiy-prototype, English and German patterns for gas, scorched or overheating sockets, water leaks in walls, distribution boards, structural work and refrigerant circuits.)*
+The deterministic hazard pre-check recognises hazards described in German.
+*Check:* `src/test/safety.test.ts` feeds German hazard descriptions to the pre-check and verifies that each is detected with its expected hazard label.
+
+**PRECHECK-SPARES-PROJECT-PACKAGES** *(SRC-daiy-prototype, Installation work that can be one package of a larger project (new socket, ceiling light, wallbox) is deliberately left to the AI, so FR-14 can still label the DIY packages of that project.)*
+The deterministic pre-check does not escalate installation work that can be one package of a larger project.
+*Check:* `src/test/safety.test.ts` feeds the inputs of the classification cases to the pre-check and verifies that none of them is blocked.
+
+**OUT-OF-SCOPE-RISK-HIGH** *(SRC-daiy-prototype, Out-of-scope work that is not an emergency (distribution board, wall removal, refrigerant) is escalated as risk `high`, emergencies as `critical`.)*
+Out-of-scope work that is not an emergency is escalated with risk "high".
+*Check:* `src/test/safety.test.ts` feeds a non-emergency out-of-scope input to the pre-check escalation and verifies the risk level "high".
+
+**EMERGENCY-RISK-CRITICAL** *(SRC-daiy-prototype, Out-of-scope work that is not an emergency (distribution board, wall removal, refrigerant) is escalated as risk `high`, emergencies as `critical`.)*
+An emergency is escalated with risk "critical".
+*Check:* `src/test/safety.test.ts` feeds an emergency input to the pre-check escalation and verifies the risk level "critical".
+
+**EMERGENCY-ACTIONS-FIRST** *(SRC-daiy-prototype, Escalation for the pre-check, with actions that fit the detected hazards (emergencies first).)*
+When an input combines several hazards, the escalation lists emergency actions before the other actions.
+*Check:* `src/test/safety.test.ts` feeds an input that combines an emergency and a non-emergency hazard and verifies that the emergency action and professional come first.
+
+**SECOND-HAND-LISTED-FIRST** *(SRC-daiy-prototype, Sample offers for demonstration — not live prices. Second-hand items are listed first.)*
+Second-hand offers for a missing item are listed before new offers.
+*Check:* no automatic check; at review. A reviewer uses an item with new and second-hand offers and verifies that every second-hand offer comes before every new one.
