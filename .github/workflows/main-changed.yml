@@ -1,0 +1,57 @@
+# Agent M's entry onMainChanged for this product, on every push to the default branch: it adds the trace graph of the pushed commit to the branch
+# trace-cache and the overview of its main page to the branch overview-cache, which the review pages read. The instance (mrh421/agent-m) is checked out
+# into instance/ and its entry run on this repository's checkout; the workflow's own token writes the two branches.
+name: main changed
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: main-changed
+  cancel-in-progress: false
+
+jobs:
+  main-changed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: mrh421/agent-m
+          ref: 29308ccb26afaf38334d7844d150422485354ab7
+          path: instance
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Make the branches trace-cache and overview-cache, once, and fetch them
+        run: |
+          git config user.name "agent-m main-changed"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for branch in trace-cache overview-cache; do
+            if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+              git checkout --orphan "$branch-first"
+              git rm -rf --quiet --cached .
+              git clean -fdq -e instance
+              echo "The files of the commits of main, one each: <commit>.json.gz." > README.md
+              git add README.md
+              git commit --quiet -m "$branch: the branch of the stored files"
+              git push origin "$branch-first:refs/heads/$branch"
+              git checkout --quiet --detach "$GITHUB_SHA"
+            fi
+            git fetch origin +$branch:$branch
+          done
+      - name: Store the records of this commit
+        run: |
+          for attempt in 1 2 3; do
+            node instance/src/workflow-entries/main.mjs onMainChanged && exit 0
+            sleep $((attempt * 20))
+          done
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
