@@ -204,7 +204,7 @@ Users can go back at any time.
 Users can create an account that syncs profile, inventory and history across devices.
 *Check:* no automatic check; at review. A reviewer creates an account, changes data on one device and verifies the change on a second device.
 
-**DELETE-ALL-DATA** *(SRC-daiy-project, FR-08)*
+**DELETE-ALL-DATA** *(SRC-daiy-project, FR-08; SRC-daiy-legal, GDPR Art. 17 (1))*
 Users can delete all their data within the app.
 *Check:* no automatic check; at review. A reviewer deletes all data and verifies that no profile, inventory, history or account data remains.
 
@@ -216,9 +216,9 @@ The app can be used locally without an account.
 If accounts exist, passwords are stored hashed.
 *Check:* no automatic check; at review. A reviewer inspects the stored account data and verifies that no password is stored in plain text.
 
-**DATA-EXPORT** *(SRC-daiy-project, NFR-10)*
-If accounts exist, users can export their data within the app.
-*Check:* no automatic check; at review. A reviewer exports the data and verifies that profile, inventory and history are contained in it.
+**DATA-EXPORT** *(SRC-daiy-project, NFR-10; SRC-daiy-legal, GDPR Art. 20 (1))*
+Users can export the data they provided in a structured, commonly used and machine-readable format.
+*Check:* no automatic check; at review. A reviewer exports the data and verifies that it contains profile, inventory and history in a structured, machine-readable format that common tools can open.
 
 **SKILL-PROFILE** *(SRC-daiy-project, FR-10)*
 Users can state their experience per area on a simple scale.
@@ -296,7 +296,7 @@ DIY preparation for a professional is presented as something to agree with the p
 Possible effects of the work on warranty or funding are marked "check with manufacturer or funding body".
 *Check:* no automatic check; at review. A reviewer uses a project that affects warranty or funding and verifies the mark.
 
-**CHECK-LOCALLY** *(SRC-daiy-project, AIR-10)*
+**CHECK-LOCALLY** *(SRC-daiy-project, AIR-10; SRC-daiy-legal, BayBO Art. 55 (1))*
 Rules that depend on location are marked "check locally" instead of being stated as fact.
 *Check:* no automatic check; at review. A reviewer uses cases that involve location-dependent rules and verifies that each such rule is marked "check locally".
 
@@ -324,7 +324,7 @@ In a case with an immediate hazard, the app directs the user to a qualified prof
 When the app gives no instructions, it explains why.
 *Check:* no automatic check; at review. A reviewer uses escalated cases and verifies that every refusal of instructions comes with a reason.
 
-**OUT-OF-SCOPE-NO-INSTRUCTIONS** *(SRC-daiy-project, Scope, Out of scope [the app informs and escalates, but gives no)*
+**OUT-OF-SCOPE-NO-INSTRUCTIONS** *(SRC-daiy-project, Scope, Out of scope [the app informs and escalates, but gives no; SRC-daiy-legal, NAV § 13 (2); SRC-daiy-legal, NDAV § 13 (2); SRC-daiy-legal, Regulation (EU) 2024/573 Art. 10 (1))*
 For work on fixed 230/400 V installations, grid connection, gas installations, refrigerant circuits, load-bearing structures or chimneys, the app gives no instructions.
 *Check:* no automatic check; at review. A reviewer runs one case per excluded area and verifies that no instructions are given.
 
@@ -424,27 +424,27 @@ At least 4 out of 5 test participants per persona group can start a case without
 For normal test cases, the AI response appears within an agreed target time at the 95th percentile.
 *Check:* no automatic check; at review. A reviewer times a load of normal test cases and compares the 95th percentile with the agreed target.
 
-**PRIVACY-NOTICE** *(SRC-daiy-project, NFR-06)*
-Users are informed how their text, photos and inventory data are processed.
-*Check:* no automatic check; at review. A reviewer verifies that a privacy notice covering text, photos and inventory is shown before such data is processed.
+**PRIVACY-NOTICE** *(SRC-daiy-project, NFR-06; SRC-daiy-legal, GDPR Art. 13 (1), (2))*
+When personal data is collected, users are informed of the controller's identity and contact details, the purposes and legal basis of the processing, the recipients, the storage period and their data protection rights.
+*Check:* no automatic check; at review. A reviewer reads the privacy notice shown when data is collected and verifies that it contains each of these items.
 
-**DATA-MINIMISATION** *(SRC-daiy-project, NFR-06)*
+**DATA-MINIMISATION** *(SRC-daiy-project, NFR-06; SRC-daiy-legal, GDPR Art. 5 (1)(c))*
 The app does not collect personal data it does not need.
 *Check:* no automatic check; at review. A reviewer goes through all collected data fields and verifies that each one is needed for a function.
 
-**ADEQUATE-CONTRAST** *(SRC-daiy-project, NFR-07)*
-The user interface has adequate contrast.
-*Check:* no automatic check; at review. An accessibility review measures contrast against the chosen accessibility guideline.
+**ADEQUATE-CONTRAST** *(SRC-daiy-project, NFR-07; SRC-daiy-legal, WCAG 2.2, 1.4.3 Contrast (Minimum))*
+Text that is not large-scale has a contrast ratio of at least 4.5:1 against its background.
+*Check:* no automatic check; at review. An accessibility review measures the contrast ratio of every text that is not large-scale on every screen and verifies the threshold.
 
-**READABLE-TEXT** *(SRC-daiy-project, NFR-07)*
-The text of the user interface is readable.
-*Check:* no automatic check; at review. An accessibility review measures text size against the chosen accessibility guideline.
+**READABLE-TEXT** *(SRC-daiy-project, NFR-07; SRC-daiy-legal, WCAG 2.2, 1.4.4 Resize Text)*
+Text resized up to 200 percent without assistive technology loses no content or functionality.
+*Check:* no automatic check; at review. An accessibility review enlarges the text to the maximum required size on every screen and verifies that no content or function is lost.
 
-**CLEAR-LABELS** *(SRC-daiy-project, NFR-07)*
+**CLEAR-LABELS** *(SRC-daiy-project, NFR-07; SRC-daiy-legal, WCAG 2.2, 3.3.2 Labels or Instructions)*
 Controls of the user interface carry clear labels.
 *Check:* no automatic check; at review. An accessibility review verifies that every control has a descriptive label.
 
-**NOT-COLOR-ALONE** *(SRC-daiy-project, NFR-07)*
+**NOT-COLOR-ALONE** *(SRC-daiy-project, NFR-07; SRC-daiy-legal, WCAG 2.2, 1.4.1 Use of Color)*
 No information is conveyed by color alone.
 *Check:* no automatic check; at review. An accessibility review in grayscale verifies that all states and labels can still be told apart.
 
@@ -487,3 +487,103 @@ When an input combines several hazards, the escalation lists emergency actions b
 **SECOND-HAND-LISTED-FIRST** *(SRC-daiy-prototype, Sample offers for demonstration — not live prices. Second-hand items are listed first.)*
 Second-hand offers for a missing item are listed before new offers.
 *Check:* no automatic check; at review. A reviewer uses an item with new and second-hand offers and verifies that every second-hand offer comes before every new one.
+
+**NO-BREAKER-ONLY-ISOLATION** *(SRC-daiy-legal, Wikipedia, Fünf Sicherheitsregeln, Gegen Wiedereinschalten sichern)*
+The app never presents switching off a circuit breaker as enough to secure an electrical circuit against being switched on again.
+*Check:* no automatic check; at review. A reviewer reads answers to cases that involve switching off a circuit and verifies that switching off the circuit breaker is never presented as securing the circuit against being switched on again.
+
+**CHIMNEY-SWEEP-NOTICE-INSTALLATION** *(SRC-daiy-legal, SchfHwG § 1 (2))*
+When a case installs, changes or puts back into operation a heating appliance or flue system that must be swept or inspected, the app points out that the owner must notify the district chimney sweep.
+*Check:* no automatic check; at review. A reviewer runs cases that install, change or recommission such an appliance and verifies that the notice to the district chimney sweep is pointed out.
+
+**CHIMNEY-SWEEP-NOTICE-DECOMMISSIONING** *(SRC-daiy-legal, SchfHwG § 1 (2))*
+When a case permanently takes a heating appliance or flue system that must be swept or inspected out of operation, the app points out that the owner must notify the district chimney sweep.
+*Check:* no automatic check; at review. A reviewer runs cases that permanently decommission such an appliance and verifies that the notice to the district chimney sweep is pointed out.
+
+**FIRING-INSTALLATION-INSPECTION-NOTICE** *(SRC-daiy-legal, 1. BImSchV § 14 (2))*
+When a case installs or substantially changes a firing installation, the app points out that a chimney sweep must verify that it meets its requirements after it is put into operation.
+*Check:* no automatic check; at review. A reviewer runs cases that install a firing installation or switch it to another fuel and verifies that the required chimney sweep check is pointed out.
+
+**PERMIT-FREE-NOT-RULE-FREE** *(SRC-daiy-legal, BayBO Art. 55 (2))*
+The app never presents a project's exemption from a building permit as an exemption from the other legal requirements on it.
+*Check:* no automatic check; at review. A reviewer runs building projects that need no permit and verifies that no answer presents this as freedom from other requirements.
+
+**SHARED-BOUNDARY-CONSENT** *(SRC-daiy-legal, BGB § 922)*
+When a case removes or changes a wall, hedge, fence or other installation that separates two properties, the app points out that the neighbour's consent may be required.
+*Check:* no automatic check; at review. A reviewer runs cases that remove or change a boundary installation and verifies that the possible need for the neighbour's consent is pointed out.
+
+**PLANTING-BOUNDARY-DISTANCE** *(SRC-daiy-legal, AGBGB Art. 47 (1))*
+When a case plants trees, shrubs or hedges near a property boundary, the app points out that boundary distances apply, marked "check locally".
+*Check:* no automatic check; at review. A reviewer runs planting cases near a boundary and verifies that the boundary distance is pointed out and marked "check locally".
+
+**TENANT-MODIFICATION-RIGHT** *(SRC-daiy-legal, BGB § 554 (1))*
+When a tenant's project is a structural change for use by people with disabilities, charging electric vehicles, burglary protection or plug-in solar devices, the app points out that the tenant can demand the landlord's permission.
+*Check:* no automatic check; at review. A reviewer runs rented-property cases for each of these purposes and verifies that the tenant's right to demand permission is pointed out.
+
+**DEVICE-STORAGE-CONSENT** *(SRC-daiy-legal, TDDDG § 25 (1), (2) Nr. 2)*
+The app stores information on the user's device or reads it from there only with the user's consent or where this is strictly necessary for a function the user explicitly requested.
+*Check:* no automatic check; at review. A reviewer lists everything the app stores on the device and verifies for each item either recorded consent or strict necessity for a requested function.
+
+**CONSENT-WITHDRAWAL** *(SRC-daiy-legal, GDPR Art. 7 (3))*
+Withdrawing a consent in the app is as easy as giving it.
+*Check:* no automatic check; at review. A reviewer gives and then withdraws each consent and verifies that withdrawing takes no more steps than giving.
+
+**DATA-RECTIFICATION** *(SRC-daiy-legal, GDPR Art. 16)*
+Users can correct their stored personal data.
+*Check:* no automatic check; at review. A reviewer changes each kind of stored personal data and verifies that the corrected values are stored.
+
+**PRIVATE-BY-DEFAULT** *(SRC-daiy-legal, GDPR Art. 25 (2))*
+By default, the app makes no personal data accessible to other people without the user's action.
+*Check:* no automatic check; at review. A reviewer uses a fresh installation and account and verifies that no personal data is visible to other users until the user shares it.
+
+**AI-INTERACTION-DISCLOSED** *(SRC-daiy-legal, EU AI Act Art. 50 (1), (5))*
+At the latest at the first interaction, the app clearly informs users that they are interacting with an AI system.
+*Check:* no automatic check; at review. A reviewer starts the app as a new user and verifies that the AI notice is shown at or before the first interaction with the AI.
+
+**LARGE-TEXT-CONTRAST** *(SRC-daiy-legal, WCAG 2.2, 1.4.3 Contrast (Minimum))*
+Large-scale text has a contrast ratio of at least 3:1 against its background.
+*Check:* no automatic check; at review. An accessibility review measures the contrast ratio of every large-scale text on every screen and verifies the threshold.
+
+**NON-TEXT-CONTRAST** *(SRC-daiy-legal, WCAG 2.2, 1.4.11 Non-text Contrast)*
+The visual information needed to identify user interface components, including their states, has a contrast ratio of at least 3:1 against adjacent colors.
+*Check:* no automatic check; at review. An accessibility review measures the contrast of the boundaries and state indicators of every control against adjacent colors.
+
+**TEXT-ALTERNATIVES** *(SRC-daiy-legal, WCAG 2.2, 1.1.1 Non-text Content)*
+All non-text content shown to the user has a text alternative that serves the same purpose.
+*Check:* no automatic check; at review. An accessibility review with a screen reader verifies a fitting text alternative for every image, icon and photo shown.
+
+**KEYBOARD-OPERABLE** *(SRC-daiy-legal, WCAG 2.2, 2.1.1 Keyboard)*
+All functionality of the app can be operated through a keyboard interface.
+*Check:* no automatic check; at review. An accessibility review runs a full case using only the keyboard and verifies that every function can be reached and used.
+
+**FOCUS-VISIBLE** *(SRC-daiy-legal, WCAG 2.2, 2.4.7 Focus Visible)*
+The keyboard focus indicator is visible.
+*Check:* no automatic check; at review. An accessibility review tabs through every screen and verifies that the focused element is always visibly marked.
+
+**TARGET-SIZE** *(SRC-daiy-legal, WCAG 2.2, 2.5.8 Target Size (Minimum))*
+Pointer targets are at least 24 by 24 CSS pixels unless a WCAG 2.2 exception applies.
+*Check:* no automatic check; at review. An accessibility review measures every pointer target and verifies its size or a listed exception.
+
+**REFLOW** *(SRC-daiy-legal, WCAG 2.2, 1.4.10 Reflow)*
+Content presented at a width of 320 CSS pixels loses no information or functionality.
+*Check:* no automatic check; at review. An accessibility review views every screen at the required width and verifies that no content or function is lost.
+
+**REFLOW-NO-TWO-DIMENSIONAL-SCROLLING** *(SRC-daiy-legal, WCAG 2.2, 1.4.10 Reflow)*
+Content presented at a width of 320 CSS pixels needs no scrolling in two dimensions.
+*Check:* no automatic check; at review. An accessibility review views every screen at the required width and verifies that no horizontal scrolling is needed.
+
+**STATUS-MESSAGES** *(SRC-daiy-legal, WCAG 2.2, 4.1.3 Status Messages)*
+Status messages can be presented by assistive technologies without receiving focus.
+*Check:* no automatic check; at review. An accessibility review with a screen reader triggers status messages and verifies that each one is announced without a change of focus.
+
+**ERROR-IDENTIFICATION** *(SRC-daiy-legal, WCAG 2.2, 3.3.1 Error Identification)*
+An automatically detected input error is described to the user in text that names the item in error.
+*Check:* no automatic check; at review. An accessibility review enters invalid input into every form and verifies a text description of each error that names the field in error.
+
+**REDUNDANT-ENTRY** *(SRC-daiy-legal, WCAG 2.2, 3.3.7 Redundant Entry)*
+Information the user already entered in a case is filled in automatically or offered for selection when it is needed again in that case.
+*Check:* no automatic check; at review. A reviewer runs a case with follow-up questions and verifies that no information already given has to be typed again.
+
+**ACCESSIBLE-AUTHENTICATION** *(SRC-daiy-legal, WCAG 2.2, 3.3.8 Accessible Authentication (Minimum))*
+Signing in to an account requires no cognitive function test unless an alternative method or a mechanism to assist the user is available.
+*Check:* no automatic check; at review. An accessibility review goes through sign-in and verifies that password entry allows pasting or password managers, or that another sign-in method without a cognitive test exists.
