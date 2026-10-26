@@ -12,6 +12,7 @@ realises:
   - MODEL-BEFORE-PARTS
   - NO-ASSUMPTIONS-AS-FACTS
   - NAME-DECIDING-INFORMATION
+  - REDUNDANT-ENTRY
 ---
 
 # UC-002 Clarify missing information
@@ -33,7 +34,8 @@ A case has been started (UC-001) and the AI finds that it lacks information it n
 3. The app asks the user targeted follow-up questions in everyday language. A technical term in a question is explained where it appears.
 4. The user answers the questions.
 5. The app checks whether the answers close the gaps. If gaps remain, it asks a second round of follow-up questions, worded as in the first round.
-6. The app continues the case with the answers.
+6. When information the user already gave in the case is needed again, the app fills it in automatically or offers it for selection. The user does not type it a second time.
+7. The app continues the case with the answers.
 
 There are at most two rounds of follow-up questions in a case.
 
@@ -43,11 +45,12 @@ There are at most two rounds of follow-up questions in a case.
 - A2, gaps remain after two rounds: the app asks no third round. If the case is safe to answer, the app gives a guide with a clearly listed list of the assumptions it made. Every assumption is shown as an assumption and never as an established fact.
 - A3, not safe without the missing information: the app gives no guide. It states why and what is needed.
 - A4, uncertain classification: if the classification of a work package stays uncertain, the app names the information that would change the label. Which label applies is decided by the rules for classification, not by this use case.
-- A5, nothing missing: the AI finds no gap, and the use case ends without a question.
+- A5, information needed again: a follow-up question asks for a detail the user already entered in the case. The app fills it in or offers it for selection, and the user only confirms or changes it.
+- A6, nothing missing: the AI finds no gap, and the use case ends without a question.
 
 ## Postcondition
 
-The case either holds the information it needs, or it holds a list of assumptions that the user can see. No assumed detail is presented as a fact. The user has been asked no more than two rounds of questions.
+The case either holds the information it needs, or it holds a list of assumptions that the user can see. No assumed detail is presented as a fact. No information the user already gave in the case had to be entered again. The user has been asked no more than two rounds of questions.
 
 ## Diagram
 
@@ -60,6 +63,8 @@ flowchart TD
     C -- yes --> E[Ask follow-up questions in everyday language]
     D --> E
     E --> F[User answers or says not sure]
+    E -. detail already given .-> R[Fill in or offer for selection]
+    R --> F
     F --> G{Gaps remain?}
     G -- no --> Z
     G -- yes, round 1 --> E

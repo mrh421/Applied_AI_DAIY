@@ -6,6 +6,7 @@ actors:
   - User
   - App
   - Inventory
+  - AI
 realises:
   - MATERIALS-LIST
   - MATERIALS-MATCHED-TO-INVENTORY
@@ -13,6 +14,7 @@ realises:
   - PARTLY-AVAILABLE
   - OWN-STOCK-FIRST
   - SUGGESTIONS-ONLY-FOR-MISSING
+  - INVENTORY-GROUNDING
 ---
 
 # UC-005 Check materials and tools against the inventory
@@ -22,6 +24,7 @@ realises:
 - User: the person who needs to know what to get.
 - App: the DAIY application.
 - Inventory: the user's stored materials and tools, which may be empty.
+- AI: the AI component that marks the items, together with the app.
 
 ## Precondition
 
@@ -31,7 +34,7 @@ The user holds instructions (UC-003) that name materials, tools or both.
 
 1. The app creates the bill of materials from the instructions. It matches the materials named in the steps.
 2. The app matches every item of the bill of materials against the material inventory.
-3. The app shows for every item whether the inventory holds it in sufficient quantity.
+3. The app shows for every item whether the inventory holds it in sufficient quantity. The AI marks an item "available" only if the inventory holds it in sufficient quantity: a quantity equal to the required quantity is sufficient, a quantity below it is not.
 4. The app proposes matching items from the user's own inventory first.
 5. The app matches the required tools against the tool inventory and lists the missing tools in a list of their own, apart from the missing materials.
 6. For each missing material, the app suggests products to buy. It suggests no product for an item that is available in sufficient quantity.
@@ -46,7 +49,7 @@ The user holds instructions (UC-003) that name materials, tools or both.
 
 ## Postcondition
 
-The user sees a materials list that matches the steps, with the inventory status of every item, the missing quantities and a separate list of missing tools. Products are suggested only for what is missing.
+The user sees a materials list, in which only items held in sufficient quantity are marked "available", that matches the steps, with the inventory status of every item, the missing quantities and a separate list of missing tools. Products are suggested only for what is missing.
 
 ## Diagram
 

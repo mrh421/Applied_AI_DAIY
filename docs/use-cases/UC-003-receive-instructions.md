@@ -26,6 +26,8 @@ realises:
   - WATER-SHUT-OFF-FIRST
   - UNPLUG-BEFORE-OPENING
   - NO-BREAKER-ONLY-ISOLATION
+  - RESPONSE-TIME
+  - UNDERSTANDABLE-ERROR-NOTICE
 ---
 
 # UC-003 Receive instructions
@@ -42,7 +44,7 @@ A case has been started (UC-001). Missing information has been clarified or has 
 
 ## Main flow
 
-1. The AI drafts the answer from the case, the skill profile and the inventory.
+1. The AI drafts the answer from the case, the skill profile and the inventory. For normal test cases the AI response appears within the agreed target time at the 95th percentile.
 2. The app validates every draft. It checks the draft for the expected format, for completeness, and for prohibited or risky output paths. Only a draft that passes all three checks goes on.
 3. The app shows the user a summary of the problem that the user can follow.
 4. The app ranks the solution options. Repair comes before buying new, and reuse comes before buying new.
@@ -62,11 +64,12 @@ A case has been started (UC-001). Missing information has been clarified or has 
 - A3, draft fails validation: the draft is malformed, incomplete, or takes a prohibited or risky path. The app does not show the draft. It shows an understandable notice instead and invents no solution.
 - A4, no repair or reuse option: the app proposes buying new. It shows this option after any repair or reuse option that exists.
 - A5, uncertain classification: if the classification of a work package is uncertain, the app chooses the more restrictive label. The instructions name the information that would change the label, as for an uncertain classification in UC-002.
-- A6, no images available: the instructions are shown without images and the case is not blocked.
+- A6, insufficient information or technical error: the information for an answer is insufficient, or a technical error occurs. The app shows an understandable notice that says what is missing or that something went wrong, and invents no solution.
+- A7, no images available: the instructions are shown without images and the case is not blocked.
 
 ## Postcondition
 
-The user holds a validated answer with a problem summary and a complete, numbered set of instructions at the level of the profile, with the available illustrative images. No AI output reached the user without passing the format, completeness and path checks. The safety content is identical for every skill profile. No work package of uncertain classification carries a less restrictive label than the stricter one.
+The user holds a validated answer, or an understandable notice instead of an invented one, with a problem summary and a complete, numbered set of instructions at the level of the profile, with the available illustrative images. No AI output reached the user without passing the format, completeness and path checks. The safety content is identical for every skill profile. No work package of uncertain classification carries a less restrictive label than the stricter one.
 
 ## Diagram
 
@@ -84,7 +87,7 @@ sequenceDiagram
         App->>App: Uncertain classification gets the stricter label
         App-->>User: Problem summary
         App-->>User: Instructions at the level of the profile, same safety content, with available images
-    else draft fails a check
+    else draft fails a check, information insufficient or technical error
         App-->>User: Understandable notice, no invented solution
     end
 ```
