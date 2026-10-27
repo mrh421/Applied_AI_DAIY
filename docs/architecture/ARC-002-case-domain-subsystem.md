@@ -26,6 +26,8 @@ forced_by:
   - NO-UNVALIDATED-OUTPUT
   - PACKAGE-LABEL
   - PACKAGE-REASON
+  - INSTRUCTION-STRUCTURE
+  - WORK-PACKAGES
   - STRICTER-LABEL-IF-UNCERTAIN
   - NAME-DECIDING-INFORMATION
   - NO-OPENING-MAINS-HOUSINGS
@@ -128,4 +130,4 @@ The SPEC's check of NO-GUIDE-AT-HIGH-RISK feeds the enforcement exactly so.
 - Every safety rule is in one place and is tested without a network.
 - New hazard kinds or notice kinds are added to a catalogue without changing a function (open for extension).
 - The AI must report structured flags (risk, hazard kinds, out-of-scope area, package flags, step flags, notice kinds). Enforcement relies on them, and the output check rejects a draft without them.
-- Some judgement stays with the AI, such as whether a step opens a device. A wrong flag is a model error that the evaluation cases must find.
+- Some judgement stays with the AI, such as whether a step opens a device. A wrong flag is a model error that the evaluation cases must find. Two deterministic second lines narrow the gap: `detectHazards` over the whole output text (rule 1b of MOD-safety-enforcement) and the `opensHousing` patterns over the step texts (rule 6b). Their price is more escalations: a harmless text that merely mentions a distribution board becomes an escalation, which is the conservative side and is accepted (UNCLEAR-CASES-CONSERVATIVE).

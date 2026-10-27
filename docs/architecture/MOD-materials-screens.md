@@ -54,7 +54,6 @@ uses:
   - MOD-inventory.useInventory
   - MOD-inventory.saveMaterial
   - MOD-inventory.saveTool
-  - MOD-inventory.deduct
   - MOD-case-model.Money
 provides:
   - MaterialsScreen
@@ -84,7 +83,7 @@ None.
 
 - `MaterialsScreen(p: { caseId: string }): JSX.Element` — the route `/case/$id/materials`.
 - `OffersScreen(p: { caseId: string; itemId: string }): JSX.Element` — the route `/case/$id/offers/$itemId`.
-- `DeductDialog(p: { caseId: string; open: boolean; onClose: () => void }): JSX.Element` — the deduction on completion.
+- `DeductDialog(p: { caseId: string; open: boolean; onClose: () => void }): JSX.Element` — the deduction on completion; it calls `complete(used)` of `useCaseSession` once and shows its single result.
 
 **Errors a caller handles:** none. An invalid budget or quantity is described in text that names the field.
 
@@ -99,5 +98,5 @@ It reads and writes no file.
 - `MOD-stock-matching.matchStock` — the materials list.
 - `MOD-catalogue.searchOffers`, `MOD-catalogue.toolHint`, `MOD-catalogue.searchModels`, `MOD-catalogue.printedPartNote` and `MOD-catalogue.CATALOGUE_IS_SAMPLE` — offers, hints, models and the sample-data notice.
 - `MOD-cost-estimate.estimateCosts` — the budget panel.
-- `MOD-inventory.useInventory`, `MOD-inventory.saveMaterial`, `MOD-inventory.saveTool` and `MOD-inventory.deduct` — the inventory, saving owned items and deduction.
+- `MOD-inventory.useInventory`, `MOD-inventory.saveMaterial`, and `MOD-inventory.saveTool` — the inventory and saving owned items. The deduction goes through `complete` of `useCaseSession`.
 - `MOD-case-model.Money` — the budget.

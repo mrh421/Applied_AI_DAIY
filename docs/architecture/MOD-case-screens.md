@@ -83,7 +83,7 @@ None. Everything comes from MOD-case-session.
 
 ## Interfaces
 
-- `CaseInputScreen(): JSX.Element` — the route `/`.
+- `CaseInputScreen(p: { caseId?: string }): JSX.Element` — the route `/`; with `caseId` it shows the description and photo of that open case again.
 - `QuestionsScreen(p: { caseId: string }): JSX.Element` — the route `/case/$id` while questions are open.
 - `OutcomeScreen(p: { caseId: string }): JSX.Element` — the route `/case/$id` with an outcome.
 - `ExecutionScreen(p: { caseId: string; packageId: string }): JSX.Element` — the route `/case/$id/work/$packageId`.

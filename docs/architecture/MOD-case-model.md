@@ -28,6 +28,7 @@ provides:
   - PackageLabel
   - LABEL_STRICTNESS
   - stricterLabel
+  - SAFETY_RULES_VERSION
   - Unit
   - Quantity
   - Money
@@ -125,6 +126,7 @@ None stored. The constant lists `SKILL_AREAS`, `LABEL_STRICTNESS` and `FIXED_TOP
 - `StepAnswerDraft` — `{ answer: string; risk: RiskLevel; hazards: HazardKind[] }`.
 - `StepAnswerOutcome` — `{ type: 'answer'; text: string } | { type: 'escalation'; escalation: Escalation } | { type: 'notice'; notice: UserNotice }`.
 - `schemas` — `{ caseRequest: ZodType<CaseRequest>; assessmentDraft: ZodType<AssessmentDraft>; explainRequest: ZodType<ExplainRequest>; explanationDraft: ZodType<ExplanationDraft>; stepQuestionRequest: ZodType<StepQuestionRequest>; stepAnswerDraft: ZodType<StepAnswerDraft> }`.
+- `SAFETY_RULES_VERSION: string` — the version of the safety rules (the hazard catalogue, the enforcement rules and the fixed texts). It is raised with every change of one of them and is stored in each case record.
 - `rankOptions(options: SolutionOption[]): SolutionOption[]` — repair, then reuse, then buy-new; stable within a kind.
 
 **Errors a caller handles:** none. The functions are total. Callers use the schemas' `safeParse` and handle its failure.

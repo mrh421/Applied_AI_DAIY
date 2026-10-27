@@ -4,6 +4,7 @@ title: Subsystem User interface
 refines: ARC-001
 forced_by:
   - ADEQUATE-CONTRAST
+  - INSTRUCTION-STRUCTURE
   - LARGE-TEXT-CONTRAST
   - NON-TEXT-CONTRAST
   - NOT-COLOR-ALONE

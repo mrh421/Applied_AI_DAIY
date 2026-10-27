@@ -56,6 +56,7 @@ The register `STORAGE_REGISTER` lists every key:
 | `daiy.v1.consents` | necessary to record consents (MOD-consent) |
 | `daiy.v1.sync` | necessary for the sync the user started (MOD-sync-client) |
 | `case-photo` blobs | consent `keep-case-photos` |
+| cookie `daiy_session` (set by the server, ARC-013) | necessary for the sign-in the user requested |
 
 At start, the module registers `removeBlobs('case-photo')` as the purge handler of `keep-case-photos` with MOD-consent.
 

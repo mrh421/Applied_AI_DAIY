@@ -29,6 +29,7 @@ provides:
   - detectHazards
   - precheck
   - escalationFor
+  - opensHousing
 ---
 # MOD-hazard-precheck Hazard catalogue and pre-check
 
@@ -46,7 +47,7 @@ It belongs to the Case domain (ARC-002). It recognises hazard and out-of-scope s
   - the kind of professional to contact;
   - the reason why no instructions are given.
 - `precheck.ts`: the detection and the escalation builder.
-- `*.test.ts`: unit tests, one per kind: an English and a German positive, a near-miss negative, and the inputs of the classification cases, which are not blocked. The subsystem test `src/test/safety.test.ts` covers the checks the SPEC names: the actions and the professional of each kind; `high` for out-of-scope work and `critical` for an emergency; emergency actions first for a mixed input.
+- `*.test.ts`: unit tests, one per kind, and one for `opensHousing` with an English and a German positive and a near-miss negative: an English and a German positive, a near-miss negative, and the inputs of the classification cases, which are not blocked. The subsystem test `src/test/safety.test.ts` covers the checks the SPEC names: the actions and the professional of each kind; `high` for out-of-scope work and `critical` for an emergency; emergency actions first for a mixed input.
 
 ## Data
 
@@ -61,6 +62,7 @@ The patterns do not match installation work that can be one package of a larger 
 
 - `detectHazards(text: string): HazardKind[]` — the detected kinds in catalogue order, without duplicates.
 - `precheck(texts: string[]): Escalation | null` — joins all texts, which are the description and every follow-up answer or the step question, and returns `null` when no kind is detected. Otherwise it returns `escalationFor(kinds, 'precheck')`.
+- `opensHousing(text: string): boolean` — whether a step text tells the reader to open a mains housing: a distribution board, a fuse box or consumer unit, or the housing of a mains-powered device or its power supply, with English and German patterns kept in the catalogue (`catalogue.ts`). Enforcement uses it as a second line behind the AI's own `opensMainsHousing` flag.
 - `escalationFor(kinds: HazardKind[], origin: 'precheck' | 'output'): Escalation` — builds the escalation:
   - `risk` is `critical` if any kind is an emergency, and `high` otherwise;
   - `actions` and `professionals` list the emergency kinds before the others, without duplicates;

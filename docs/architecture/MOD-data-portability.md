@@ -53,10 +53,11 @@ The export format is JSON, UTF-8, with the media type `application/json`. Photos
 ## Interfaces
 
 - `ExportFile` — `{ format: 'daiy-export'; version: 1; exportedAt: string; profile: SkillProfile; materials: MaterialItem[]; tools: ToolItem[]; history: CaseRecord[]; consents: ConsentRecord[]; account: AccountData | null }`.
+- Kept case photos are not part of `ExportFile`. Whether Art. 20 GDPR needs them is for the approver to decide; if so, `ExportFile` gets a `photos` entry.
 - `EraseReport` — `{ device: 'erased' | 'failed'; account: 'erased' | 'none' | 'failed'; remaining: string[] }`.
 - `ExportError` — `class ExportError extends Error {}`.
 - `exportAll(): Promise<Blob>` — the export file; rejects with `ExportError`; stored data stays unchanged.
-- `eraseAll(): Promise<EraseReport>` — with an account, `deleteSyncedData`, then `deleteAccount`, where a failure is recorded and the device is erased anyway; then `localStore.clearAll()`, `clearConsents()` and `resetSync()`; returns the report, whose `remaining` names what could not be erased, for example the account data on the server.
+- `eraseAll(): Promise<EraseReport>` — with an account, `deleteSyncedData`, then `deleteAccount`, where a failure is recorded and the device is erased anyway; when `currentAccount` itself fails (offline), `account` is `'failed'` and `remaining` names the account data on the server; then `localStore.clearAll()`, `clearConsents()` and `resetSync()`; returns the report, whose `remaining` names what could not be erased, for example the account data on the server.
 
 **Errors a caller handles:** `ExportError` from `exportAll`. `eraseAll` does not reject; it reports every failure.
 

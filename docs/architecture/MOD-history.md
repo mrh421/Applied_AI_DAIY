@@ -45,7 +45,7 @@ Case records in the collection `cases` of MOD-local-store; photos as `case-photo
 
 ## Interfaces
 
-- `CaseRecord` — `{ id: string; createdAt: string; status: 'ongoing' | 'completed'; description: string; hadPhoto: boolean; answers: Answer[]; round: 0 | 1 | 2; outcome: CaseOutcome | null; chosenOptionId: string | null; explanations: Record<string, Record<number, string>>; checked: Record<string, number[]>; notes: string; budget: Money | null; materialsUsed: { name: string; quantity: Quantity; inventoryItemId?: string }[] }`. `explanations` maps a package id and a step number to its basics; `checked` maps a package id to its checked step numbers.
+- `CaseRecord` — `{ id: string; createdAt: string; rulesVersion: string; chosenOffers: Record<string, string>; status: 'ongoing' | 'completed'; description: string; hadPhoto: boolean; answers: Answer[]; round: 0 | 1 | 2; outcome: CaseOutcome | null; chosenOptionId: string | null; explanations: Record<string, Record<number, string>>; checked: Record<string, number[]>; notes: string; budget: Money | null; materialsUsed: { name: string; quantity: Quantity; inventoryItemId?: string }[] }`. `rulesVersion` is the `SAFETY_RULES_VERSION` under which `outcome` was made. `chosenOffers` maps a needed item to the id of the offer the user chose, so that the cost totals survive a reload. `explanations` maps a package id and a step number to its basics; `checked` maps a package id to its checked step numbers.
 - `listCases(): CaseRecord[]` — newest first.
 - `getCase(id: string): CaseRecord | undefined` — one record.
 - `saveCase(record: CaseRecord): void` — stores a record.

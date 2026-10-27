@@ -30,7 +30,7 @@ A cache from URL to `{ reachable, checkedAt }` for one hour. It is not persisted
 ## Interfaces
 
 - `checkLink: (input: { url: string }) => Promise<{ reachable: boolean }>` — a server function, called remotely from the browser over HTTPS POST.
-  - It accepts only `https` URLs that appear in `models.json` of MOD-catalogue, which rules out requests to arbitrary addresses. Any other URL returns `{ reachable: false }`.
+  - It accepts only `https` URLs that appear in `models.json` (`prototype/data/catalogue/`, ARC-018), which rules out requests to arbitrary addresses. Any other URL returns `{ reachable: false }`.
   - It sends HEAD, and falls back to GET when HEAD is refused, with a timeout of 5 s.
   - A 2xx or 3xx answer is reachable.
 
@@ -38,7 +38,7 @@ A cache from URL to `{ reachable, checkedAt }` for one hour. It is not persisted
 
 ## Files
 
-It reads the model URLs of `prototype/src/catalogue/data/models.json`, bundled at build time as a data file, not through MOD-catalogue's interface, so no cycle arises.
+It reads the model URLs of `prototype/data/catalogue/models.json`, bundled at build time. The file belongs to no module (ARC-018), so neither module imports from the other's folder and no cycle arises.
 
 ## Uses
 

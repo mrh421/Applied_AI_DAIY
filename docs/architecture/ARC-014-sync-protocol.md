@@ -30,7 +30,8 @@ The device stores records with `id`, `updatedAt` and a deletion tombstone (MOD-l
 - **Pull:** the server gives every record a growing sequence number when it stores it. The client asks for records after its last cursor and applies them with the same rule.
 - **Order:** push, then pull, triggered at app start, after local changes (debounced by 2 s), when the device comes back online, and on demand.
 - **Offline:** a failed push leaves the last-push mark unchanged, so the changes are sent next time. Nothing blocks the user.
-- **Tombstones:** kept for 90 days, then removed on both sides.
+- **Tombstones:** the server keeps them without expiry, because a tombstone is small and a device that was offline for longer than any limit must not bring a deleted record back. A device removes its own tombstone after 90 days, once a push has passed it on.
+- **Account change:** the sync mark stores the account it belongs to. After a sign-in as another account, nothing is pushed until the user chooses to merge the device data into the new account or to clear the device, so records never move silently from one account to another.
 
 **Principles:** KISS; YAGNI; a remote interface names how it fails.
 

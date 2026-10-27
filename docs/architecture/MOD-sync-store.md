@@ -54,4 +54,4 @@ Server functions, called remotely from the browser over HTTPS POST. Each serves 
 ## Uses
 
 - `MOD-accounts.requireAccountId` and `MOD-accounts.UnauthenticatedError` — the account of the session.
-- `MOD-local-store.StoredRecord` — the form of a synced record. It uses the library `better-sqlite3`.
+- `MOD-local-store.StoredRecord` — the form of a synced record. It is imported with `import type` only, which leaves nothing of the client module in the server build. It uses the library `better-sqlite3`.

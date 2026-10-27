@@ -40,13 +40,13 @@ It belongs to the User interface (ARC-008). It defines the routes and the layout
 - `routes/`: TanStack Router file routes. The plugin's `routesDirectory` points here (ARC-009). Each route renders a screen of MOD-case-screens, MOD-materials-screens or MOD-data-screens.
 - `layout.tsx`: the header with navigation and back.
 - `start.tsx`: calls `startSync` once.
-- `*.test.tsx`: Testing Library tests. Every route renders a back action; going back from the questions screen restores the description.
+- `*.test.tsx`: Testing Library tests. Every route renders a back action; going back from the questions screen restores the description and the photo of the open case (route `/?case=<id>`).
 
 ## Data
 
 None. The screen state lives in the URL and in MOD-case-session, so going back keeps earlier input. The routes:
 
-- `/`
+- `/`, with the optional search parameter `case=<id>`: the case input of an open case, so that the description and the photo are restored when the user goes back from `/case/$id`
 - `/case/$id`
 - `/case/$id/work/$packageId`
 - `/case/$id/materials`
@@ -59,7 +59,7 @@ None. The screen state lives in the URL and in MOD-case-session, so going back k
 
 ## Interfaces
 
-- `router` — the TanStack Router instance for the TanStack Start entry. No DAIY module imports it. Its back action calls `router.history.back()`, and falls back to the parent route when there is no history entry.
+- `router` — the TanStack Router instance for the TanStack Start entry. No DAIY module imports it. Its back action from `/case/$id` goes to `/?case=<id>`; elsewhere it calls `router.history.back()`, and falls back to the parent route when there is no history entry.
 
 **Errors a caller handles:** none. An unknown route or case id shows a not-found page with a link to the start, worded in plain language.
 

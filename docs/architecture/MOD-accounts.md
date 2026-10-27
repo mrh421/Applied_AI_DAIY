@@ -55,7 +55,8 @@ Tables:
 
 - `accounts(id, username unique, password_hash, created_at)`;
 - `passkeys(id, account_id, public_key, counter, name, created_at)`;
-- `sessions(token_hash, account_id, expires_at)`.
+- `sessions(token_hash, account_id, expires_at)`;
+- `challenges(id, challenge, purpose, expires_at)`: the WebAuthn challenge between an `…Options` call and its `verify…` call, valid for five minutes and deleted when used. Its id travels in a short-lived HttpOnly cookie, so that the server functions keep no state in memory.
 
 Validation: the user name has 3 to 40 characters and is unique; the password has at least 10 characters. Each error names its field.
 
@@ -71,7 +72,7 @@ The functions below, except `requireAccountId`, are server functions called remo
 - `currentAccount: () => Promise<AccountData | null>` — the signed-in account, or `null`.
 - `passkeyRegistrationOptions: () => Promise<PublicKeyCredentialCreationOptionsJSON>` — options to add a passkey.
 - `verifyPasskeyRegistration: (i: { response: RegistrationResponseJSON; name: string }) => Promise<{ ok: boolean }>` — stores a passkey.
-- `passkeySignInOptions: () => Promise<PublicKeyCredentialRequestOptionsJSON>` — options to sign in with a passkey.
+- `passkeySignInOptions: () => Promise<PublicKeyCredentialRequestOptionsJSON>` — options to sign in with a passkey; it takes no user name, because the credentials are discoverable.
 - `verifyPasskeySignIn: (i: { response: AuthenticationResponseJSON }) => Promise<{ ok: boolean }>` — signs in with a passkey.
 - `changeUsername: (i: { username: string }) => Promise<{ ok: true } | { ok: false; errors: AccountFieldError[] }>` — corrects the user name.
 - `changePassword: (i: { current: string; next: string }) => Promise<{ ok: true } | { ok: false; errors: AccountFieldError[] }>` — changes the password.

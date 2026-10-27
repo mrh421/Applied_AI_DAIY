@@ -36,6 +36,7 @@ The server must store accounts, credentials and sessions (UC-018), and the synce
 
 ## Consequences
 
+- A backup keeps the data of a deleted account for up to 30 days. The privacy notice already states these 30 days as the storage period of backups. To keep a restore from bringing a deleted account back, the server keeps a deletion log of account ids (no personal data) outside the backups and replays it after every restore (UC-023).
 - One server process can write. Scaling beyond one instance would require a change of this decision, but no requirement asks for it.
 - Erasure of an account is two calls, one per module and file, which MOD-data-portability orders and reports (UC-023 A4).
 - `better-sqlite3` is a native module, and the host build must compile it for its Node version.

@@ -30,6 +30,7 @@ The provider receives personal data and is a recipient under PRIVACY-NOTICE.
 
 - **SDK:** the Vercel AI SDK `ai` (npm) with the provider package `@ai-sdk/anthropic`.
 - **Model:** Claude Sonnet 5.5, `claude-sonnet-5-5`, chosen for latency and vision. It is set by the environment variable `AI_MODEL`, with the key in `AI_PROVIDER_API_KEY` and an optional `AI_BASE_URL` for the test stub.
+- **Sampling:** temperature 0 and, where the provider supports one, a fixed seed, so that repeated runs of the same input differ as little as possible (SKILL-DOES-NOT-UNLOCK is reviewed by comparing runs).
 - **Structured output:** each task calls the SDK's structured output with the task's zod schema from MOD-case-model. No tools are declared.
 - **Timeout:** each call has a timeout, `AI_TIMEOUT_MS`, which serves the agreed response target. A timeout becomes `AiError` code `timeout`, and the user sees an understandable notice.
 - **Validation:** the SDK's own schema parsing only guides generation. MOD-output-check remains the check of record.
@@ -49,6 +50,6 @@ The provider receives personal data and is a recipient under PRIVACY-NOTICE.
 
 ## Consequences
 
-- A data processing agreement with the provider is needed, and the provider is named in the privacy notice as a recipient.
-- The model choice is confirmed or changed by the evaluation cases for classification quality and the 95th-percentile response time, without a code change.
+- A data processing agreement with the provider is needed, and the provider is named in the privacy notice as a recipient. The provider processes outside the EU, although the server is hosted in the EU (ARC-017). The transfer to a third country is therefore named in the privacy notice and rests on the provider's contractual safeguards (standard contractual clauses); the approver confirms this with the data protection contact.
+- The model choice is provisional, with no measurement behind it yet. It is confirmed or changed by the evaluation cases for classification quality and the 95th-percentile response time, without a code change.
 - The prompt version and the model name are logged with each outcome type, without case text, so results can be traced.

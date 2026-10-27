@@ -53,7 +53,7 @@ It belongs to Materials and offers (ARC-005). It holds the sample catalogue of n
 ## Parts
 
 - `index.ts`: the interface.
-- `data/products.json`, `data/listings.json`, `data/models.json` (ARC-018).
+- The data are not part of this folder: `prototype/data/catalogue/products.json`, `listings.json` and `models.json` (ARC-018).
 - `schema.ts`: the zod schemas of the data.
 - `spec-match.ts`: the one matcher for products and models. A stated requirement must be met. Dimensions match within ±2 percent, or ±1 mm for values under 50 mm.
 - `offers.ts`, `models.ts`, `hints.ts`.
@@ -79,7 +79,7 @@ The three JSON files, each entry in the form of `Offer` or `ModelEntry`, every d
 
 ## Files
 
-It reads its three JSON files under `prototype/src/catalogue/data/`, which are bundled at build time.
+It reads the three JSON files under `prototype/data/catalogue/`, which are bundled at build time.
 
 ## Uses
 

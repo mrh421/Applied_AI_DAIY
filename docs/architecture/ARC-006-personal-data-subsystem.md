@@ -81,6 +81,7 @@ Storage is localStorage for records and IndexedDB for photos (ARC-015). Every it
 
 ## Consequences
 
+- The consents and the sync mark (`daiy.v1.consents`, `daiy.v1.sync`) are written by MOD-consent and MOD-sync-client directly, not through the repository of MOD-local-store; the register still lists them, and the register test covers every key.
 - The register makes the review of DEVICE-STORAGE-CONSENT a reading of one table.
 - localStorage limits the total to a few megabytes. Photos are therefore kept apart, and only under consent.
 - Records carry `updatedAt` and tombstones even without an account, so sync can start at any time without migration.

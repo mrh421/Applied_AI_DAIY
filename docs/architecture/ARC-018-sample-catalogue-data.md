@@ -34,7 +34,7 @@ UC-007 needs 3D models with dimensions, material requirements, licence, intended
 
 ## Decision
 
-- **Files:** the catalogue is three JSON files inside `prototype/src/catalogue/data/`: `products.json` for new offers, `listings.json` for second-hand offers and `models.json` for 3D models. Each is validated against MOD-catalogue's zod schema by a unit test.
+- **Files:** the catalogue is three JSON files inside `prototype/data/catalogue/`, a folder that belongs to no module, so that MOD-catalogue and MOD-link-check can both read them without importing from each other's folder: `products.json` for new offers, `listings.json` for second-hand offers and `models.json` for 3D models. Each is validated against MOD-catalogue's zod schema by a unit test.
 - **Datum form:** every datum is stored in the `Datum` form of MOD-catalogue. A datum labelled `verified` has a source, and a second-hand listing without evidence has the value `null` with the label `unverified`.
 - **Per-offer fields:** every offer carries `dataAsOf`, `source` and `sellerUrl`. A sustainability reason is a sentence without a CO₂ figure, unless the figure carries a source.
 - **Display:** the User interface marks the whole catalogue as sample data.

@@ -93,7 +93,7 @@ flowchart LR
 ### Patterns
 
 1. **Client-server with a fat client** (distributed). *Organises* the split between the browser and the DAIY server. The browser holds the UI, all personal data, inventory matching, offer search, cost estimates and the case state. The server holds only what cannot sit on the device: the AI key and the AI calls with the checks around them, the accounts and the synced copy. *Why:* an API key must never be in client code (ch. 10, API tokens). Profile and inventory stay on the device (PROFILE-ON-DEVICE, INVENTORY-ON-DEVICE, USE-WITHOUT-ACCOUNT). Sync needs one shared server (ACCOUNT-SYNC). The server keeps no case state: every request carries the whole case, so nothing is stored for a user without an account.
-2. **Layers** (structuring). *Organises* the dependencies, from top to bottom: User interface → application subsystems (Case guidance, Materials and offers, Account, sync and data rights, Personal data) → AI access → Case domain. A layer uses only the layers below it. *Why:* the safety rules sit at the bottom, free of input and output, and both the client and the server can use them. They are testable on their own (design to test, divide and conquer).
+2. **Layers** (structuring). *Organises* the dependencies, from top to bottom: User interface → application subsystems (Case guidance, Materials and offers, Account, sync and data rights, Personal data) → AI access → Case domain. A layer uses the layers below it; the application subsystems may also use Personal data, which they share as a store. *Why:* the safety rules sit at the bottom, free of input and output, and both the client and the server can use them. They are testable on their own (design to test, divide and conquer).
 3. **Pipe-and-filter** (structuring). *Organises* every AI request on the server as a chain of filters: hazard pre-check → AI draft → output check → safety enforcement → finishing (ranking, legal notices). The filters are passive and work on the pull principle. A filter may end the pipe with an outcome, either an escalation or a notice; no later filter then runs. The AI filter is reached only after the pre-check has passed. *Why:* RISK-CHECK-FIRST, NO-UNVALIDATED-OUTPUT, the three output checks and NO-GUIDE-AT-HIGH-RISK need a fixed order that no caller can bypass. Each filter can be tested alone.
 4. **Repository** (structuring). *Organises* personal data on the device. One local store reads and writes profile, inventory, history and consent-gated data, and keeps one register of everything stored. Sync, export and delete-all read the whole store through it. *Why:* DATA-EXPORT, DELETE-ALL-DATA, ACCOUNT-SYNC and DEVICE-STORAGE-CONSENT each need all personal data in one place.
 5. **Probabilistic reasoning above a deterministic boundary** (agentic, ch. 11). *Organises* the use of the AI. The AI only produces JSON drafts, constrained by a schema. It calls no tools and acts on nothing. What the user sees is decided by deterministic code below the boundary. *Why:* the safety requirements must hold whatever the model writes (NO-GUIDE-AT-HIGH-RISK, SKILL-DOES-NOT-UNLOCK, NO-OPENING-MAINS-HOUSINGS).
@@ -345,11 +345,13 @@ flowchart LR
     B -- link --> Seller[Seller page]
 ```
 
-The server also delivers the app's static files. The secrets, the AI key and the session signing, exist only as environment variables of the server process (ARC-017).
+The server also delivers the app's static files. The secrets, such as the AI key, exist only as environment variables of the server process (ARC-017).
 
 ### Scenarios
 
-Each accepted use case is possible with the subsystems below. The scenarios name what takes part. They do not restate the steps.
+Each accepted use case is possible with the subsystems below. The scenarios name what takes part. They do not restate the steps. A module's `realises` names requirements only; a use case is followed through the modules of its requirements.
+
+For UC-001 the modules in order are: MOD-case-screens (`CaseInputScreen`), MOD-case-session (`start`), MOD-inventory (`snapshot`), MOD-case-pipeline (`assessCase`), MOD-hazard-precheck (`precheck`), MOD-ai-tasks (`draftAssessment`), MOD-output-check, MOD-safety-enforcement, and MOD-case-screens again for the outcome. Back from the outcome goes to `/?case=<id>`, where MOD-case-session returns the open case.
 
 - **UC-001 Start a case.**
   - The User interface shows the case input with a text field, an optional photo and a confirm action, so a case starts in three required inputs or fewer.
@@ -466,4 +468,5 @@ Each accepted use case is possible with the subsystems below. The scenarios name
 - The server must be reachable for every AI answer. Offline, the app shows a notice, and the profile, the inventory, the history and the work on an answered case keep working.
 - Each request carries the whole case, which makes requests larger, but the server holds no case data.
 - The AI provider is a recipient of the case data and must be named in the privacy notice (PRIVACY-NOTICE).
-- Changing a safety rule touches only the Case domain, and its tests show the effect.
+- Changing a safety rule touches only the Case domain, and its tests show the effect. A stored case keeps the `SAFETY_RULES_VERSION` it was made under; when the version has changed, MOD-case-session re-checks it and offers a new assessment.
+- Many numbers in the architecture are chosen values that no requirement fixes: retention times (backups 30 days, logs 14 days, sessions 30 days, device tombstones 90 days), limits (256 KB per synced record, 1600 px per photo, 600 characters of `basics`), the 2 s debounce of sync, the tolerance of ±2 percent or ±1 mm in the spec match, and the ten-character password minimum. They can be changed without a change of structure, and each stands in its decision.

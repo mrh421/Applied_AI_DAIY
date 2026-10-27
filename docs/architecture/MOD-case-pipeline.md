@@ -71,12 +71,12 @@ These are server functions made with `createServerFn`. They are remote calls fro
   1. Parse the input with `schemas.caseRequest`. Invalid input gives notice `technical-error`.
   2. `precheck([description, ...answers.map(a => a.text)])`. An escalation is returned, and no AI call is made.
   3. `draftAssessment`.
-  4. `checkAssessmentDraft`. A failure gives notice `output-rejected`.
+  4. `checkAssessmentDraft`. A failure gives notice `output-rejected`, except when the format check passed and `risk` is `high` or `critical`: the completeness check is then skipped and the draft goes to enforcement, so the user gets the escalation and its hazard information and not only a notice to retry.
   5. `enforceSafety`.
   6. For guidance only: `rankOptions`, and `noticesFor(draft.notices)`.
   An `AiError` gives notice `technical-error` with a text per code, and nothing is invented.
 - `explainSteps: (req: ExplainRequest) => Promise<ExplainOutcome>` — parse; `draftExplanation`; `checkExplanationDraft`, then return.
-- `answerStepQuestion: (req: StepQuestionRequest) => Promise<StepAnswerOutcome>` — parse; `precheck([question])`, where an escalation is returned without an AI call; `draftStepAnswer`; `checkStepAnswerDraft`; `enforceStepAnswer`.
+- `answerStepQuestion: (req: StepQuestionRequest) => Promise<StepAnswerOutcome>` — parse; `precheck([question])`, where an escalation is returned without an AI call; `draftStepAnswer`; `checkStepAnswerDraft`, which also runs the hazard check of the answer text; `enforceStepAnswer`. As for the assessment, a failed check of a draft whose `risk` is `high` or `critical` goes to `enforceStepAnswer`.
 
 **Errors a caller handles:** on the server the functions resolve with a notice for every failure and do not throw. On the client, a network failure rejects the call's promise with a `TypeError`.
 

@@ -81,10 +81,10 @@ It belongs to the User interface (ARC-008). It presents the user's own data and 
 - `index.ts`: the interface.
 - `ProfileScreen`: the areas with a simple level scale, the stored level shown, and areas left open shown as beginner.
 - `InventoryScreen`: add, change and remove materials and tools, with errors that name the field.
-- `HistoryScreen`: ongoing and completed cases, each opened with its steps, materials used and editable notes, and an empty state.
+- `HistoryScreen`: ongoing and completed cases, each opened with its steps, materials used and editable notes, and an empty state. The notes are the only part of a record that the user edits (UC-021); a wrong entry under materials used is corrected in the inventory, not in the record.
 - `PrivacyScreen`: the full `PrivacyNotice`; consents with a one-action toggle each, giving and withdrawing alike; export as a download; delete all data with a warning, an export offer and confirmation, followed by the report.
 - `AccountScreen`: the `PrivacyNotice` before the sign-up form; sign up and sign in with paste-enabled password fields; passkey add and sign-in through `@simplewebauthn/browser`; change user name or password, and sign out; the sync state.
-- `PrivacyNotice`: the text with the controller's identity and contact, the purposes and legal bases (case answers, account and sync), the recipients (hosting provider and AI provider), the storage periods and the user's rights.
+- `PrivacyNotice`: the text with six items (PRIVACY-NOTICE): the controller's identity and contact; the purposes and legal bases (case answers, account and sync); the recipients (hosting provider and AI provider, with the transfer to a third country, ARC-010); the storage periods, including the 30 days of backups (ARC-012); the user's rights; and the right to complain to a supervisory authority. Variant `full` gives each item as a paragraph. Variant `short` gives each item as one line and links to the full text, so that no item is missing where data is first collected (UC-019). The notice is always shown beside the case input and before the account form, so a changed notice is seen again on the next visit; the app stores no notice version (UC-019 A1, A4).
 - `*.test.tsx`: Testing Library tests. The notice contains every required item; the account form appears only after the notice; withdrawing a consent takes as many actions as giving it; a correction is stored; the export is offered; erasure shows the report.
 
 ## Data
