@@ -1,0 +1,59 @@
+---
+id: ARC-009
+title: Platform, libraries and module layout
+refines: ARC-001
+forced_by:
+  - RISK-CHECK-FIRST
+  - NO-UNVALIDATED-OUTPUT
+  - HAZARD-SAFETY-MEASURES
+  - NO-GUIDE-AT-HIGH-RISK
+  - PRECHECK-ENGLISH
+  - UC-001
+  - UC-003
+  - UC-011
+---
+# ARC-009 Platform, libraries and module layout
+
+## Context
+
+The product's code exists as a prototype in `prototype/`, written with TypeScript, React 19, TanStack Start, Vite, Tailwind and shadcn/ui on Radix. The architecture needs:
+
+- one language for client and server, so that the Case domain runs on both (ARC-002), and one rule set guards both (RISK-CHECK-FIRST, NO-UNVALIDATED-OUTPUT);
+- server functions for the pipeline and the account;
+- file routes;
+- one folder per module, named after the module's identifier without the prefix `MOD-`.
+
+The checks of HAZARD-SAFETY-MEASURES, NO-GUIDE-AT-HIGH-RISK and PRECHECK-ENGLISH name `src/test/safety.test.ts`. The prototype also carries many generated UI components and libraries that no function uses.
+
+## Decision
+
+- **Language:** TypeScript 5 in strict mode, for client and server.
+- **UI:** React 19, styled with Tailwind CSS 4.
+- **Components:** Radix primitives through shadcn/ui (npm ecosystem), wrapped by MOD-ui-kit. Status toasts use sonner and icons use lucide-react.
+- **App framework:** TanStack Start, version as in `package.json`, with TanStack Router and `createServerFn` for all server functions. Nitro builds the server with the Node preset (ARC-017).
+- **Schemas:** zod 3, for every request schema and output schema.
+- **Build and package manager:** Vite 8 and Bun, keeping the existing lockfile; npm works as well.
+- **Module layout:**
+  - every module MOD-<slug> is the folder `prototype/src/<slug>/`, with `index.ts` as its only public entry; MOD-case-model, for example, is `prototype/src/case-model/`;
+  - the TanStack Router plugin's `routesDirectory` is `src/app-shell/routes`;
+  - the shadcn components that are used move into `src/ui-kit/`;
+  - the existing `src/lib`, `src/components` and `src/hooks` are dissolved into the modules.
+- **Imports:** an ESLint rule (`no-restricted-imports`) forbids imports into another module's folder other than its `index.ts`.
+- **Dependencies removed:** those no module uses, such as recharts, embla-carousel-react, react-day-picker, input-otp, cmdk, vaul, react-resizable-panels and @tanstack/react-query. The prototype's Lovable error-reporting files are also removed.
+
+**Principles:** KISS, continue the stack that works; YAGNI, remove unused dependencies; one responsibility per folder; develop against interfaces, through the import rule.
+
+## Alternatives
+
+| Alternative | Ecosystem | Why not |
+|---|---|---|
+| Next.js | npm | Equivalent capability, but a rewrite of a working prototype. |
+| Python FastAPI for the server, with React for the client | Python and npm | Two languages. The Case domain could not run on both sides without duplication (DRY). |
+| SvelteKit | npm | Same as Next.js. |
+| Keeping `src/lib` and `src/components` as they are | — | Breaks one folder per module, and mixes concerns in `lib`. |
+
+## Consequences
+
+- The prototype is refactored into module folders before new functions are added.
+- `src/test/safety.test.ts` stays where the SPEC's checks name it, as the subsystem test of the Case domain (ARC-016).
+- Every dependency left in `package.json` is used by a named module.
