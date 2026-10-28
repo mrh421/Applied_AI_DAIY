@@ -45,4 +45,4 @@ origin:
 
 ## Priority
 
-Must (from AIR-06, AIR-09, FR-04, FR-11, FR-12, SAF-05, SUS-07), planned for sprint 4 of docs/Implementation_Plan_EN.md
+Must (from AIR-06, AIR-09, FR-04, FR-11, FR-12, SAF-05, SUS-07), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

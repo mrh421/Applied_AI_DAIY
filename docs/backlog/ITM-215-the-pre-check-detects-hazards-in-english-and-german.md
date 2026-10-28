@@ -33,4 +33,4 @@ origin:
 
 ## Priority
 
-Must (from FR-14, SAF-01), planned for sprint 1 of docs/Implementation_Plan_EN.md
+Must (from FR-14, SAF-01), planned for sprint 2 of the sprint split (docs/sprint-split.md)

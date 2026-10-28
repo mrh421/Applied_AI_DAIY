@@ -33,6 +33,6 @@ The outcome lists each work package with its label as word and icon, not colour 
 
 ## Priority
 
-Must (from FR-14, FR-15, NFR-07, SAF-07), planned for sprint 4 of docs/Implementation_Plan_EN.md
+Must (from FR-14, FR-15, NFR-07, SAF-07), planned for sprint 8 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 2; it is planned for sprint 4 because it builds on ITM-242, planned for sprint 4. Until then the prototype's code serves sprint 2.

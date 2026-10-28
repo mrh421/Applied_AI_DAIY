@@ -42,4 +42,4 @@ Every screen is reached from the shell, built from the kit, and passes the acces
 
 ## Priority
 
-Should (from NFR-07), planned for sprint 7 of docs/Implementation_Plan_EN.md
+Should (from NFR-07), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

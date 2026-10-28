@@ -42,6 +42,6 @@ Profile, inventory and history persist on the device through the local store, ea
 
 ## Priority
 
-Must (from FR-10, FR-11, FR-12, FR-13), planned for sprint 4 of docs/Implementation_Plan_EN.md
+Must (from FR-10, FR-11, FR-12, FR-13), planned for sprint 5 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 3; it is planned for sprint 4 because it builds on ITM-224, planned for sprint 4. Until then the prototype's code serves sprint 3.

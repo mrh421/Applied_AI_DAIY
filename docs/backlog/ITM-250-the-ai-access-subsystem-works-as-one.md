@@ -33,6 +33,6 @@ The AI tasks call the gateway against a stub server with recorded drafts; the as
 
 ## Priority
 
-Must (from AIR-01, AIR-02, AIR-07, FR-01, FR-03, FR-05, NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-09, SAF-03, SAF-06), planned for sprint 3 of docs/Implementation_Plan_EN.md
+Must (from AIR-01, AIR-02, AIR-07, FR-01, FR-03, FR-05, NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-09, SAF-03, SAF-06), planned for sprint 6 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 1; it is planned for sprint 3 because it builds on ITM-222, planned for sprint 3. Until then the prototype's code serves sprint 1.

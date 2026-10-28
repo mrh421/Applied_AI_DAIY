@@ -32,4 +32,4 @@ The Node build runs as one process on the EU host with a persistent volume, HTTP
 
 ## Priority
 
-Should (from NFR-04), planned for sprint 8 of docs/Implementation_Plan_EN.md
+Should (from NFR-04), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

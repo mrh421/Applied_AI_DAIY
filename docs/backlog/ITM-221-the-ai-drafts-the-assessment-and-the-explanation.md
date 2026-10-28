@@ -42,4 +42,4 @@ The prompts and calls of `lib/repair.functions.ts` move into `prototype/src/ai-t
 
 ## Priority
 
-Must (from AIR-01, AIR-02, FR-01, FR-02, FR-03, FR-14, NFR-02, NFR-09), planned for sprint 1 of docs/Implementation_Plan_EN.md
+Must (from AIR-01, AIR-02, FR-01, FR-02, FR-03, FR-14, NFR-02, NFR-09), planned for sprint 3 of the sprint split (docs/sprint-split.md)

@@ -32,4 +32,4 @@ The shadcn components that a screen uses move from `components/ui/` into `protot
 
 ## Priority
 
-Must (from FR-03, NFR-07), planned for sprint 1 of docs/Implementation_Plan_EN.md
+Must (from FR-03, NFR-07), planned for sprint 1 of the sprint split (docs/sprint-split.md)

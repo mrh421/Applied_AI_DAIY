@@ -32,4 +32,4 @@ origin:
 
 ## Priority
 
-Must (from FR-08, FR-10, FR-11, NFR-10), planned for sprint 3 of docs/Implementation_Plan_EN.md
+Must (from FR-08, FR-10, FR-11, NFR-10), planned for sprint 4 of the sprint split (docs/sprint-split.md)

@@ -36,4 +36,4 @@ origin:
 
 ## Priority
 
-Must (from FR-02, FR-14, FR-15, NFR-05, SAF-03, SAF-06), planned for sprint 1 of docs/Implementation_Plan_EN.md
+Must (from FR-02, FR-14, FR-15, NFR-05, SAF-03, SAF-06), planned for sprint 3 of the sprint split (docs/sprint-split.md)

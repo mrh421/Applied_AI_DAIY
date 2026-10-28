@@ -33,4 +33,4 @@ origin:
 
 ## Priority
 
-Should (from FR-08, NFR-10), planned for sprint 5 of docs/Implementation_Plan_EN.md
+Should (from FR-08, NFR-10), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

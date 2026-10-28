@@ -37,4 +37,4 @@ origin:
 
 ## Priority
 
-Must (from SAF-02), planned for sprint 1 of docs/Implementation_Plan_EN.md
+Must (from SAF-02), planned for sprint 2 of the sprint split (docs/sprint-split.md)

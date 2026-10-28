@@ -27,3 +27,7 @@ MOD-safety-enforcement keeps the escalation, label, mains-housing and result rul
 
 - The module files of both modules and ARC-001 are changed together, and the schema and coverage checks pass.
 - `src/test/safety.test.ts` and the unit tests per rule pass unchanged; the order of the rules is a test.
+
+## Priority
+
+Must (from SAF-01, SAF-06), planned for sprint 2 of the sprint split (docs/sprint-split.md)

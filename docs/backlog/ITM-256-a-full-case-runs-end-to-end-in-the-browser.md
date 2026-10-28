@@ -40,6 +40,6 @@ Playwright in `prototype/tests/system/` runs the production build against the AI
 
 ## Priority
 
-Must (from AIR-01, AIR-02, AIR-07, FR-01, FR-02, FR-03, FR-05, FR-07, FR-08, FR-14, NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-09, SAF-01, SAF-02, SAF-03, SAF-06), planned for sprint 7 of docs/Implementation_Plan_EN.md
+Must (from AIR-01, AIR-02, AIR-07, FR-01, FR-02, FR-03, FR-05, FR-07, FR-08, FR-14, NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-09, SAF-01, SAF-02, SAF-03, SAF-06), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)
 
 Its requirements belong to sprint 1; it is planned for sprint 7 because it builds on ITM-255, planned for sprint 7. Until then the prototype's code serves sprint 1.

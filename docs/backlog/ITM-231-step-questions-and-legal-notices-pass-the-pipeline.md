@@ -31,6 +31,6 @@ origin:
 
 ## Priority
 
-Must (from AIR-10), planned for sprint 3 of docs/Implementation_Plan_EN.md
+Must (from AIR-10), planned for sprint 6 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 2; it is planned for sprint 3 because it builds on ITM-222, planned for sprint 3. Until then the prototype's code serves sprint 2.

@@ -39,6 +39,6 @@ origin:
 
 ## Priority
 
-Must (from AIR-02, AIR-07, FR-01, FR-02, FR-10, NFR-03, SAF-06), planned for sprint 4 of docs/Implementation_Plan_EN.md
+Must (from AIR-02, AIR-07, FR-01, FR-02, FR-10, NFR-03, SAF-06), planned for sprint 7 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 1; it is planned for sprint 4 because it builds on ITM-224, planned for sprint 4. Until then the prototype's code serves sprint 1.

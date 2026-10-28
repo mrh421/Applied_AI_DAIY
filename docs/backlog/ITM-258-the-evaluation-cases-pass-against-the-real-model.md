@@ -32,6 +32,6 @@ origin:
 
 ## Priority
 
-Must (from AIR-02, NFR-04, NFR-09), planned for sprint 7 of docs/Implementation_Plan_EN.md
+Must (from AIR-02, NFR-04, NFR-09), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)
 
 Its requirements belong to sprint 1; it is planned for sprint 7 because it builds on ITM-256, planned for sprint 7. Until then the prototype's code serves sprint 1.

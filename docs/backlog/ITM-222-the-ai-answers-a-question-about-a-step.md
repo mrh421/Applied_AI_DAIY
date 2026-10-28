@@ -28,4 +28,4 @@ origin:
 
 ## Priority
 
-Must (from FR-07), planned for sprint 3 of docs/Implementation_Plan_EN.md
+Must (from FR-07), planned for sprint 6 of the sprint split (docs/sprint-split.md)

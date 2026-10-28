@@ -35,4 +35,4 @@ Offers carry price, condition, dimensions, compatibility, availability, the date
 
 ## Priority
 
-Should (from FR-12, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05), planned for sprint 5 of docs/Implementation_Plan_EN.md
+Should (from FR-12, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

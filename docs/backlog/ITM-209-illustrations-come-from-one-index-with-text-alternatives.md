@@ -28,6 +28,6 @@ origin:
 
 ## Priority
 
-unrated (nothing it realises cites an old id with a MoSCoW row), planned for sprint 1 of docs/Implementation_Plan_EN.md
+unrated (nothing it realises cites an old id with a MoSCoW row), planned for sprint 2 of the sprint split (docs/sprint-split.md)
 
 It realises nothing with a sprint of its own, so it is planned with the earliest item that builds on it.

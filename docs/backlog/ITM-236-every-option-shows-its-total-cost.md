@@ -32,4 +32,4 @@ origin:
 
 ## Priority
 
-Must (from SUS-07), planned for sprint 4 of docs/Implementation_Plan_EN.md
+Must (from SUS-07), planned for sprint 7 of the sprint split (docs/sprint-split.md)

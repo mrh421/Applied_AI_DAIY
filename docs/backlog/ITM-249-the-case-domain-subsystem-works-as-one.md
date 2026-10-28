@@ -42,6 +42,6 @@ The six modules of the Case domain run together on client and server: the pre-ch
 
 ## Priority
 
-Must (from AIR-10, FR-14, SAF-01, SAF-02), planned for sprint 2 of docs/Implementation_Plan_EN.md
+Must (from AIR-10, FR-14, SAF-01, SAF-02), planned for sprint 4 of the sprint split (docs/sprint-split.md)
 
 Its requirements belong to sprint 1; it is planned for sprint 2 because it builds on ITM-217, planned for sprint 2. Until then the prototype's code serves sprint 1.

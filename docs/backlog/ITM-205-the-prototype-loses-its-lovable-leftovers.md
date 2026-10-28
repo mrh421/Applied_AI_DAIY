@@ -25,3 +25,7 @@ origin:
 
 - No file or dependency of the repository names Lovable, apart from the README's note on where the prototype came from.
 - The build starts with the Node preset, and an error in a route still shows the error page.
+
+## Priority
+
+Must (from NFR-06), planned for sprint 1 of the sprint split (docs/sprint-split.md)

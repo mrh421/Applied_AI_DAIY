@@ -38,4 +38,4 @@ The colour tokens of `styles.css` and the kit meet 4.5:1 for text, 3:1 for large
 
 ## Priority
 
-Should (from NFR-07), planned for sprint 7 of docs/Implementation_Plan_EN.md
+Should (from NFR-07), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

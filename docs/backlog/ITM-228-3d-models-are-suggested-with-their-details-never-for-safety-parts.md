@@ -31,4 +31,4 @@ origin:
 
 ## Priority
 
-Could (from FR-06, SAF-04, SUS-06), planned for sprint 6 of docs/Implementation_Plan_EN.md
+Could (from FR-06, SAF-04, SUS-06), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)

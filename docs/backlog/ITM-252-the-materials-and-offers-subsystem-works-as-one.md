@@ -39,6 +39,6 @@ For a guide and an inventory, the four modules give the matched stock, the offer
 
 ## Priority
 
-Must (from AIR-05, AIR-06, AIR-09, FR-04, FR-06, FR-12, SAF-04, SAF-05, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05, SUS-06, SUS-07), planned for sprint 6 of docs/Implementation_Plan_EN.md
+Must (from AIR-05, AIR-06, AIR-09, FR-04, FR-06, FR-12, SAF-04, SAF-05, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05, SUS-06, SUS-07), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)
 
 Its requirements belong to sprint 4; it is planned for sprint 6 because it builds on ITM-228, planned for sprint 6. Until then the prototype's code serves sprint 4.

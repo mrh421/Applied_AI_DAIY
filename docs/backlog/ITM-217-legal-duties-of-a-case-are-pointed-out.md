@@ -38,4 +38,4 @@ origin:
 
 ## Priority
 
-Must (from AIR-10), planned for sprint 2 of docs/Implementation_Plan_EN.md
+Must (from AIR-10), planned for sprint 4 of the sprint split (docs/sprint-split.md)

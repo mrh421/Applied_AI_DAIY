@@ -36,6 +36,6 @@ origin:
 
 ## Priority
 
-Must (from AIR-05, AIR-06, FR-04, FR-12, SAF-05, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05), planned for sprint 5 of docs/Implementation_Plan_EN.md
+Must (from AIR-05, AIR-06, FR-04, FR-12, SAF-05, SUS-01, SUS-02, SUS-03, SUS-04, SUS-05), planned for sprint 9 or later, after the cut decision (docs/sprint-split.md)
 
 Its requirements belong to sprint 4; it is planned for sprint 5 because it builds on ITM-227, planned for sprint 5. Until then the prototype's code serves sprint 4.
