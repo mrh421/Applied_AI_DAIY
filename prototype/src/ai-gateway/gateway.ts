@@ -75,7 +75,7 @@ export async function generateJson(opts: {
       content: opts.content.map((c) =>
         c.type === "text"
           ? { type: "text" as const, text: c.text }
-          : { type: "image" as const, image: c.dataBase64, mediaType: c.mediaType },
+          : { type: "file" as const, data: c.dataBase64, mediaType: c.mediaType },
       ),
     },
   ];
