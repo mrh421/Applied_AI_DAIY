@@ -1,0 +1,65 @@
+/*
+ * Design tokens of the accessible building blocks.
+ *
+ * Text colours meet 4.5:1 against the background they are used on; borders,
+ * state indicators and the focus ring meet 3:1 against adjacent colours.
+ * tokens.test.ts computes every pair. Sizes are in rem, so text scales to
+ * 200 percent. All colours use oklch.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
+  --radius-lg: var(--radius);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --radius: 0.9rem;
+  --ring-width: 2px;
+  --background: oklch(0.973 0.01 125);
+  --foreground: oklch(0.27 0.035 155);
+  --card: oklch(0.993 0.005 120);
+  --card-foreground: oklch(0.27 0.035 155);
+  --popover: oklch(0.993 0.005 120);
+  --popover-foreground: oklch(0.27 0.035 155);
+  --primary: oklch(0.45 0.09 148);
+  --primary-foreground: oklch(0.98 0.01 120);
+  --secondary: oklch(0.93 0.03 130);
+  --secondary-foreground: oklch(0.27 0.035 155);
+  --muted: oklch(0.945 0.015 125);
+  --muted-foreground: oklch(0.45 0.03 150);
+  --accent: oklch(0.83 0.09 90);
+  --accent-foreground: oklch(0.27 0.035 155);
+  --destructive: oklch(0.52 0.19 28);
+  --destructive-foreground: oklch(0.98 0.01 120);
+  --warning: oklch(0.9 0.08 85);
+  --warning-foreground: oklch(0.35 0.07 65);
+  --success: oklch(0.9 0.06 145);
+  --success-foreground: oklch(0.32 0.07 150);
+  --border: oklch(0.6 0.03 130);
+  --input: oklch(0.55 0.03 130);
+  --ring: oklch(0.5 0.1 148);
+}
