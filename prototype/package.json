@@ -14,7 +14,9 @@
     "test:watch": "vitest"
   },
   "overrides": {
-    "rolldown": "1.2.1"
+    "rolldown": "1.2.1",
+    "@ai-sdk/provider": "4.0.34",
+    "@ai-sdk/provider-utils": "5.0.70"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.90",

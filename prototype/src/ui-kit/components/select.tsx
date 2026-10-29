@@ -10,7 +10,10 @@ export function SelectShell(p: {
   invalid?: boolean | undefined;
 }) {
   return (
-    <SelectPrimitive.Root value={p.value ?? undefined} onValueChange={p.onChange}>
+    <SelectPrimitive.Root
+      {...(p.value === null ? {} : { value: p.value })}
+      onValueChange={p.onChange}
+    >
       <SelectPrimitive.Trigger
         id={p.id}
         aria-describedby={p.describedBy}
