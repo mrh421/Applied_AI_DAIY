@@ -21,7 +21,6 @@ builds_on:
   - ITM-220
   - ITM-217
   - ITM-209
-  - ITM-201
 tests:
   - component
 origin:

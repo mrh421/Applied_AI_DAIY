@@ -30,4 +30,4 @@ MOD-safety-enforcement keeps the escalation, label, mains-housing and result rul
 
 ## Priority
 
-Must (from SAF-01, SAF-06), planned for sprint 2 of the sprint split (docs/sprint-split.md)
+Must (from SAF-01, SAF-06), but postponed on 2026-10-29 by the Product Owner and no longer planned for a sprint: the review that found it (m-06) rated it minor and allowed keeping one module with one file per rule group. The split changes no behaviour and would put six accepted architecture files back to waiting for acceptance, which blocks ITM-220. ITM-220 builds the whole module; ITM-249 no longer builds on this item. A later refactor.

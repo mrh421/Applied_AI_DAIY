@@ -29,7 +29,7 @@ origin:
 
 ## Outcome
 
-`enforceSafety` moves from `lib/repair.schema.ts` into `prototype/src/safety-enforcement/` with its rules in a fixed order: no guide at high or critical risk, no step that opens a mains housing (with `opensHousing` behind the AI's flag), water shut off and device unplugged first, the agreement with the professional for DIY preparation, no printed part for a safety-critical use, assumptions listed as assumptions, and the same labels for every skill level. `enforceStepAnswer` escalates a step question with a hazard. ITM-201 then splits the rules into two modules.
+`enforceSafety` moves from `lib/repair.schema.ts` into `prototype/src/safety-enforcement/` with its rules in a fixed order: no guide at high or critical risk, no step that opens a mains housing (with `opensHousing` behind the AI's flag), water shut off and device unplugged first, the agreement with the professional for DIY preparation, no printed part for a safety-critical use, assumptions listed as assumptions, and the same labels for every skill level. `enforceStepAnswer` escalates a step question with a hazard. The module stays one; the split into two modules (ITM-201) is postponed.
 
 ## Acceptance
 
