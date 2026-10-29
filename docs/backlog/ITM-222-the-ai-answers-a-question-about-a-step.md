@@ -13,6 +13,8 @@ tests:
   - unit
 origin:
   - Backlog run 1 (2026-10-28): drafted by Claude Code (Opus 5.5) by hand along Agent M's job kind propose-items and UC-032 steps 2 to 4, because the Backlog page has no Propose items button; from docs/architecture/MOD-ai-tasks.md
+built_by:
+  - 3ad6d625c36902a193ba13f3be9f70bc4f733d90
 ---
 # ITM-222 The AI answers a question about a step
 
