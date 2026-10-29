@@ -35,7 +35,7 @@ beforeEach(() => {
 
 function notice(o: { type: string }): UserNotice {
   if (o.type !== "notice") throw new Error(`expected notice, got ${o.type}`);
-  return (o as { notice: UserNotice }).notice;
+  return (o as unknown as { notice: UserNotice }).notice;
 }
 
 describe("assessCase", () => {

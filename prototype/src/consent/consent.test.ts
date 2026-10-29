@@ -34,7 +34,7 @@ describe("MOD-consent", () => {
     expect(hasConsent("keep-case-photos")).toBe(true);
     const [record] = listConsents();
     expect(record).toMatchObject({ kind: "keep-case-photos", given: true });
-    expect(Number.isNaN(Date.parse(record.at))).toBe(false);
+    expect(Number.isNaN(Date.parse(record?.at ?? ""))).toBe(false);
     expect(localStorage.getItem(KEY)).not.toBeNull();
   });
 
