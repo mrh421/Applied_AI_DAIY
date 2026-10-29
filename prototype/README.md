@@ -15,7 +15,7 @@ bun run dev        # or: npm run dev
 bun run test       # unit tests (vitest)
 ```
 
-The AI calls need the environment variable `LOVABLE_API_KEY` (Lovable AI gateway, see `src/lib/ai.server.ts`). Replacing the gateway with our own model access is an architecture decision for sprint 0.
+The AI calls need the environment variables `AI_PROVIDER_API_KEY` and `AI_MODEL`, and optionally `AI_TIMEOUT_MS` and `AI_BASE_URL` (see `src/ai-gateway/`).
 
 ## Where things are
 

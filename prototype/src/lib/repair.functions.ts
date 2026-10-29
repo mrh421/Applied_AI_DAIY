@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type { ModelMessage } from "ai";
+import { AiError, generateJson, type AiContent, type AiErrorCode } from "../ai-gateway";
 import {
   caseInputSchema,
   detectHazards,
@@ -25,7 +25,17 @@ Always fill "summary" with a 1-2 sentence plain-language restatement of the prob
 For guides: adapt to the skill level (beginner = more explanation, explain every technical term in brackets, extra safety notes). Short sentences, numbered actionable steps (3-10). Mark tools/materials the user already owns (from their inventory) as inInventory=true. Material "spec" must contain concrete requirements (dimensions, material, function) or "measure first: ..." if unknown. Prefer repair and reuse over replacement; "reuseTip" explains a reuse or second-hand option without claiming CO2 numbers. Warnings: concrete, at least one.
 Set unused fields to null / empty arrays.`;
 
-function buildMessages(input: z.infer<typeof caseInputSchema>): ModelMessage[] {
+const AI_NOTICES: Record<AiErrorCode, string> = {
+  config: "The AI service is not configured correctly.",
+  quota: "The AI quota is used up. Please try again later.",
+  "rate-limit": "Too many requests right now. Please wait a moment and try again.",
+  refused: "The AI service declined this request.",
+  "invalid-output": "The AI answer was incomplete.",
+  timeout: "The AI took too long to answer. Please try again.",
+  unavailable: "The AI could not answer right now. Please try again.",
+};
+
+function buildContent(input: z.infer<typeof caseInputSchema>): AiContent[] {
   const skillLabel = {
     beginner: "beginner",
     some_experience: "some experience",
@@ -36,12 +46,10 @@ function buildMessages(input: z.infer<typeof caseInputSchema>): ModelMessage[] {
       input.answers.map((x, i) => `${i + 1}. Q: ${x.q}\n   A: ${x.a || "(no answer)"}`).join("\n")
     : "";
   const text = `Problem: ${input.problem}\nSkill level: ${skillLabel}\nTools & materials I already have: ${input.inventory || "not specified"}${qa}`;
-  const content: Exclude<ModelMessage, { role: "system" }>["content"] = [{ type: "text", text }];
-  if (input.photo) {
-    const m = input.photo.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
-    if (m) (content as unknown[]).push({ type: "file", mediaType: m[1], data: m[2] });
-  }
-  return [{ role: "user", content } as ModelMessage];
+  const content: AiContent[] = [{ type: "text", text }];
+  const photo = input.photo?.match(/^data:image\/jpeg;base64,(.+)$/);
+  if (photo?.[1]) content.push({ type: "image", mediaType: "image/jpeg", dataBase64: photo[1] });
+  return content;
 }
 
 export type AssessResponse =
@@ -54,23 +62,24 @@ export const assessCase = createServerFn({ method: "POST" })
       `${data.problem} ${data.answers.map((a) => a.a).join(" ")}`,
     );
     if (escalation) return { ok: true, source: "safety_rule", result: escalation };
-    const { runStructured, AiError } = await import("./ai.server");
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const raw = await runStructured({
-          instructions: INSTRUCTIONS,
-          messages: buildMessages(data),
-          schema: repairResultSchema,
-        });
+        const raw = repairResultSchema.parse(
+          await generateJson({
+            system: INSTRUCTIONS,
+            content: buildContent(data),
+            schema: repairResultSchema,
+          }),
+        );
         return { ok: true, source: "ai", result: enforceSafety(raw) };
       } catch (e) {
-        const retryable = !(e instanceof AiError) || e.code === "invalid";
+        const retryable = !(e instanceof AiError) || e.code === "invalid-output";
         if (attempt === 1 || !retryable) {
           return {
             ok: false,
             error:
-              e instanceof AiError && e.code !== "invalid"
-                ? e.message
+              e instanceof AiError && e.code !== "invalid-output"
+                ? AI_NOTICES[e.code]
                 : "We couldn't produce a reliable answer for this case. Please add a few more details and try again.",
           };
         }
@@ -100,24 +109,26 @@ export const explainStep = createServerFn({ method: "POST" })
           text: "That sounds dangerous. Stop now, make the area safe and contact a professional.",
         };
       }
-      const { runStructured, AiError } = await import("./ai.server");
+      const answerSchema = z.object({ text: z.string(), escalate: z.boolean() });
       try {
-        const r = await runStructured({
-          instructions:
-            "You help someone during a home repair. Answer in short, simple sentences (max 6), explain any technical term. If the situation sounds unsafe, set escalate=true and tell them to stop. If you don't know, say so honestly.",
-          messages: [
-            {
-              role: "user",
-              content: `Repair: ${data.problem}\nSkill: ${data.skill}\nStep: ${data.stepTitle} — ${data.stepDetail}\n${data.question ? `My problem/question: ${data.question}` : "Please explain this step again more simply."}`,
-            },
-          ],
-          schema: z.object({ text: z.string(), escalate: z.boolean() }),
-        });
+        const r = answerSchema.parse(
+          await generateJson({
+            system:
+              "You help someone during a home repair. Answer in short, simple sentences (max 6), explain any technical term. If the situation sounds unsafe, set escalate=true and tell them to stop. If you don't know, say so honestly.",
+            content: [
+              {
+                type: "text",
+                text: `Repair: ${data.problem}\nSkill: ${data.skill}\nStep: ${data.stepTitle} — ${data.stepDetail}\n${data.question ? `My problem/question: ${data.question}` : "Please explain this step again more simply."}`,
+              },
+            ],
+            schema: answerSchema,
+          }),
+        );
         return { ok: true, ...r };
       } catch (e) {
         return {
           ok: false,
-          error: e instanceof AiError ? e.message : "Couldn't get an explanation.",
+          error: e instanceof AiError ? AI_NOTICES[e.code] : "Couldn't get an explanation.",
         };
       }
     },
