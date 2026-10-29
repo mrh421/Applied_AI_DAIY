@@ -26,7 +26,7 @@ function mustSave(
   unit: "piece" | "m" | "g" = "piece",
   location?: string,
 ) {
-  const r = saveMaterial({ name, amount, unit, location });
+  const r = saveMaterial({ name, amount, unit, ...(location === undefined ? {} : { location }) });
   if (!r.ok) throw new Error("save failed");
   return r.item;
 }
@@ -39,7 +39,7 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
       expect(r.item).toMatchObject({ name: "Screws", quantity: { amount: 20, unit: "piece" } });
     }
     expect(listMaterials()).toHaveLength(1);
-    expect(listMaterials()[0].location).toBeUndefined();
+    expect(listMaterials()[0]?.location).toBeUndefined();
   });
 
   it("saves a material with a location", () => {
@@ -87,7 +87,7 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
   it("persists across reload (INVENTORY-ON-DEVICE)", () => {
     mustSave("Screws", 20);
     expect(localStorage.getItem("daiy.v1.materials")).not.toBeNull();
-    expect(listMaterials()[0].name).toBe("Screws");
+    expect(listMaterials()[0]?.name).toBe("Screws");
   });
 });
 
@@ -120,8 +120,8 @@ describe("MOD-inventory deduct (DEDUCT-CONSUMED)", () => {
 
   it("clamps to 0 when more than held is used", () => {
     const a = mustSave("Screws", 3);
-    expect(deduct([{ itemId: a.id, amount: 10 }])[0].quantity.amount).toBe(0);
-    expect(listMaterials()[0].quantity.amount).toBe(0);
+    expect(deduct([{ itemId: a.id, amount: 10 }])[0]?.quantity.amount).toBe(0);
+    expect(listMaterials()[0]?.quantity.amount).toBe(0);
   });
 
   it("ignores unknown ids", () => {
