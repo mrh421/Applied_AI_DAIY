@@ -118,6 +118,27 @@ describe("generateJson", () => {
     expect(await codeOf(call())).toBe(code);
   });
 
+  it("sends an attached photo as image content", async () => {
+    reply = { status: 200, text: '{"answer":"ok"}' };
+
+    await generateJson({
+      system: "Be brief.",
+      content: [
+        { type: "text", text: "what is this?" },
+        { type: "image", mediaType: "image/jpeg", dataBase64: "AAEC" },
+      ],
+      schema,
+    });
+
+    const body = JSON.parse(lastRequest?.body ?? "{}") as {
+      messages: {
+        content: { type: string; source?: { type: string; media_type: string; data: string } }[];
+      }[];
+    };
+    const image = body.messages[0]?.content.find((c) => c.type === "image");
+    expect(image?.source).toEqual({ type: "base64", media_type: "image/jpeg", data: "AAEC" });
+  });
+
   it("maps output that is not JSON to invalid-output", async () => {
     reply = { status: 200, text: "not json" };
 
