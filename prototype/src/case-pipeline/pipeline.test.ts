@@ -136,6 +136,28 @@ describe("assessCase", () => {
     expect(o.notices.map((x) => x.kind)).toEqual(["permit-free"]);
   });
 
+  it("carries 'check locally' for a fence case (location-dependent rule)", async () => {
+    ai.draftAssessment.mockResolvedValue({
+      ...answerDraft,
+      notices: [{ kind: "location-dependent-rule", certainty: "applies" }],
+    });
+    const o = await runAssess(caseRequest);
+    if (o.type !== "guidance") throw new Error(`expected guidance, got ${o.type}`);
+    expect(o.notices.map((x) => x.kind)).toEqual(["location-dependent-rule"]);
+    expect(o.notices[0]!.marks).toContain("check-locally");
+  });
+
+  it("carries the tenant notice for a rented property", async () => {
+    ai.draftAssessment.mockResolvedValue({
+      ...answerDraft,
+      notices: [{ kind: "rented-property", certainty: "applies" }],
+    });
+    const o = await runAssess(caseRequest);
+    if (o.type !== "guidance") throw new Error(`expected guidance, got ${o.type}`);
+    expect(o.notices.map((x) => x.kind)).toEqual(["rented-property"]);
+    expect(o.notices[0]!.text).toContain("landlord");
+  });
+
   it("logs the prompt version and outcome type but no case text", async () => {
     ai.draftAssessment.mockResolvedValue(answerDraft);
     await runAssess(caseRequest);

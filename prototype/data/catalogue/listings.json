@@ -1,0 +1,68 @@
+[
+  {
+    "id": "sh-washer-brass-20",
+    "title": "Brass washers 20 mm, leftover from a plumbing job",
+    "condition": "second-hand",
+    "unitPrice": {
+      "certainty": "verified",
+      "value": { "amount": 0.15, "currency": "EUR" },
+      "source": "Sample Marketplace listing"
+    },
+    "packSize": { "amount": 6, "unit": "piece" },
+    "spec": {
+      "dimensionsMm": {
+        "certainty": "verified",
+        "value": { "diameter": 20 },
+        "source": "Sample Marketplace listing"
+      },
+      "material": {
+        "certainty": "verified",
+        "value": "brass",
+        "source": "Sample Marketplace listing"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "seal",
+        "source": "Sample Marketplace listing"
+      }
+    },
+    "compatibility": { "certainty": "unverified", "value": null },
+    "availability": { "certainty": "unverified", "value": null },
+    "dataAsOf": "2026-10-20",
+    "source": {
+      "name": "Sample Marketplace (sample data)",
+      "url": "https://example.org/sample-marketplace/listings"
+    },
+    "sellerUrl": "https://example.org/sample-marketplace/listing/brass-washers-20",
+    "sustainabilityReason": "Reusing existing washers avoids making a new part."
+  },
+  {
+    "id": "sh-hinge-brass-40",
+    "title": "Used brass cabinet hinge 40 mm",
+    "condition": "second-hand",
+    "unitPrice": { "certainty": "ai-estimate", "value": { "amount": 1.2, "currency": "EUR" } },
+    "packSize": { "amount": 1, "unit": "piece" },
+    "spec": {
+      "dimensionsMm": { "certainty": "unverified", "value": null },
+      "material": {
+        "certainty": "verified",
+        "value": "brass",
+        "source": "Sample Marketplace listing"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "hinge",
+        "source": "Sample Marketplace listing"
+      }
+    },
+    "compatibility": { "certainty": "unverified", "value": null },
+    "availability": { "certainty": "unverified", "value": null },
+    "dataAsOf": "2026-10-20",
+    "source": {
+      "name": "Sample Marketplace (sample data)",
+      "url": "https://example.org/sample-marketplace/listings"
+    },
+    "sellerUrl": "https://example.org/sample-marketplace/listing/brass-hinge-40",
+    "sustainabilityReason": "A used hinge keeps a working part in use instead of producing a new one."
+  }
+]
