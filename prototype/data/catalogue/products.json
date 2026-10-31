@@ -1,0 +1,170 @@
+[
+  {
+    "id": "new-washer-brass-20",
+    "title": "Brass washer 20 mm, pack of 10",
+    "condition": "new",
+    "unitPrice": {
+      "certainty": "verified",
+      "value": { "amount": 0.35, "currency": "EUR" },
+      "source": "Sample Hardware Shop price list"
+    },
+    "packSize": { "amount": 10, "unit": "piece" },
+    "spec": {
+      "dimensionsMm": {
+        "certainty": "verified",
+        "value": { "diameter": 20 },
+        "source": "Sample Hardware Shop price list"
+      },
+      "material": {
+        "certainty": "verified",
+        "value": "brass",
+        "source": "Sample Hardware Shop price list"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "seal",
+        "source": "Sample Hardware Shop price list"
+      }
+    },
+    "compatibility": {
+      "certainty": "verified",
+      "value": "fits",
+      "source": "Sample Hardware Shop price list"
+    },
+    "availability": {
+      "certainty": "verified",
+      "value": "in-stock",
+      "source": "Sample Hardware Shop price list"
+    },
+    "dataAsOf": "2026-10-15",
+    "source": {
+      "name": "Sample Hardware Shop (sample data)",
+      "url": "https://example.org/sample-hardware-shop/price-list"
+    },
+    "sellerUrl": "https://example.org/sample-hardware-shop/brass-washer-20",
+    "sustainabilityReason": null
+  },
+  {
+    "id": "new-washer-steel-20",
+    "title": "Steel washer 20 mm, pack of 20",
+    "condition": "new",
+    "unitPrice": {
+      "certainty": "verified",
+      "value": { "amount": 0.1, "currency": "EUR" },
+      "source": "Sample Hardware Shop price list"
+    },
+    "packSize": { "amount": 20, "unit": "piece" },
+    "spec": {
+      "dimensionsMm": {
+        "certainty": "verified",
+        "value": { "diameter": 20 },
+        "source": "Sample Hardware Shop price list"
+      },
+      "material": {
+        "certainty": "verified",
+        "value": "steel",
+        "source": "Sample Hardware Shop price list"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "seal",
+        "source": "Sample Hardware Shop price list"
+      }
+    },
+    "compatibility": { "certainty": "ai-estimate", "value": "fits" },
+    "availability": {
+      "certainty": "verified",
+      "value": "limited",
+      "source": "Sample Hardware Shop price list"
+    },
+    "dataAsOf": "2026-10-15",
+    "source": {
+      "name": "Sample Hardware Shop (sample data)",
+      "url": "https://example.org/sample-hardware-shop/price-list"
+    },
+    "sellerUrl": "https://example.org/sample-hardware-shop/steel-washer-20",
+    "sustainabilityReason": null
+  },
+  {
+    "id": "new-hinge-brass-40",
+    "title": "Brass cabinet hinge 40 mm",
+    "condition": "new",
+    "unitPrice": {
+      "certainty": "verified",
+      "value": { "amount": 2.9, "currency": "EUR" },
+      "source": "Sample Furniture Parts catalogue"
+    },
+    "packSize": { "amount": 1, "unit": "piece" },
+    "spec": {
+      "dimensionsMm": {
+        "certainty": "verified",
+        "value": { "length": 40 },
+        "source": "Sample Furniture Parts catalogue"
+      },
+      "material": {
+        "certainty": "verified",
+        "value": "brass",
+        "source": "Sample Furniture Parts catalogue"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "hinge",
+        "source": "Sample Furniture Parts catalogue"
+      }
+    },
+    "compatibility": { "certainty": "unverified", "value": null },
+    "availability": {
+      "certainty": "verified",
+      "value": "in-stock",
+      "source": "Sample Furniture Parts catalogue"
+    },
+    "dataAsOf": "2026-10-12",
+    "source": {
+      "name": "Sample Furniture Parts (sample data)",
+      "url": "https://example.org/sample-furniture-parts/catalogue"
+    },
+    "sellerUrl": "https://example.org/sample-furniture-parts/brass-hinge-40",
+    "sustainabilityReason": null
+  },
+  {
+    "id": "new-silicone-sealant-300",
+    "title": "Silicone sealant, 300 ml cartridge",
+    "condition": "new",
+    "unitPrice": {
+      "certainty": "verified",
+      "value": { "amount": 6.5, "currency": "EUR" },
+      "source": "Sample Hardware Shop price list"
+    },
+    "packSize": { "amount": 300, "unit": "ml" },
+    "spec": {
+      "dimensionsMm": { "certainty": "unverified", "value": null },
+      "material": {
+        "certainty": "verified",
+        "value": "silicone",
+        "source": "Sample Hardware Shop price list"
+      },
+      "function": {
+        "certainty": "verified",
+        "value": "sealant",
+        "source": "Sample Hardware Shop price list"
+      }
+    },
+    "compatibility": {
+      "certainty": "verified",
+      "value": "fits",
+      "source": "Sample Hardware Shop price list"
+    },
+    "availability": {
+      "certainty": "verified",
+      "value": "out-of-stock",
+      "source": "Sample Hardware Shop price list"
+    },
+    "dataAsOf": "2026-10-15",
+    "source": {
+      "name": "Sample Hardware Shop (sample data)",
+      "url": "https://example.org/sample-hardware-shop/price-list"
+    },
+    "sellerUrl": "https://example.org/sample-hardware-shop/silicone-300",
+    "sustainabilityReason": null
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "model-knob-30",
+    "title": "Round control knob 30 mm",
+    "spec": { "material": "pla", "function": "knob", "dimensionsMm": { "diameter": 30 } },
+    "dimensionsMm": { "diameter": 30, "height": 18 },
+    "materialRequirements": "PLA or PETG, 0.2 mm layers, no supports",
+    "licence": "CC BY 4.0",
+    "intendedUse": "Replacement knob for light household devices that carry no mains parts",
+    "url": "https://example.org/sample-models/knob-30",
+    "provider": "Sample Model Library"
+  },
+  {
+    "id": "model-clip-cable-12",
+    "title": "Cable clip 12 mm",
+    "spec": { "material": "pla", "function": "clip", "dimensionsMm": { "diameter": 12 } },
+    "dimensionsMm": { "diameter": 12, "length": 25 },
+    "materialRequirements": "PETG, 0.2 mm layers",
+    "licence": "CC BY-SA 4.0",
+    "intendedUse": "Holds a thin cable against a wall or desk edge",
+    "url": "https://example.org/sample-models/cable-clip-12",
+    "provider": "Sample Model Library"
+  }
+]
