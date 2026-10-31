@@ -44,7 +44,7 @@ const ans = (questionId: string, topic: string, text: string, notSure = false) =
   notSure,
 });
 // A server function is called as fn({ data }).
-const reqOf = (call: number): CaseRequest => pipe.assessCase.mock.calls[call][0].data;
+const reqOf = (call: number): CaseRequest => pipe.assessCase.mock.calls[call]![0].data;
 
 beforeEach(async () => {
   vi.resetModules();
@@ -121,7 +121,7 @@ describe("start and answer", () => {
     });
     if (out?.type !== "questions") throw new Error("expected questions");
     expect(out.questions.map((q) => q.id)).toEqual(["q2"]);
-    expect(out.questions[0].prefill).toBe("5 years");
+    expect(out.questions[0]!.prefill).toBe("5 years");
   });
 
   it("gives an offline notice for a network failure, without throwing", async () => {
@@ -203,7 +203,7 @@ describe("explanations", () => {
     const { result } = renderHook(() => useCaseSession());
     await act(() => result.current.start({ description: "Tap" }));
     await act(() => result.current.chooseOption("o1"));
-    const req: ExplainRequest = pipe.explainSteps.mock.calls[0][0].data;
+    const req: ExplainRequest = pipe.explainSteps.mock.calls[0]![0].data;
     expect(req).toMatchObject({
       packageId: "p1",
       area: "plumbing",
@@ -214,7 +214,7 @@ describe("explanations", () => {
     expect(req.steps.map((s) => s.n)).toEqual([1, 2]);
     const r = result.current.session!.record;
     expect(r.chosenOptionId).toBe("o1");
-    expect(r.explanations.p1[2]).toBe("basics 2");
+    expect(r.explanations["p1"]![2]).toBe("basics 2");
   });
 
   it("sends beginner when no level is set", async () => {
@@ -223,7 +223,7 @@ describe("explanations", () => {
     const { result } = renderHook(() => useCaseSession());
     await act(() => result.current.start({ description: "Tap" }));
     await act(() => result.current.chooseOption("o1"));
-    expect(pipe.explainSteps.mock.calls[0][0].data.level).toBe("beginner");
+    expect(pipe.explainSteps.mock.calls[0]![0].data.level).toBe("beginner");
   });
 
   it("reExplain asks for one step, simpler", async () => {
@@ -232,12 +232,12 @@ describe("explanations", () => {
     const { result } = renderHook(() => useCaseSession());
     await act(() => result.current.start({ description: "Tap" }));
     await act(() => result.current.reExplain("p1", 2));
-    expect(pipe.explainSteps.mock.calls[0][0].data).toMatchObject({
+    expect(pipe.explainSteps.mock.calls[0]![0].data).toMatchObject({
       onlyStep: 2,
       simpler: true,
       level: "beginner",
     });
-    expect(result.current.session!.record.explanations.p1[2]).toBe("basics 2");
+    expect(result.current.session!.record.explanations["p1"]![2]).toBe("basics 2");
   });
 
   it("keeps the steps when an explanation fails (offline notice)", async () => {
@@ -263,7 +263,7 @@ describe("explanations", () => {
       out = await result.current.askStep("p1", 2, "Stuck?");
     });
     expect(out).toEqual({ type: "answer", text: "Use oil." });
-    expect(pipe.answerStepQuestion.mock.calls[0][0].data).toMatchObject({
+    expect(pipe.answerStepQuestion.mock.calls[0]![0].data).toMatchObject({
       summary: "A tap drips.",
       currentStep: 2,
       question: "Stuck?",
@@ -339,7 +339,7 @@ describe("complete (UC-015)", () => {
       res = hook.result.current.complete(used);
     });
     expect(res).toEqual({ ok: true });
-    expect(listMaterials()[0].quantity.amount).toBe(3);
+    expect(listMaterials()[0]!.quantity.amount).toBe(3);
     expect(hook.result.current.session!.record).toMatchObject({
       status: "completed",
       materialsUsed: used,
@@ -362,7 +362,7 @@ describe("complete (UC-015)", () => {
       ]);
     });
     expect(res).toEqual({ ok: false, reason: "storage-full" });
-    expect(listMaterials()[0].quantity.amount).toBe(5);
+    expect(listMaterials()[0]!.quantity.amount).toBe(5);
     expect(hook.result.current.session!.record.status).toBe("ongoing");
   });
 });

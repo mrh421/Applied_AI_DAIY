@@ -9,8 +9,10 @@ import { z } from "zod";
 const OFFERS: Offer[] = z.array(offerSchema).parse([...listings, ...products]);
 
 /** An unverified value does not meet a requirement. */
-function known<T>(d: Datum<T>): T | undefined {
-  return d.certainty === "unverified" || d.value === null ? undefined : d.value;
+function known<T>(d: Datum<T>): NonNullable<T> | undefined {
+  return d.certainty === "unverified" || d.value === null || d.value === undefined
+    ? undefined
+    : (d.value as NonNullable<T>);
 }
 
 function price(o: Offer): number {
