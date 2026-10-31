@@ -366,3 +366,38 @@ describe("complete (UC-015)", () => {
     expect(hook.result.current.session!.record.status).toBe("ongoing");
   });
 });
+
+describe("the work step by step (ITM-235, UC-004)", () => {
+  async function started() {
+    const saved = saveMaterial({ name: "Seal", amount: 5, unit: "piece" });
+    if (!saved.ok) throw new Error("setup");
+    pipe.assessCase.mockResolvedValue(guidance);
+    const hook = renderHook(() => useCaseSession());
+    await act(() => hook.result.current.start({ description: "Tap" }));
+    return { hook, itemId: saved.item.id };
+  }
+
+  it("hands a hazard escalation of a step question to the screen and keeps the check-offs", async () => {
+    const { hook } = await started();
+    act(() => hook.result.current.checkStep("p1", 1, true));
+    const escalation = { type: "escalation", escalation: { origin: "precheck" } };
+    pipe.answerStepQuestion.mockResolvedValue(escalation);
+    let out: unknown;
+    await act(async () => {
+      out = await hook.result.current.askStep("p1", 2, "I smell gas now.");
+    });
+    expect(out).toEqual(escalation);
+    expect(hook.result.current.session!.record.checked).toEqual({ p1: [1] });
+    expect(hook.result.current.session!.pending).toBeNull();
+  });
+
+  it("deducts nothing before complete is called", async () => {
+    const { hook } = await started();
+    act(() => hook.result.current.checkStep("p1", 1, true));
+    pipe.answerStepQuestion.mockResolvedValue({ type: "answer", text: "Use oil." });
+    await act(() => hook.result.current.askStep("p1", 1, "Stuck?"));
+    expect(listMaterials()[0]!.quantity.amount).toBe(5);
+    expect(hook.result.current.session!.record.status).toBe("ongoing");
+    expect(hook.result.current.session!.record.materialsUsed).toEqual([]);
+  });
+});
