@@ -18,7 +18,6 @@ builds_on:
   - ITM-251
   - ITM-252
   - ITM-253
-  - ITM-254
   - ITM-255
 tests:
   - system

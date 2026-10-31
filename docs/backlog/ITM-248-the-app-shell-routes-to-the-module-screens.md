@@ -13,8 +13,6 @@ builds_on:
   - ITM-244
   - ITM-245
   - ITM-238
-  - ITM-240
-  - ITM-233
 tests:
   - unit
   - component

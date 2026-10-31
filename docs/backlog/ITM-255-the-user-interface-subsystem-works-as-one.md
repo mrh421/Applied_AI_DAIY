@@ -20,8 +20,6 @@ builds_on:
   - ITM-243
   - ITM-244
   - ITM-246
-  - ITM-247
-  - ITM-202
 tests:
   - component
 origin:
