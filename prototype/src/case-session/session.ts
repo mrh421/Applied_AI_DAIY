@@ -379,7 +379,7 @@ export function useCaseSession(caseId?: string) {
                 name: m.name,
                 amount: m.quantity.amount,
                 unit: m.quantity.unit,
-                location: m.location,
+                ...(m.location === undefined ? {} : { location: m.location }),
               },
               m.id,
             );
