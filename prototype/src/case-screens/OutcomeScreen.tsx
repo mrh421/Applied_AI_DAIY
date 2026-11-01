@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-import type { Escalation, SolutionOption, WorkPackage } from "../case-model";
+import type { Escalation, PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
 import { levelFor } from "../profile";
-import { Button, Page } from "../ui-kit";
+import { Button, Page, StatusBadge, announce, type IconName } from "../ui-kit";
 import { GuideView } from "./GuideView";
 
 function EscalationView(p: { escalation: Escalation }) {
@@ -28,11 +28,75 @@ function EscalationView(p: { escalation: Escalation }) {
   );
 }
 
+type Tone = "ok" | "warning" | "danger" | "info";
+
+/** PACKAGE-LABEL, NOT-COLOR-ALONE: every label has a word and an icon besides its tone. */
+const LABELS: Record<PackageLabel, { text: string; icon: IconName; tone: Tone }> = {
+  diy: { text: "DIY", icon: "CircleCheck", tone: "ok" },
+  "diy-preparation": { text: "DIY preparation for a professional", icon: "Info", tone: "info" },
+  "professional-only": { text: "Professional only", icon: "TriangleAlert", tone: "warning" },
+  "not-recommended": { text: "Not recommended", icon: "CircleX", tone: "danger" },
+};
+
+async function copyBrief(brief: string) {
+  try {
+    await navigator.clipboard.writeText(brief);
+    announce("The brief was copied.");
+  } catch {
+    announce("The brief could not be copied. Select the text and copy it by hand.");
+  }
+}
+
+async function shareBrief(brief: string) {
+  try {
+    await navigator.share({ text: brief });
+  } catch {
+    // The user closed the share sheet; nothing to report.
+  }
+}
+
+/** HANDOVER-BRIEF: a task description for a professional, to copy or share. */
+function HandoverBrief(p: { brief: string }) {
+  return (
+    <div className="grid gap-2">
+      <h3 className="text-sm font-medium">Brief for the professional</h3>
+      <p>{p.brief}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button label="Copy brief" variant="secondary" onPress={() => void copyBrief(p.brief)} />
+        {typeof navigator.share === "function" && (
+          <Button
+            label="Share brief"
+            variant="secondary"
+            onPress={() => void shareBrief(p.brief)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function PackageView(p: { pkg: WorkPackage; basics: Record<number, string> | undefined }) {
   const { pkg } = p;
+  const label = LABELS[pkg.label];
   return (
-    <section className="grid gap-2">
+    <section role="group" aria-label={pkg.title} className="grid gap-2 rounded-md border p-3">
       <h3 className="font-medium">{pkg.title}</h3>
+      <div>
+        <StatusBadge tone={label.tone} icon={label.icon} text={label.text} />
+      </div>
+      <p>{pkg.reason}</p>
+      {pkg.decidingInformation.length > 0 && (
+        <div>
+          <h4 className="text-sm font-medium">This would change the label</h4>
+          <ul className="list-disc pl-5">
+            {pkg.decidingInformation.map((info) => (
+              <li key={info}>{info}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {pkg.label === "diy-preparation" && pkg.agreeBeforehand && <p>{pkg.agreeBeforehand}</p>}
+      {pkg.label === "professional-only" && <HandoverBrief brief={pkg.handoverBrief} />}
       {pkg.guide && <GuideView guide={pkg.guide} level={levelFor(pkg.area)} basics={p.basics} />}
     </section>
   );
