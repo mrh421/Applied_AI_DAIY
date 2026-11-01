@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { CaseOutcome, PackageLabel, WorkPackage } from "../case-model";
+import type { CaseOutcome, WorkPackage } from "../case-model";
 import { localStore } from "../local-store";
 
 const pipe = vi.hoisted(() => ({
@@ -19,49 +19,84 @@ vi.mock("../case-session/photo", async (orig) => ({
 
 let CaseInputScreen: typeof import("./index").CaseInputScreen;
 let OutcomeScreen: typeof import("./index").OutcomeScreen;
+let setLevel: typeof import("../profile").setLevel;
 
-const flags = { opensMainsHousing: false, carriesPerson: false, waterRelated: false };
-const pkg = (id: string, label: PackageLabel, extra: Partial<WorkPackage> = {}): WorkPackage => ({
-  id,
-  title: `Package ${id}`,
+const pkg: WorkPackage = {
+  id: "p1",
+  title: "Replace the tap cartridge",
   area: "plumbing",
-  label,
-  reason: `Reason for ${id}`,
+  label: "diy",
+  reason: "Simple part swap.",
   labelUncertain: false,
   decidingInformation: [],
-  handoverBrief: `Brief for ${id}`,
-  flags,
-  ...extra,
-});
+  handoverBrief: "Brief",
+  flags: { opensMainsHousing: false, carriesPerson: false, waterRelated: true },
+  guide: {
+    diagnosis: "The cartridge seal is worn.",
+    tools: [{ id: "t1", name: "Adjustable spanner", rentable: false }],
+    materials: [
+      {
+        id: "m1",
+        name: "Ceramic cartridge",
+        quantity: { amount: 1, unit: "piece" },
+        spec: {},
+        replacementPart: true,
+        safetyCritical: "no",
+        printable: false,
+      },
+    ],
+    steps: [
+      {
+        n: 1,
+        text: "Close the stop valve.",
+        opensDevice: false,
+        switchesOffCircuit: false,
+        fixedSafetyStep: true,
+        imageIds: ["water-shut-off-valve"],
+      },
+      {
+        n: 2,
+        text: "Unscrew the handle.",
+        opensDevice: false,
+        switchesOffCircuit: false,
+        fixedSafetyStep: false,
+        imageIds: [],
+      },
+    ],
+    estimatedMinutes: { min: 30, max: 45 },
+    warnings: ["Water may still drip from the pipe."],
+  },
+};
 
-const guidance = (): CaseOutcome => ({
+const guidance: CaseOutcome = {
   type: "guidance",
-  summary: "The tap drips because of a worn washer.",
-  assumptions: ["The tap is a standard one"],
+  summary: "Your tap drips because of a worn seal.",
+  assumptions: ["The tap is a single-lever mixer."],
+  options: [{ id: "o1", kind: "repair", title: "Repair the tap", packages: [pkg] }],
   notices: [],
   photoAlt: null,
-  options: [
-    {
-      id: "o1",
-      kind: "repair",
-      title: "Repair it",
-      packages: [
-        pkg("a", "diy"),
-        pkg("b", "diy-preparation", {
-          agreeBeforehand: "Agree the prep with your electrician first.",
-        }),
-        pkg("c", "professional-only", {
-          labelUncertain: true,
-          decidingInformation: ["Is the pipe copper?"],
-        }),
-        pkg("d", "not-recommended"),
-      ],
-    },
-  ],
-});
+};
 
-async function openOutcome() {
-  pipe.assessCase.mockResolvedValueOnce(guidance());
+beforeEach(async () => {
+  vi.resetModules();
+  vi.resetAllMocks();
+  await localStore.clearAll();
+  localStorage.clear();
+  pipe.explainSteps.mockResolvedValue({
+    type: "explanation",
+    packageId: "p1",
+    steps: [
+      { n: 1, basics: "A stop valve is the small tap on the pipe." },
+      { n: 2, basics: "Turn the handle screw anticlockwise." },
+    ],
+  });
+  ({ CaseInputScreen, OutcomeScreen } = await import("./index"));
+  ({ setLevel } = await import("../profile"));
+});
+afterEach(cleanup);
+
+async function startWith(outcome: CaseOutcome) {
+  pipe.assessCase.mockResolvedValueOnce(outcome);
   let id = "";
   const view = render(<CaseInputScreen onStarted={(i) => (id = i)} />);
   await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
@@ -71,66 +106,100 @@ async function openOutcome() {
   return id;
 }
 
-beforeEach(async () => {
-  vi.resetModules();
-  vi.resetAllMocks();
-  await localStore.clearAll();
-  localStorage.clear();
-  ({ CaseInputScreen, OutcomeScreen } = await import("./index"));
-});
-afterEach(cleanup);
-
-describe("OutcomeScreen packages", () => {
-  it("shows summary and assumptions", async () => {
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    expect(screen.getByText(/worn washer/)).toBeInTheDocument();
-    expect(screen.getByText(/standard one/)).toBeInTheDocument();
+describe("OutcomeScreen guidance", () => {
+  it("shows the summary, the assumptions and all parts of the guide (PROBLEM-SUMMARY, INSTRUCTION-STRUCTURE)", async () => {
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    expect(screen.getByText("Your tap drips because of a worn seal.")).toBeInTheDocument();
+    expect(screen.getByText("The tap is a single-lever mixer.")).toBeInTheDocument();
+    expect(screen.getByText("The cartridge seal is worn.")).toBeInTheDocument();
+    expect(screen.getByText("Adjustable spanner")).toBeInTheDocument();
+    expect(screen.getByText(/Ceramic cartridge/)).toBeInTheDocument();
+    expect(screen.getByText(/30.*45 minutes/)).toBeInTheDocument();
+    expect(screen.getByText("Water may still drip from the pipe.")).toBeInTheDocument();
   });
 
-  it("shows each label as text with its reason (PACKAGE-LABEL, PACKAGE-REASON)", async () => {
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    for (const [id, text] of [
-      ["a", "DIY"],
-      ["b", "DIY preparation for a professional"],
-      ["c", "Professional only"],
-      ["d", "Not recommended"],
-    ] as const) {
-      const section = screen.getByRole("group", { name: `Package ${id}` });
-      expect(within(section).getByText(text)).toBeInTheDocument();
-      expect(within(section).getByText(`Reason for ${id}`)).toBeInTheDocument();
-    }
+  it("numbers the steps (NUMBERED-STEPS)", async () => {
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    const list = screen.getByRole("list", { name: /steps/i });
+    expect(list.tagName).toBe("OL");
+    const items = within(list).getAllByRole("listitem");
+    expect(items[0]).toHaveTextContent("Close the stop valve.");
+    expect(items[1]).toHaveTextContent("Unscrew the handle.");
   });
 
-  it("shows the information that would change an uncertain label", async () => {
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    expect(screen.getByText(/Is the pipe copper\?/)).toBeInTheDocument();
+  it("shows an illustration with its text alternative (ILLUSTRATIVE-IMAGES, TEXT-ALTERNATIVES)", async () => {
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    expect(screen.getByRole("img", { name: /stop valve on a pipe/i })).toBeInTheDocument();
   });
 
-  it("gives a professional-only package a brief to copy (HANDOVER-BRIEF)", async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
-    Object.defineProperty(navigator, "share", { value: undefined, configurable: true });
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    const section = screen.getByRole("group", { name: "Package c" });
-    expect(within(section).getByText("Brief for c")).toBeInTheDocument();
-    await userEvent.click(within(section).getByRole("button", { name: /copy/i }));
-    expect(writeText).toHaveBeenCalledWith("Brief for c");
+  it("opens the basics for a beginner (BASICS-EXPANDABLE)", async () => {
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
     expect(
-      within(screen.getByRole("group", { name: "Package a" })).queryByText(/Brief for/),
-    ).toBeNull();
+      await screen.findByText("A stop valve is the small tap on the pipe."),
+    ).toBeInTheDocument();
+    expect(pipe.explainSteps.mock.calls[0]![0].data).toMatchObject({ level: "beginner" });
   });
 
-  it("shares the brief with the Web Share API where it exists", async () => {
-    const share = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "share", { value: share, configurable: true });
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    const section = screen.getByRole("group", { name: "Package c" });
-    await userEvent.click(within(section).getByRole("button", { name: /share/i }));
-    expect(share).toHaveBeenCalledWith({ text: "Brief for c" });
+  it("collapses the basics for an experienced user and lets them expand (BASICS-EXPANDABLE)", async () => {
+    setLevel("plumbing", "experienced");
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    const toggles = await screen.findAllByRole("button", { name: /basics/i });
+    expect(screen.queryByText("A stop valve is the small tap on the pipe.")).toBeNull();
+    await userEvent.click(toggles[0]!);
+    expect(screen.getByText("A stop valve is the small tap on the pipe.")).toBeInTheDocument();
   });
 
-  it("advises to agree a preparation package with the professional first (AGREE-WITH-PROFESSIONAL-BEFOREHAND)", async () => {
-    render(<OutcomeScreen caseId={await openOutcome()} />);
-    expect(screen.getByText(/Agree the prep with your electrician first/)).toBeInTheDocument();
+  it("says so when the explanations are not available and still shows the steps", async () => {
+    pipe.explainSteps.mockRejectedValue(new Error("down"));
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    expect(await screen.findByText(/explanations are not available/i)).toBeInTheDocument();
+    expect(screen.getByText("Close the stop valve.")).toBeInTheDocument();
+  });
+});
+
+describe("OutcomeScreen escalation and notice", () => {
+  it("shows risk, reason, actions and professional and no steps (ESCALATION-REASON, HAZARD-PROFESSIONAL)", async () => {
+    const id = await startWith({
+      type: "escalation",
+      escalation: {
+        risk: "critical",
+        reason: "Gas can explode.",
+        hazards: ["gas"],
+        actions: ["Leave the room and open the windows."],
+        professionals: ["Gas installer"],
+        origin: "precheck",
+      },
+    });
+    render(<OutcomeScreen caseId={id} />);
+    expect(screen.getByText(/critical/i)).toBeInTheDocument();
+    expect(screen.getByText("Gas can explode.")).toBeInTheDocument();
+    expect(screen.getByText("Leave the room and open the windows.")).toBeInTheDocument();
+    expect(screen.getByText("Gas installer")).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: /steps/i })).toBeNull();
+    expect(pipe.explainSteps).not.toHaveBeenCalled();
+  });
+
+  it("shows the notice of a failed assessment on the case input and does not move on (UNDERSTANDABLE-ERROR-NOTICE)", async () => {
+    pipe.assessCase.mockResolvedValueOnce({
+      type: "notice",
+      notice: { reason: "offline", text: "You seem to be offline.", missing: [] },
+    });
+    const onStarted = vi.fn();
+    render(<CaseInputScreen onStarted={onStarted} />);
+    await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(await screen.findByText("You seem to be offline.")).toBeInTheDocument();
+    expect(onStarted).not.toHaveBeenCalled();
+  });
+
+  it("says so when the case has no outcome", () => {
+    render(<OutcomeScreen caseId="unknown" />);
+    expect(screen.getByText(/no result/i)).toBeInTheDocument();
   });
 });
