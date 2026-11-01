@@ -208,7 +208,7 @@ export function Page(p: {
   children: ReactNode;
 }) {
   return (
-    <main className="mx-auto grid w-full min-w-0 max-w-2xl gap-4 break-words px-4 py-6">
+    <main className="mx-auto grid w-full min-w-0 max-w-2xl grid-cols-[minmax(0,1fr)] gap-4 break-words px-4 py-6">
       {p.back && (
         <div>
           <Button

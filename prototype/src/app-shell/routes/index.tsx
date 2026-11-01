@@ -5,7 +5,7 @@ import { CaseInputScreen } from "../../case-screens";
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { case?: string } =>
     typeof search["case"] === "string" ? { case: search["case"] } : {},
-  head: () => ({ meta: [{ title: "D.AI.Y — Safe AI help to repair it yourself" }] }),
+  head: () => ({ meta: [{ title: "New case — D.AI.Y" }] }),
   component: Start,
 });
 

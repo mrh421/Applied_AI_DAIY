@@ -62,6 +62,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
           id="case-photo"
           type="file"
           accept="image/*"
+          className="w-full min-w-0"
           onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
         />
       </div>
