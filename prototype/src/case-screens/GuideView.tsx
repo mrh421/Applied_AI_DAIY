@@ -1,47 +1,66 @@
-import type { SkillLevel, WorkPackage } from "../case-model";
+import type { Guide, SkillLevel } from "../case-model";
 import { illustration } from "../illustrations";
 import { Collapsible, Img } from "../ui-kit";
 
-/** The guide of a package: diagnosis, tools, materials, numbered steps, time and warnings. */
+/** Diagnosis, tools, materials, numbered steps, time and warnings (INSTRUCTION-STRUCTURE). */
 export function GuideView(p: {
-  pkg: WorkPackage;
+  guide: Guide;
   level: SkillLevel;
-  basics: Record<number, string>;
+  /** The basics per step number; absent while they are loading or when they failed. */
+  basics: Record<number, string> | undefined;
 }) {
-  const guide = p.pkg.guide;
-  if (!guide) return null;
+  const { guide } = p;
   return (
-    <section className="grid gap-2" aria-label={`Guide: ${p.pkg.title}`}>
-      <p>{guide.diagnosis}</p>
+    <div className="grid gap-3">
+      <section>
+        <h4 className="font-medium">Diagnosis</h4>
+        <p>{guide.diagnosis}</p>
+      </section>
+      <section>
+        <h4 className="font-medium">Tools</h4>
+        {guide.tools.length === 0 ? (
+          <p>No tools needed.</p>
+        ) : (
+          <ul className="list-disc pl-5">
+            {guide.tools.map((t) => (
+              <li key={t.id}>{t.name}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section>
+        <h4 className="font-medium">Materials</h4>
+        {guide.materials.length === 0 ? (
+          <p>No materials needed.</p>
+        ) : (
+          <ul className="list-disc pl-5">
+            {guide.materials.map((m) => (
+              <li key={m.id}>
+                {m.name}: {m.quantity.amount} {m.quantity.unit}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <p>
         Time: {guide.estimatedMinutes.min} to {guide.estimatedMinutes.max} minutes
       </p>
-      <h4 className="font-medium">Tools</h4>
-      <ul className="list-disc pl-5">
-        {guide.tools.map((t) => (
-          <li key={t.id}>{t.name}</li>
-        ))}
-      </ul>
-      <h4 className="font-medium">Materials</h4>
-      <ul className="list-disc pl-5">
-        {guide.materials.map((m) => (
-          <li key={m.id}>
-            {m.name}: {m.quantity.amount} {m.quantity.unit}
-          </li>
-        ))}
-      </ul>
-      <h4 className="font-medium">Warnings</h4>
-      <ul className="list-disc pl-5">
-        {guide.warnings.map((w) => (
-          <li key={w}>{w}</li>
-        ))}
-      </ul>
+      {guide.warnings.length > 0 && (
+        <section>
+          <h4 className="font-medium">Warnings</h4>
+          <ul className="list-disc pl-5">
+            {guide.warnings.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        </section>
+      )}
       <ol aria-label="Steps" className="grid list-decimal gap-3 pl-5">
         {guide.steps.map((s) => {
-          const basics = p.basics[s.n];
+          const basics = p.basics?.[s.n];
           return (
-            <li key={s.n} className="grid gap-1">
-              <span>{s.text}</span>
+            <li key={s.n}>
+              <p>{s.text}</p>
               {s.imageIds.map((id) => {
                 const image = illustration(id);
                 return image ? <Img key={id} src={image.src} alt={image.alt} /> : null;
@@ -58,6 +77,6 @@ export function GuideView(p: {
           );
         })}
       </ol>
-    </section>
+    </div>
   );
 }

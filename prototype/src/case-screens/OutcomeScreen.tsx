@@ -1,176 +1,170 @@
-import type { Notice, WorkPackage } from "../case-model";
+import { useEffect } from "react";
+
+import type { PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
 import { levelFor } from "../profile";
-import { Button, Page, StatusBadge, announce } from "../ui-kit";
+import { Button, Page, StatusBadge, announce, type IconName } from "../ui-kit";
 import { EscalationView } from "./EscalationView";
 import { GuideView } from "./GuideView";
-import { LABEL_VIEW } from "./labels";
 
-const MARKS: Record<Notice["marks"][number], string> = {
-  "check-locally": "Check locally",
-  "check-with-manufacturer-or-funding-body": "Check with manufacturer or funding body",
+type Tone = "ok" | "warning" | "danger" | "info";
+
+/** PACKAGE-LABEL, NOT-COLOR-ALONE: every label has a word and an icon besides its tone. */
+const LABELS: Record<PackageLabel, { text: string; icon: IconName; tone: Tone }> = {
+  diy: { text: "DIY", icon: "CircleCheck", tone: "ok" },
+  "diy-preparation": { text: "DIY preparation for a professional", icon: "Info", tone: "info" },
+  "professional-only": { text: "Professional only", icon: "TriangleAlert", tone: "warning" },
+  "not-recommended": { text: "Not recommended", icon: "CircleX", tone: "danger" },
 };
 
-async function shareBrief(text: string): Promise<void> {
+async function copyBrief(brief: string) {
   try {
-    if (typeof navigator.share === "function") {
-      await navigator.share({ text });
-      return;
-    }
-    await navigator.clipboard.writeText(text);
-    announce("The task description was copied.");
+    await navigator.clipboard.writeText(brief);
+    announce("The brief was copied.");
   } catch {
-    announce("The task description could not be shared. Please copy it by hand.");
+    announce("The brief could not be copied. Select the text and copy it by hand.");
   }
 }
 
-async function copyBrief(text: string): Promise<void> {
+async function shareBrief(brief: string) {
   try {
-    await navigator.clipboard.writeText(text);
-    announce("The task description was copied.");
+    await navigator.share({ text: brief });
   } catch {
-    announce("The task description could not be copied. Please copy it by hand.");
+    // The user closed the share sheet; nothing to report.
   }
 }
 
-function PackageView(p: {
-  pkg: WorkPackage;
-  basics: Record<number, string>;
-  chosen: boolean;
-  onStart: () => void;
-}) {
-  const { pkg } = p;
-  const view = LABEL_VIEW[pkg.label];
+/** HANDOVER-BRIEF: a task description for a professional, to copy or share. */
+function HandoverBrief(p: { brief: string }) {
   return (
-    <section className="grid gap-2 rounded-md border p-3">
+    <div className="grid gap-2">
+      <h3 className="text-sm font-medium">Brief for the professional</h3>
+      <p>{p.brief}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button label="Copy brief" variant="secondary" onPress={() => void copyBrief(p.brief)} />
+        {typeof navigator.share === "function" && (
+          <Button
+            label="Share brief"
+            variant="secondary"
+            onPress={() => void shareBrief(p.brief)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PackageView(p: { pkg: WorkPackage; basics: Record<number, string> | undefined }) {
+  const { pkg } = p;
+  const label = LABELS[pkg.label];
+  return (
+    <section role="group" aria-label={pkg.title} className="grid gap-2 rounded-md border p-3">
       <h3 className="font-medium">{pkg.title}</h3>
       <div>
-        <StatusBadge tone={view.tone} icon={view.icon} text={view.text} />
+        <StatusBadge tone={label.tone} icon={label.icon} text={label.text} />
       </div>
       <p>{pkg.reason}</p>
       {pkg.decidingInformation.length > 0 && (
         <div>
-          <p>This would change the label:</p>
+          <h4 className="text-sm font-medium">This would change the label</h4>
           <ul className="list-disc pl-5">
-            {pkg.decidingInformation.map((d) => (
-              <li key={d}>{d}</li>
+            {pkg.decidingInformation.map((info) => (
+              <li key={info}>{info}</li>
             ))}
           </ul>
         </div>
       )}
-      {pkg.agreeBeforehand && <p>{pkg.agreeBeforehand}</p>}
-      {(pkg.label === "professional-only" || pkg.label === "diy-preparation") && (
-        <div className="grid gap-2">
-          <p>{pkg.handoverBrief}</p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              label="Copy task description"
-              variant="secondary"
-              onPress={() => void copyBrief(pkg.handoverBrief)}
-            />
-            <Button
-              label="Share task description"
-              variant="secondary"
-              onPress={() => void shareBrief(pkg.handoverBrief)}
-            />
-          </div>
-        </div>
-      )}
-      {pkg.guide && (
-        <>
-          <GuideView pkg={pkg} level={levelFor(pkg.area)} basics={p.basics} />
-          {p.chosen && <Button label={`Start the work: ${pkg.title}`} onPress={p.onStart} />}
-        </>
-      )}
+      {pkg.label === "diy-preparation" && pkg.agreeBeforehand && <p>{pkg.agreeBeforehand}</p>}
+      {pkg.label === "professional-only" && <HandoverBrief brief={pkg.handoverBrief} />}
+      {pkg.guide && <GuideView guide={pkg.guide} level={levelFor(pkg.area)} basics={p.basics} />}
     </section>
   );
 }
 
-/** The route `/case/$id` with an outcome. */
-export function OutcomeScreen(p: {
-  caseId: string;
-  onBack?: () => void;
-  onOpenPackage?: (packageId: string) => void;
-}) {
-  const { session, chooseOption, reassess } = useCaseSession(p.caseId);
-  const back = p.onBack ? { back: { label: "Back", onBack: p.onBack } } : {};
+/** The route `/case/$id` with an outcome (PROBLEM-SUMMARY, ESCALATION-REASON, UNDERSTANDABLE-ERROR-NOTICE). */
+export function OutcomeScreen(p: { caseId: string }) {
+  const { session, chooseOption } = useCaseSession(p.caseId);
   const outcome = session?.record.outcome;
+  const guidance = outcome?.type === "guidance" ? outcome : null;
+  const chosenId = session?.record.chosenOptionId ?? null;
+  const firstId = guidance?.options[0]?.id;
+
+  // The first option is the one shown at once; its basics are requested when none was chosen yet.
+  useEffect(() => {
+    if (firstId && chosenId === null) void chooseOption(firstId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firstId, chosenId]);
+
   if (!session || !outcome || outcome.type === "questions") {
     return (
-      <Page title="Your answer" {...back}>
-        <p>There is no answer for this case yet.</p>
-      </Page>
-    );
-  }
-  const record = session.record;
-  const stale = session.staleRules && (
-    <div className="grid gap-2">
-      <p>This plan was made under older safety rules.</p>
-      <Button
-        label="Assess again"
-        onPress={() => void reassess()}
-        disabled={session.pending !== null}
-      />
-    </div>
-  );
-
-  if (outcome.type === "escalation") {
-    return (
-      <Page title="We cannot give instructions for this" {...back}>
-        <EscalationView escalation={outcome.escalation} />
+      <Page title="Result">
+        <p>There is no result for this case yet.</p>
       </Page>
     );
   }
   if (outcome.type === "notice") {
     return (
-      <Page title="Your answer" {...back}>
+      <Page title="Notice">
         <p>{outcome.notice.text}</p>
       </Page>
     );
   }
+  if (outcome.type === "escalation") {
+    return (
+      <Page title="Please get professional help">
+        <EscalationView escalation={outcome.escalation} />
+      </Page>
+    );
+  }
+
+  const shown: SolutionOption | undefined =
+    outcome.options.find((o) => o.id === chosenId) ?? outcome.options[0];
+  const explanations = session.record.explanations;
+  const loading = session.pending === "explain";
+  const hasGuide = shown?.packages.some((pkg) => pkg.guide) ?? false;
+  const noBasics =
+    hasGuide && !loading && !shown?.packages.some((pkg) => explanations[pkg.id] !== undefined);
+
   return (
-    <Page title="Your answer" {...back}>
-      {stale}
+    <Page title="Your plan">
       <p>{outcome.summary}</p>
       {outcome.assumptions.length > 0 && (
-        <div>
-          <h2 className="font-medium">What we assumed</h2>
+        <section>
+          <h3 className="font-medium">Assumptions</h3>
           <ul className="list-disc pl-5">
             {outcome.assumptions.map((a) => (
               <li key={a}>{a}</li>
             ))}
           </ul>
-        </div>
+        </section>
       )}
-      {outcome.options.map((option) => (
-        <section key={option.id} className="grid gap-3">
-          <h2 className="text-lg font-medium">{option.title}</h2>
-          {option.packages.map((pkg) => (
-            <PackageView
-              key={pkg.id}
-              pkg={pkg}
-              basics={record.explanations[pkg.id] ?? {}}
-              chosen={record.chosenOptionId === option.id}
-              onStart={() => p.onOpenPackage?.(pkg.id)}
-            />
+      {outcome.options.length > 1 && (
+        <section className="grid gap-1">
+          <h3 className="font-medium">Options</h3>
+          {outcome.options.map((o) =>
+            o.id === shown?.id ? (
+              <p key={o.id}>{o.title} (shown)</p>
+            ) : (
+              <Button
+                key={o.id}
+                label={`Show: ${o.title}`}
+                variant="secondary"
+                onPress={() => void chooseOption(o.id)}
+              />
+            ),
+          )}
+        </section>
+      )}
+      {shown && (
+        <section className="grid gap-3">
+          <h2 className="text-lg font-semibold">{shown.title}</h2>
+          {loading && <p>Explanations are being prepared.</p>}
+          {noBasics && <p>Explanations are not available right now. The steps are complete.</p>}
+          {shown.packages.map((pkg) => (
+            <PackageView key={pkg.id} pkg={pkg} basics={explanations[pkg.id]} />
           ))}
-          {record.chosenOptionId !== option.id && (
-            <Button
-              label={`Choose this option: ${option.title}`}
-              disabled={session.pending !== null}
-              onPress={() => void chooseOption(option.id)}
-            />
-          )}
         </section>
-      ))}
-      {outcome.notices.map((n) => (
-        <section key={n.kind} className="grid gap-1 rounded-md border p-3">
-          <p>{n.text}</p>
-          {n.marks.length > 0 && (
-            <p className="text-sm">{n.marks.map((m) => MARKS[m]).join(", ")}</p>
-          )}
-        </section>
-      ))}
+      )}
     </Page>
   );
 }
