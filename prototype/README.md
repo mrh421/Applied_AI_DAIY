@@ -19,16 +19,18 @@ The AI calls need the environment variables `AI_PROVIDER_API_KEY` and `AI_MODEL`
 
 ## Where things are
 
-| Path                          | Content                                                                                              |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `src/routes/index.tsx`        | The single page: intake, then result                                                                 |
-| `src/components/repair/`      | `Intake.tsx` (problem, photo, skill, inventory), `Result.tsx` (guide, offers, escalation, step help) |
-| `src/lib/repair.schema.ts`    | Output schema, hazard pre-check `detectHazards`, output check `enforceSafety`                        |
-| `src/lib/repair.functions.ts` | Server functions and the versioned prompt (`PROMPT_VERSION`)                                         |
-| `src/lib/ai.server.ts`        | The only place that calls the AI gateway                                                             |
-| `src/lib/offers.ts`           | Sample offers (no live retailer data)                                                                |
-| `src/lib/profiles.ts`         | Skill level and inventory, stored in the browser only                                                |
-| `src/test/`                   | Unit tests, including `safety.test.ts`                                                               |
-| `src/components/ui/`          | Generated UI component library (shadcn/ui)                                                           |
+| Path                         | Content                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/app-shell/`             | Routes (`routes/`), router, server and start entries, layout with navigation and back, styles  |
+| `src/case-screens/`          | Case input, questions, outcome, work step by step                                              |
+| `src/materials-screens/`     | Materials, offers, budget, deduction                                                           |
+| `src/data-screens/`          | Profile, inventory, history                                                                    |
+| `src/ui-kit/`                | The accessible building blocks of every screen                                                 |
+| `src/case-pipeline/`, `ai-*` | The server functions of the AI steps, the gateway and the tasks                                |
+| `src/catalogue/`, `data/`    | Sample products, offers and 3D models (no live retailer data), the link check in `link-check/` |
+| `src/*/`                     | One folder per module of `docs/architecture/`; a module is used through its `index.ts` only    |
+| `src/test/`                  | Tests across modules                                                                           |
+
+The screens keep all user data in the browser (localStorage, IndexedDB), so the pages render in the browser; the server sends the document shell and runs the server functions.
 
 What the prototype covers and what is still missing for the MVP: [Implementation plan, "Starting point"](../docs/Implementation_Plan_EN.md#starting-point-the-prototype).

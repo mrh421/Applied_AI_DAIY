@@ -36,5 +36,25 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  {
+    // A module is used through its index.ts only (MOD-app-shell): no import into another module's folder.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/**/*.test.{ts,tsx}", "src/test/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              // `../module/file`, at any depth; `../module` (the index) and the shared `data/` folder are fine.
+              regex: "^(\\.\\./)+(?!data/)[^./][^/]*/[^/]+",
+              message:
+                "Import another module through its index.ts, not from a file inside its folder.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   eslintPluginPrettier,
 );

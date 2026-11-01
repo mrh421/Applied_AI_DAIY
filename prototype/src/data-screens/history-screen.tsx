@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { saveCase, useHistory, type CaseRecord } from "../history";
-import { activeOption, guidesOf, quantity } from "../materials-screens/plan";
+import { activeOption, guidesOf, quantity } from "../materials-screens";
 import { Button, Page, StatusBadge, TextField, announce } from "../ui-kit";
 
 function Record({ record, onBack }: { record: CaseRecord; onBack: () => void }) {

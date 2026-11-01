@@ -11,8 +11,16 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    tanstackStart({ server: { entry: "server" } }),
+    // The app shell (MOD-app-shell) holds the routes, the router and the entries; the server entry is our SSR error wrapper.
+    tanstackStart({
+      router: {
+        entry: "app-shell/router",
+        routesDirectory: "app-shell/routes",
+        generatedRouteTree: "app-shell/routeTree.gen.ts",
+      },
+      start: { entry: "app-shell/start" },
+      server: { entry: "app-shell/server" },
+    }),
     viteReact(),
     tailwindcss(),
     nitro({ preset: "node-server" }),
