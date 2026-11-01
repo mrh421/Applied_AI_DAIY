@@ -63,7 +63,9 @@ function messageBody(text: string, toolMode: boolean) {
   };
 }
 
-export async function startAiStub(): Promise<AiStub> {
+export async function startAiStub(
+  options: { port?: number; respond?: (body: string) => Reply } = {},
+): Promise<AiStub> {
   let current: Reply = { status: 200, text: "{}" };
   const requests: AiStub["requests"] = [];
   const server: Server = createServer((req, res) => {
@@ -72,7 +74,7 @@ export async function startAiStub(): Promise<AiStub> {
     req.on("end", () => {
       const body = Buffer.concat(chunks).toString("utf8");
       requests.push({ headers: req.headers, body });
-      const reply = current;
+      const reply = options.respond ? options.respond(body) : current;
       setTimeout(() => {
         res.writeHead(reply.status, { "content-type": "application/json" });
         const toolMode = body.includes('"name":"json"');
@@ -82,7 +84,7 @@ export async function startAiStub(): Promise<AiStub> {
       }, reply.delayMs ?? 0);
     });
   });
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  await new Promise<void>((resolve) => server.listen(options.port ?? 0, "127.0.0.1", resolve));
   const port = (server.address() as AddressInfo).port;
   return {
     url: `http://127.0.0.1:${port}/v1`,

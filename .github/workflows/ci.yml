@@ -1,0 +1,49 @@
+# The checks of the prototype on every pull request and every push to main: types, lint, the unit
+# and component tests, then the system tests in a browser on the production build against the AI stub.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Types
+        run: bunx tsc --noEmit
+      - name: Lint
+        run: node node_modules/eslint/bin/eslint.js .
+      - name: Unit and component tests
+        run: node node_modules/vitest/vitest.mjs run
+      - name: Browser for the system tests
+        run: node node_modules/@playwright/test/cli.js install --with-deps chromium
+      - name: System tests on the production build
+        run: bun run test:system
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            prototype/playwright-report/
+            prototype/test-results/
