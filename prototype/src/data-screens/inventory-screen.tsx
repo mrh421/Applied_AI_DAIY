@@ -9,7 +9,7 @@ import {
   useInventory,
   type InventoryFieldError,
 } from "../inventory";
-import { parseAmount } from "../materials-screens/plan";
+import { parseAmount } from "../materials-screens";
 import { Button, Page, Select, TextField, announce } from "../ui-kit";
 
 const UNITS: Unit[] = ["piece", "mm", "cm", "m", "m2", "ml", "l", "g", "kg"];

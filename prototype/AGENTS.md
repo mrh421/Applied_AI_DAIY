@@ -1,5 +1,7 @@
-- AI repair logic lives in `src/lib/repair.functions.ts` (server fns) with prompts versioned via `PROMPT_VERSION`; gateway calls only in `src/lib/ai.server.ts`. Why: keeps prompts traceable and secrets server-side.
-- Safety is enforced in code (`detectHazards` before AI, `enforceSafety` after) in `src/lib/repair.schema.ts`, covered by `src/test/safety.test.ts`. Why: AI output must never bypass hazard escalation.
-- Product offers are sample data in `src/lib/offers.ts` until real retailer integrations exist. Why: MVP scope.
-- User profiles (skill level + tool inventory) live in `src/lib/profiles.ts`, stored in localStorage only — no accounts yet. Why: the app promises no account is needed; cloud-synced accounts are later scope.
+- The code is one folder per module of `../docs/architecture/` under `src/`; use a module through its `index.ts` only (ESLint `no-restricted-imports` fails otherwise). Why: the architecture stays checkable.
+- Routes live in `src/app-shell/routes/` (TanStack file routes, `routeTree.gen.ts` is generated) and render the screens of the screen modules; the shell holds no business rules. Why: ARC-008, ARC-009.
+- Safety is enforced in code (`MOD-hazard-precheck` before the AI, `MOD-safety-enforcement` after), covered by tests in `src/safety-enforcement/` and `src/test/case-domain.test.ts`. Why: AI output must never bypass hazard escalation.
+- Product offers and 3D models are sample data in `data/catalogue/` until real retailer integrations exist. Why: MVP scope.
+- User data (profile, inventory, history, consents) lives in `MOD-local-store` (localStorage and IndexedDB) only; there are no accounts. Why: the app promises no account is needed. The pages render in the browser for that reason.
+- Run the tests with Node 22: `node node_modules/vitest/vitest.mjs run` (`bunx vitest` runs on Bun's runtime and fails on zod imports).
 - Requirements are binding in `../docs/Requirements_EN.md`; reference their IDs (FR-, SAF-, AIR-, …) in code comments and tests. Why: traceability.
