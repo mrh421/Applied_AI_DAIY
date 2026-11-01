@@ -20,6 +20,8 @@ tests:
   - unit
 origin:
   - Backlog run 1 (2026-10-28): drafted by Claude Code (Opus 5.5) by hand along Agent M's job kind propose-items and UC-032 steps 2 to 4, because the Backlog page has no Propose items button; from docs/architecture/MOD-catalogue.md
+built_by:
+  - 4a35ce2ad3a9267809e246054fe536b2e42ece8b
 ---
 # ITM-227 Second-hand offers come first and are compared
 
