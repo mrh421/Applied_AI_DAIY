@@ -38,7 +38,7 @@ async function shareBrief(brief: string) {
 function HandoverBrief(p: { brief: string }) {
   return (
     <div className="grid gap-2">
-      <h3 className="text-sm font-medium">Brief for the professional</h3>
+      <h4 className="text-sm font-medium">Brief for the professional</h4>
       <p>{p.brief}</p>
       <div className="flex flex-wrap gap-2">
         <Button label="Copy brief" variant="secondary" onPress={() => void copyBrief(p.brief)} />
@@ -130,7 +130,7 @@ export function OutcomeScreen(p: { caseId: string }) {
       <p>{outcome.summary}</p>
       {outcome.assumptions.length > 0 && (
         <section>
-          <h3 className="font-medium">Assumptions</h3>
+          <h2 className="font-medium">Assumptions</h2>
           <ul className="list-disc pl-5">
             {outcome.assumptions.map((a) => (
               <li key={a}>{a}</li>
@@ -140,7 +140,7 @@ export function OutcomeScreen(p: { caseId: string }) {
       )}
       {outcome.options.length > 1 && (
         <section className="grid gap-1">
-          <h3 className="font-medium">Options</h3>
+          <h2 className="font-medium">Options</h2>
           {outcome.options.map((o) =>
             o.id === shown?.id ? (
               <p key={o.id}>{o.title} (shown)</p>
