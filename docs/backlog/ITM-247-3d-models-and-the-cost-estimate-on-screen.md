@@ -19,6 +19,9 @@ tests:
   - component
 origin:
   - Backlog run 1 (2026-10-28): drafted by Claude Code (Opus 5.5) by hand along Agent M's job kind propose-items and UC-032 steps 2 to 4, because the Backlog page has no Propose items button; from docs/architecture/MOD-materials-screens.md
+built_by:
+  - 224181e5dedc28f3aa88d6353f70fc1087d4fd67
+  - a7a96698afb1c6352fde047578db0df85c18abaa
 ---
 # ITM-247 3D models and the cost estimate on screen
 
