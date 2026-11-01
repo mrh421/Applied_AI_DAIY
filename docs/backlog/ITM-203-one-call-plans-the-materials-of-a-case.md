@@ -28,3 +28,7 @@ MOD-cost-estimate offers `planMaterials(record)`, which matches the stock, searc
 
 - The screens call no catalogue or stock function directly.
 - A unit test of `planMaterials` covers the order and the budget total; the screen tests of UC-005 to UC-008 pass.
+
+## Postponed
+
+Sprint daiy/08, 2026-11-01: the job (1755-fd8c) stopped with no branch. The item is an internal refactor of the screens ITM-245 and ITM-246 built, it needs the interface `planMaterials` added to the accepted file MOD-cost-estimate (back to waiting for acceptance), and nothing visible depends on it. Done only if time remains at the end. ITM-252 no longer builds on it.
