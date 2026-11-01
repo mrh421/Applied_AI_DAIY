@@ -1,32 +1,11 @@
 import { useEffect } from "react";
 
-import type { Escalation, PackageLabel, SolutionOption, WorkPackage } from "../case-model";
+import type { PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
 import { levelFor } from "../profile";
 import { Button, Page, StatusBadge, announce, type IconName } from "../ui-kit";
+import { EscalationView } from "./EscalationView";
 import { GuideView } from "./GuideView";
-
-function EscalationView(p: { escalation: Escalation }) {
-  const { escalation } = p;
-  return (
-    <>
-      <p>Risk: {escalation.risk}</p>
-      <p>{escalation.reason}</p>
-      <h3 className="font-medium">What to do now</h3>
-      <ul className="list-disc pl-5">
-        {escalation.actions.map((a) => (
-          <li key={a}>{a}</li>
-        ))}
-      </ul>
-      <h3 className="font-medium">Who to contact</h3>
-      <ul className="list-disc pl-5">
-        {escalation.professionals.map((pro) => (
-          <li key={pro}>{pro}</li>
-        ))}
-      </ul>
-    </>
-  );
-}
 
 type Tone = "ok" | "warning" | "danger" | "info";
 
