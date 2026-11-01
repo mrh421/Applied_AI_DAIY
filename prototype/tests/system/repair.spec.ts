@@ -3,6 +3,11 @@ import { expect, test } from "@playwright/test";
 // UC-001, UC-002, UC-004: a repair with questions, a guide and the check-off of its steps,
 // without an account (UC-017).
 
+// TST-021 · level: system · module: system
+// guards: UC-001; UC-004; THREE-STEP-START; STEP-CHECK-OFF; FOLLOW-UP-DURING-EXECUTION
+// given: the production build with the AI stub, no account
+// input: a description, the answer to one question, the check-off of two steps and a question about a step
+// expect: the plan appears, the checked steps are still checked after a reload, the question gets its answer and the case is in the history
 test("a repair: question, guide, check-off that survives a reload", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "What needs fixing?" })).toBeVisible();
@@ -41,6 +46,11 @@ test("a repair: question, guide, check-off that survives a reload", async ({ pag
   await expect(page.getByText("TAP-REPAIR The kitchen tap drips.")).toBeVisible();
 });
 
+// TST-022 · level: system · module: system
+// guards: UC-017; USE-WITHOUT-ACCOUNT
+// given: a person opening the start page
+// input: the page and every request it makes
+// expect: no sign-in, account or password text is shown and no request goes to an account address
 test("the whole flow needs no account", async ({ page }) => {
   const requests: string[] = [];
   page.on("request", (r) => requests.push(new URL(r.url()).pathname));
