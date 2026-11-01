@@ -138,6 +138,8 @@ async function tabTo(page: Page, match: { role: string; name: string | RegExp })
 
 test("a full case by keyboard alone, with a visible focus", async ({ page }) => {
   await page.goto("/");
+  // The pages are drawn in the browser: press Tab only once there is something to focus.
+  await expect(page.getByRole("heading", { name: "What needs fixing?" })).toBeVisible();
   await tabTo(page, { role: "textbox", name: "Describe the problem" });
   await page.keyboard.type("TAP-REPAIR The kitchen tap drips.");
   await tabTo(page, { role: "button", name: "^Confirm" });
