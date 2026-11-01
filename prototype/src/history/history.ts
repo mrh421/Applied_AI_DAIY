@@ -52,18 +52,23 @@ export function getPhoto(caseId: string): Promise<Blob | undefined> {
   return localStore.getBlob("case-photo", caseId);
 }
 
-let snapshot: CaseRecord[] | null = null;
+let snapshot: CaseRecord[] = [];
+let snapshotKey = "[]";
 
 function subscribe(onChange: () => void): () => void {
   return localStore.subscribe((c) => {
-    if (c !== "cases") return;
-    snapshot = null;
-    onChange();
+    if (c === "cases") onChange();
   });
 }
 
+/** The cached list while the stored cases are unchanged, also for a save made while no one listened. */
 function read(): CaseRecord[] {
-  snapshot ??= listCases();
+  const next = listCases();
+  const key = JSON.stringify(next);
+  if (key !== snapshotKey) {
+    snapshotKey = key;
+    snapshot = next;
+  }
   return snapshot;
 }
 
