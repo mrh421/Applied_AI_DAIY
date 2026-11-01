@@ -13,6 +13,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
   const [error, setError] = useState<string | undefined>();
   const [consented, setConsented] = useState(hasConsent("keep-case-photos"));
   const [started, setStarted] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const text = description ?? session?.record.description ?? "";
   const startedId = started && session && session.pending === null ? session.record.id : null;
@@ -27,11 +28,16 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
       return;
     }
     setError(undefined);
-    setStarted(true);
+    setNotice(null);
     try {
-      await start({ description: text.trim(), ...(photo ? { photo } : {}) });
+      const outcome = await start({ description: text.trim(), ...(photo ? { photo } : {}) });
+      if (outcome.type === "notice") {
+        announce(outcome.notice.text);
+        setNotice(outcome.notice.text);
+      } else {
+        setStarted(true);
+      }
     } catch {
-      setStarted(false);
       announce("Your case could not be saved on this device.");
       setError("Your case could not be saved. Please free some space and try again.");
     }
@@ -76,6 +82,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
             />
           </div>
         ))}
+      {notice && <p>{notice}</p>}
       <Button label="Confirm" onPress={() => void confirm()} disabled={session?.pending != null} />
     </Page>
   );
