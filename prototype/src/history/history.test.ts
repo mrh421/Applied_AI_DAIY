@@ -7,6 +7,7 @@ import { StorageFullError, localStore } from "../local-store";
 import {
   getCase,
   getPhoto,
+  getPhotos,
   listCases,
   removeCase,
   saveCase,
@@ -136,6 +137,18 @@ describe("MOD-history photos (DEVICE-STORAGE-CONSENT)", () => {
     giveConsent("keep-case-photos");
     expect(await savePhoto("a", blob())).toBe(true);
     expect(await getPhoto("a")).toBeDefined();
+  });
+
+  it("keeps several photos of a case in order and deletes them with the case", async () => {
+    giveConsent("keep-case-photos");
+    saveCase(record("a", "2026-01-01T00:00:00Z", { hadPhoto: true, photoCount: 3 }));
+    for (const [i, t] of ["one", "two", "three"].entries()) {
+      await savePhoto("a", new Blob([t], { type: "image/jpeg" }), i);
+    }
+    const got = await getPhotos("a", 3);
+    expect(got).toHaveLength(3);
+    removeCase("a");
+    await vi.waitFor(async () => expect(await getPhotos("a", 3)).toHaveLength(0));
   });
 
   it("loses the photo when the consent is withdrawn", async () => {

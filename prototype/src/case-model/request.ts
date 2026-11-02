@@ -9,6 +9,9 @@ export const photoInputSchema = z.object({
 });
 export type PhotoInput = z.infer<typeof photoInputSchema>;
 
+/** At most this many photos belong to one case (ITM-267). */
+export const MAX_PHOTOS = 4;
+
 export const answerSchema = z.object({
   questionId: z.string(),
   topic: factTopicSchema,
@@ -25,7 +28,7 @@ export type InventorySnapshot = z.infer<typeof inventorySnapshotSchema>;
 
 export const caseRequestSchema = z.object({
   description: z.string(),
-  photo: photoInputSchema.optional(),
+  photos: z.array(photoInputSchema).max(MAX_PHOTOS).optional(),
   answers: z.array(answerSchema),
   round: z.union([z.literal(0), z.literal(1), z.literal(2)]),
   inventory: inventorySnapshotSchema,

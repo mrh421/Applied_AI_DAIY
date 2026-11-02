@@ -142,8 +142,17 @@ describe("schemas", () => {
     const base = examples.caseRequest;
     expect(schemas.caseRequest.safeParse({ ...base, round: 3 }).success).toBe(false);
     expect(
-      schemas.caseRequest.safeParse({ ...base, photo: { mediaType: "image/png", dataBase64: "A" } })
-        .success,
+      schemas.caseRequest.safeParse({
+        ...base,
+        photos: [{ mediaType: "image/png", dataBase64: "A" }],
+      }).success,
+    ).toBe(false);
+    const jpeg = { mediaType: "image/jpeg", dataBase64: "A" };
+    expect(
+      schemas.caseRequest.safeParse({ ...base, photos: [jpeg, jpeg, jpeg, jpeg] }).success,
+    ).toBe(true);
+    expect(
+      schemas.caseRequest.safeParse({ ...base, photos: [jpeg, jpeg, jpeg, jpeg, jpeg] }).success,
     ).toBe(false);
   });
 

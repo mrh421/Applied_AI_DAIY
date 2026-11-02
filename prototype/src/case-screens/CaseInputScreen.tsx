@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { MAX_PHOTOS } from "../case-model";
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
 import { useCaseSession } from "../case-session";
 import {
@@ -26,14 +27,15 @@ const EXAMPLES = [
 ];
 import { AI_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
 
-/** The route `/`: free text, an optional photo and Confirm. With `caseId` the open case is shown again. */
+/** The route `/`: free text, optional photos and Confirm. With `caseId` the open case is shown again. */
 export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: string) => void }) {
   const { session, start } = useCaseSession(p.caseId);
   const [description, setDescription] = useState<string | null>(null);
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoNote, setPhotoNote] = useState<string | null>(null);
   const [pickerKey, setPickerKey] = useState(0);
-  const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo]);
-  useEffect(() => () => (preview ? URL.revokeObjectURL(preview) : undefined), [preview]);
+  const previews = useMemo(() => photos.map((f) => URL.createObjectURL(f)), [photos]);
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
   const [error, setError] = useState<string | undefined>();
   const [consented, setConsented] = useState(hasConsent("keep-case-photos"));
   const [started, setStarted] = useState(false);
@@ -54,7 +56,10 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
     setError(undefined);
     setNotice(null);
     try {
-      const outcome = await start({ description: text.trim(), ...(photo ? { photo } : {}) });
+      const outcome = await start({
+        description: text.trim(),
+        ...(photos.length > 0 ? { photos } : {}),
+      });
       if (outcome.type === "notice") {
         announce(outcome.notice.text);
         setNotice(outcome.notice.text);
@@ -117,55 +122,75 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                   htmlFor="case-photo"
                   className="inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-1.5 text-sm font-medium hover:bg-secondary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
                 >
-                  <Icon name="Camera" /> Add a photo (optional)
+                  <Icon name="Camera" />{" "}
+                  {photos.length === 0 ? "Add a photo (optional)" : "Add another photo"}
                   <input
                     key={pickerKey}
                     id="case-photo"
                     type="file"
                     accept="image/*"
+                    multiple
                     className="sr-only"
-                    onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+                    onChange={(e) => {
+                      const chosen = Array.from(e.target.files ?? []);
+                      const room = MAX_PHOTOS - photos.length;
+                      setPhotos([...photos, ...chosen.slice(0, room)]);
+                      const note =
+                        chosen.length > room
+                          ? `You can add up to ${MAX_PHOTOS} photos. The first ${MAX_PHOTOS} are kept.`
+                          : null;
+                      setPhotoNote(note);
+                      if (note) announce(note);
+                      setPickerKey((k) => k + 1);
+                    }}
                   />
                 </label>
               </div>
-              {photo && preview && (
+              {photoNote && (
+                <p role="status" className="text-sm">
+                  {photoNote}
+                </p>
+              )}
+              {photos.length > 0 && (
                 <ul aria-label="Photos" className="flex flex-wrap gap-3">
-                  <li className="relative">
-                    <img
-                      src={preview}
-                      alt={`Your photo: ${photo.name}`}
-                      className="size-24 rounded-xl border border-border object-cover"
-                    />
-                    <div className="absolute -right-2 -top-2">
-                      <IconButton
-                        label="Remove the photo"
-                        icon="X"
-                        onPress={() => {
-                          setPhoto(null);
-                          setPickerKey((k) => k + 1);
-                          announce("The photo was removed.");
-                        }}
+                  {photos.map((photo, i) => (
+                    <li key={`${photo.name}-${i}`} className="relative">
+                      <img
+                        src={previews[i]}
+                        alt={`Your photo: ${photo.name}`}
+                        className="size-24 rounded-xl border border-border object-cover"
                       />
-                    </div>
-                  </li>
+                      <div className="absolute -right-2 -top-2">
+                        <IconButton
+                          label={`Remove the photo ${photo.name}`}
+                          icon="X"
+                          onPress={() => {
+                            setPhotos(photos.filter((_, k) => k !== i));
+                            setPhotoNote(null);
+                            announce(`The photo ${photo.name} was removed.`);
+                          }}
+                        />
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               )}
-              {photo &&
+              {photos.length > 0 &&
                 (consented ? (
                   <p className="text-sm text-muted-foreground">
-                    The photo will be kept on this device.
+                    The photos will be kept on this device.
                   </p>
                 ) : (
                   <div className="grid gap-2 rounded-xl border border-border bg-secondary/60 p-4 text-sm">
                     <p>{CONSENT_PURPOSES["keep-case-photos"]}</p>
                     <div>
                       <Button
-                        label="Keep the photo"
+                        label="Keep the photos"
                         variant="secondary"
                         onPress={() => {
                           giveConsent("keep-case-photos");
                           setConsented(true);
-                          announce("The photo will be kept on this device.");
+                          announce("The photos will be kept on this device.");
                         }}
                       />
                     </div>
@@ -177,7 +202,9 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
               <Progress
                 messages={[
                   "Reading your description…",
-                  ...(photo ? ["Looking at your photo…"] : []),
+                  ...(photos.length > 0
+                    ? [photos.length > 1 ? "Looking at your photos…" : "Looking at your photo…"]
+                    : []),
                   "Checking for risks…",
                   "Working out what to ask or do next…",
                 ]}

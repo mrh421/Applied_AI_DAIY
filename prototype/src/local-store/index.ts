@@ -4,6 +4,7 @@ import {
   getBlob,
   putBlob,
   removeAllBlobs,
+  removeBlob,
   removeBlobs,
   type BlobKind,
 } from "./blobs";
@@ -42,6 +43,7 @@ export const localStore = {
   subscribe,
   putBlob,
   getBlob,
+  removeBlob,
   removeBlobs,
   clearAll,
 };

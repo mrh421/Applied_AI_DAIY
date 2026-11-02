@@ -6,7 +6,7 @@ export type ConsentRecord = { kind: ConsentKind; given: boolean; at: string };
 
 export const CONSENT_PURPOSES: Record<ConsentKind, string> = {
   "keep-case-photos":
-    "Keep the photo of a case on this device after the case, so you can see it again in your history.",
+    "Keep the photos of a case on this device after the case, so you can see them again in your history.",
 };
 
 const KEY = "daiy.v1.consents";
