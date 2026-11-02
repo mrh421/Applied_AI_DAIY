@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { detectHazards } from "../hazard-precheck";
+import { detectHazards, detectLanguage } from "../hazard-precheck";
 import { draft, guide, pkg, step } from "./fixtures";
 import { FIXED_BY_LANGUAGE } from "./fixed";
-import { detectLanguage, enforceSafety } from "./index";
+import { enforceSafety, enforceStepAnswer } from "./index";
 
 describe("detectLanguage", () => {
   it("finds German", () => {
@@ -86,5 +86,23 @@ describe("fixed texts in German", () => {
     const o = enforceSafety(device(), { round: 2, answers: [], language: "de" });
     if (o.type !== "guidance") throw new Error(o.type);
     expect(o.assumptions).toContain(FIXED_BY_LANGUAGE.de.texts.unknownModel);
+  });
+});
+
+describe("escalations in German", () => {
+  it("come from enforcement and from a step answer in the language of the context", () => {
+    const o = enforceSafety(draft({ risk: "high", hazards: ["fixed-installation"] }), {
+      round: 0,
+      answers: [],
+      language: "de",
+    });
+    if (o.type !== "escalation") throw new Error(o.type);
+    expect(o.escalation.reason).toMatch(/^Es gibt keine Anleitung\./);
+    const s = enforceStepAnswer(
+      { answer: "x", risk: "high", hazards: ["gas"], riskUncertain: false } as never,
+      "de",
+    );
+    if (s.type !== "escalation") throw new Error(s.type);
+    expect(s.escalation.professionals).toEqual(["Gas-Notdienst / Gas-Installateur mit Zulassung"]);
   });
 });

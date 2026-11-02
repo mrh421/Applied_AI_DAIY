@@ -1,4 +1,5 @@
-import type { FixedLanguage } from "./fixed";
+/** The languages of the texts the app writes itself: the language the person writes in. */
+export type Language = "en" | "de";
 
 const GERMAN = new Set(
   "der die das und ist nicht ich mein meine mit für von zu den dem ein eine einen einer wie wo habe hat kaputt wird auch aber oder bei auf im zum zur es sich wir sind mir mich nur noch wenn dann kann".split(
@@ -13,9 +14,9 @@ const ENGLISH = new Set(
 
 /**
  * The language a person writes in, guessed from common words (German or English). The fixed safety
- * texts follow it. When the words give no lead, the answer is English.
+ * texts and the escalation texts follow it. When the words give no lead, the answer is English.
  */
-export function detectLanguage(texts: string[]): FixedLanguage {
+export function detectLanguage(texts: string[]): Language {
   let de = 0;
   let en = 0;
   for (const word of texts

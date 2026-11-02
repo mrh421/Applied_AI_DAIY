@@ -244,3 +244,32 @@ describe("precheck", () => {
     expect(e?.hazards).toContain("fire-or-smoke");
   });
 });
+
+describe("escalations in the language of the person", () => {
+  it("writes German for a German input and English otherwise", () => {
+    const de = precheck(["Die Steckdose im Bad ist verschmort und wird warm."]);
+    const en = precheck(["The socket in the bathroom is scorched and gets warm."]);
+    expect(de?.reason).toMatch(/^Es gibt keine Anleitung\./);
+    expect(de?.reason).toContain("Überhitzte oder verschmorte Elektrik");
+    expect(de?.actions[0]).toMatch(/beschädigte Teil/);
+    expect(de?.professionals).toEqual(["Elektrofachkraft"]);
+    expect(en?.reason).toMatch(/^No instructions are given\./);
+  });
+  it("has a German text for every kind, with the same number of actions", async () => {
+    const { CATALOGUE } = await import("./catalogue");
+    const { GERMAN_TEXTS } = await import("./catalogue-de");
+    for (const e of CATALOGUE) {
+      const de = GERMAN_TEXTS[e.kind];
+      expect(de, e.kind).toBeDefined();
+      expect(de.actions, e.kind).toHaveLength(e.actions.length);
+      expect(de.label.length + de.why.length + de.professional.length).toBeGreaterThan(0);
+    }
+  });
+  it("keeps the risk, the hazards and the generic case the same in German", () => {
+    const en = escalationFor(["gas", "refrigerant-circuit"], "output");
+    const de = escalationFor(["gas", "refrigerant-circuit"], "output", "de");
+    expect([de.risk, de.hazards, de.origin]).toEqual([en.risk, en.hazards, en.origin]);
+    expect(de.actions).toHaveLength(en.actions.length);
+    expect(escalationFor([], "output", "de").reason).toMatch(/^Es gibt keine Anleitung/);
+  });
+});

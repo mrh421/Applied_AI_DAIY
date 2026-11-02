@@ -121,19 +121,19 @@ function shapePackage(original: WorkPackage, fixed: FixedTexts): WorkPackage {
 export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): CaseOutcome {
   const draft = structuredClone(input);
   const { answers, round } = ctx;
-  const { texts: FIXED_TEXTS, questions: FIXED_QUESTIONS } =
-    FIXED_BY_LANGUAGE[ctx.language ?? "en"];
+  const language = ctx.language ?? "en";
+  const { texts: FIXED_TEXTS, questions: FIXED_QUESTIONS } = FIXED_BY_LANGUAGE[language];
 
   // 1. Escalation
   if (draft.outOfScope !== null || draft.risk === "high" || draft.risk === "critical") {
     const kinds: HazardKind[] = [...draft.hazards, ...(draft.outOfScope ? [draft.outOfScope] : [])];
-    return { type: "escalation", escalation: escalationFor(kinds, "output") };
+    return { type: "escalation", escalation: escalationFor(kinds, "output", language) };
   }
 
   // 1b. Hazards in the output text
   const found = unique(outputTexts(draft).flatMap(detectHazards));
   if (found.length > 0) {
-    return { type: "escalation", escalation: escalationFor(found, "output") };
+    return { type: "escalation", escalation: escalationFor(found, "output", language) };
   }
 
   // 2. Unclear risk
@@ -141,7 +141,7 @@ export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): Case
     if (round < 2 && draft.questions.length > 0) {
       return questionsOutcome(ctx, draft.missing, draft.questions);
     }
-    return { type: "escalation", escalation: escalationFor(draft.hazards, "output") };
+    return { type: "escalation", escalation: escalationFor(draft.hazards, "output", language) };
   }
 
   const added: FollowUpQuestion[] = [];
@@ -235,13 +235,16 @@ export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): Case
   };
 }
 
-export function enforceStepAnswer(draft: StepAnswerDraft): StepAnswerOutcome {
+export function enforceStepAnswer(
+  draft: StepAnswerDraft,
+  language: FixedLanguage = "en",
+): StepAnswerOutcome {
   if (draft.risk === "high" || draft.risk === "critical") {
-    return { type: "escalation", escalation: escalationFor(draft.hazards, "output") };
+    return { type: "escalation", escalation: escalationFor(draft.hazards, "output", language) };
   }
   const found = detectHazards(draft.answer);
   if (found.length > 0) {
-    return { type: "escalation", escalation: escalationFor(found, "output") };
+    return { type: "escalation", escalation: escalationFor(found, "output", language) };
   }
   return { type: "answer", text: draft.answer };
 }

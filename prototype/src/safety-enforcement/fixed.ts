@@ -1,5 +1,6 @@
 import { FIXED_TOPICS } from "../case-model";
 import type { FollowUpQuestion } from "../case-model";
+import type { Language } from "../hazard-precheck";
 
 export type FixedTexts = { [K in keyof typeof FIXED_TEXTS]: string };
 
@@ -103,7 +104,7 @@ const FIXED_QUESTIONS_DE: FixedQuestions = {
 };
 
 /** The language of the fixed texts: the language the person writes in. */
-export type FixedLanguage = "en" | "de";
+export type FixedLanguage = Language;
 
 export const FIXED_BY_LANGUAGE: Record<
   FixedLanguage,

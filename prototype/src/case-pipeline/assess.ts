@@ -1,10 +1,10 @@
 import { draftAssessment } from "../ai-tasks";
 import { rankOptions, schemas } from "../case-model";
 import type { CaseOutcome } from "../case-model";
-import { precheck } from "../hazard-precheck";
+import { detectLanguage, precheck } from "../hazard-precheck";
 import { noticesFor } from "../legal-notices";
 import { checkAssessmentDraft } from "../output-check";
-import { detectLanguage, enforceSafety } from "../safety-enforcement";
+import { enforceSafety } from "../safety-enforcement";
 import { logOutcome } from "./log";
 import { INVALID_REQUEST_NOTICE, OUTPUT_REJECTED_NOTICE, technicalErrorNotice } from "./notices";
 
