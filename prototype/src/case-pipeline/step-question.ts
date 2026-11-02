@@ -1,7 +1,7 @@
 import { draftStepAnswer } from "../ai-tasks";
 import { schemas } from "../case-model";
 import type { StepAnswerOutcome } from "../case-model";
-import { precheck } from "../hazard-precheck";
+import { detectLanguage, precheck } from "../hazard-precheck";
 import { checkStepAnswerDraft } from "../output-check";
 import { enforceStepAnswer } from "../safety-enforcement";
 import { logOutcome } from "./log";
@@ -14,6 +14,7 @@ async function pipe(input: unknown): Promise<{ outcome: StepAnswerOutcome; failu
   }
   const req = parsed.data;
 
+  const language = detectLanguage([req.question]);
   const escalation = precheck([req.question]);
   if (escalation) return { outcome: { type: "escalation", escalation }, failures: [] };
 
@@ -25,13 +26,13 @@ async function pipe(input: unknown): Promise<{ outcome: StepAnswerOutcome; failu
   }
 
   const checked = checkStepAnswerDraft(raw);
-  if (checked.ok) return { outcome: enforceStepAnswer(checked.value), failures: [] };
+  if (checked.ok) return { outcome: enforceStepAnswer(checked.value, language), failures: [] };
 
   const failures = checked.failures.map((f) => f.check);
   // As for the assessment: a failed draft of high risk is enforced, not turned into a notice.
   const readable = failures.includes("format") ? null : schemas.stepAnswerDraft.safeParse(raw);
   if (readable?.success && (readable.data.risk === "high" || readable.data.risk === "critical")) {
-    return { outcome: enforceStepAnswer(readable.data), failures };
+    return { outcome: enforceStepAnswer(readable.data, language), failures };
   }
   return { outcome: { type: "notice", notice: OUTPUT_REJECTED_NOTICE }, failures };
 }

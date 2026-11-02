@@ -1,6 +1,9 @@
 import type { Escalation, HazardKind } from "../case-model";
 import { CATALOGUE, OPENS_HOUSING } from "./catalogue";
 import type { CatalogueEntry } from "./catalogue";
+import { GERMAN_GENERIC, GERMAN_TEXTS } from "./catalogue-de";
+import { detectLanguage } from "./language";
+import type { Language } from "./language";
 
 const GENERIC_ACTIONS = [
   "Stop the work",
@@ -20,17 +23,24 @@ function unique<T>(items: T[]): T[] {
   return [...new Set(items)];
 }
 
-export function escalationFor(kinds: HazardKind[], origin: "precheck" | "output"): Escalation {
+/** The escalation for the kinds, in the language of the person (English when none is given). */
+export function escalationFor(
+  kinds: HazardKind[],
+  origin: "precheck" | "output",
+  language: Language = "en",
+): Escalation {
+  const de = language === "de";
   const hazards = unique(kinds);
   const entries = CATALOGUE.filter((e) => hazards.includes(e.kind));
   if (entries.length === 0) {
     return {
       risk: "high",
-      reason:
-        "No instructions are given because the risk of this work cannot be judged as safe. Stop the work and let a qualified professional look at it.",
+      reason: de
+        ? GERMAN_GENERIC.reason
+        : "No instructions are given because the risk of this work cannot be judged as safe. Stop the work and let a qualified professional look at it.",
       hazards: [],
-      actions: GENERIC_ACTIONS,
-      professionals: GENERIC_PROFESSIONALS,
+      actions: de ? GERMAN_GENERIC.actions : GENERIC_ACTIONS,
+      professionals: de ? GERMAN_GENERIC.professionals : GENERIC_PROFESSIONALS,
       origin,
     };
   }
@@ -40,12 +50,13 @@ export function escalationFor(kinds: HazardKind[], origin: "precheck" | "output"
   ];
   const ordered = emergencyFirst(entries);
   const emergency = ordered.some((e) => e.emergency);
+  const texts = ordered.map((e) => (de ? GERMAN_TEXTS[e.kind] : e));
   return {
     risk: emergency ? "critical" : "high",
-    reason: `No instructions are given. ${ordered.map((e) => `${capitalise(e.label)}: ${e.why}`).join(" ")}`,
+    reason: `${de ? GERMAN_GENERIC.prefix : "No instructions are given."} ${texts.map((t) => `${capitalise(t.label)}: ${t.why}`).join(" ")}`,
     hazards,
-    actions: unique(ordered.flatMap((e) => e.actions)),
-    professionals: unique(ordered.map((e) => e.professional)),
+    actions: unique(texts.flatMap((t) => t.actions)),
+    professionals: unique(texts.map((t) => t.professional)),
     origin,
   };
 }
@@ -56,5 +67,5 @@ function capitalise(s: string): string {
 
 export function precheck(texts: string[]): Escalation | null {
   const kinds = detectHazards(texts.join("\n"));
-  return kinds.length === 0 ? null : escalationFor(kinds, "precheck");
+  return kinds.length === 0 ? null : escalationFor(kinds, "precheck", detectLanguage(texts));
 }
