@@ -1,5 +1,5 @@
 ---
-id: ITM-265
+id: ITM-268
 title: The user can dictate the description
 level: module
 realises:
@@ -18,7 +18,7 @@ tests:
 origin:
   - mrh (2026-11-02): speech input for the description; the browser's own speech recognition is enough for the demo because dictating is optional
 ---
-# ITM-265 The user can dictate the description
+# ITM-268 The user can dictate the description
 
 **REGISTER**
 
@@ -37,4 +37,4 @@ Next to the description field on the start page the user can press "Dictate your
 
 ## Priority
 
-Could: planned for sprint 11, after ITM-263 and ITM-264 (the start page changes in both).
+Could: planned for sprint 11, after ITM-266 and ITM-267 (the start page changes in both).
