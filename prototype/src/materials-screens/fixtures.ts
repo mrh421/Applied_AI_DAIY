@@ -100,7 +100,7 @@ export function session(outcome: CaseOutcome | null, over: Partial<CaseRecord> =
       materialsUsed: [],
       ...over,
     },
-    photo: null,
+    photos: [],
     pending: null,
     staleRules: false,
   };

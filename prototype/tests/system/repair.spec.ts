@@ -5,14 +5,14 @@ import { expect, test } from "@playwright/test";
 
 test("a repair: question, guide, check-off that survives a reload", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "What needs fixing?" })).toBeVisible();
-  await page.getByLabel("Describe the problem").fill("TAP-REPAIR The kitchen tap drips.");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+  await page.getByLabel(/What.s broken/).fill("TAP-REPAIR The kitchen tap drips.");
+  await page.getByRole("button", { name: "Find my repair" }).click();
 
   // The assessment asks one question first.
-  await expect(page.getByRole("heading", { name: "A few questions" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "A few quick questions" })).toBeVisible();
   await page.getByLabel("How old is the tap?", { exact: true }).fill("About five years");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
 
   // Then the plan with its steps.
   await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
@@ -39,6 +39,17 @@ test("a repair: question, guide, check-off that survives a reload", async ({ pag
   // The case is in the history.
   await page.getByRole("link", { name: "History" }).click();
   await expect(page.getByText("TAP-REPAIR The kitchen tap drips.")).toBeVisible();
+
+  // The case can be picked up again and read again from the history (UC-016).
+  await page.getByRole("button", { name: "Open" }).click();
+  await expect(page.getByText(/Replace the seal: 2 of 3 steps done/)).toBeVisible();
+  await page.getByRole("link", { name: "Continue the work: Replace the seal" }).click();
+  await expect(page.getByLabel("Done: step 2")).toBeChecked();
+  await page.goto("/history");
+  await page.getByRole("button", { name: "Open" }).click();
+  await page.getByRole("link", { name: "Read the plan again" }).click();
+  await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
+  await expect(page.getByText("A tap drips.")).toBeVisible();
 });
 
 test("the whole flow needs no account", async ({ page }) => {

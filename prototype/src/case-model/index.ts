@@ -5,6 +5,7 @@ import type { AssessmentDraft, ExplanationDraft, StepAnswerDraft } from "./draft
 import { caseRequestSchema, explainRequestSchema, stepQuestionRequestSchema } from "./request";
 import type { CaseRequest, ExplainRequest, StepQuestionRequest } from "./request";
 
+export { MAX_PHOTOS } from "./request";
 export { FIXED_TOPICS, LABEL_STRICTNESS, SAFETY_RULES_VERSION, SKILL_AREAS } from "./vocabulary";
 export type {
   FactTopic,

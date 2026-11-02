@@ -16,17 +16,17 @@ async function buildCase(page: Page): Promise<string[]> {
   await page.getByRole("button", { name: "Add material" }).click();
 
   await page.goto("/");
-  await page.getByLabel("Describe the problem").fill("TAP-REPAIR The kitchen tap drips.");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByLabel(/What.s broken/).fill("TAP-REPAIR The kitchen tap drips.");
+  await page.getByRole("button", { name: "Find my repair" }).click();
   await page.getByLabel("How old is the tap?", { exact: true }).fill("About five years");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
   await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
   const id = /\/case\/([^/?]+)/.exec(page.url())?.[1] ?? "";
 
   const danger = await page.context().newPage();
   await danger.goto("/");
-  await danger.getByLabel("Describe the problem").fill("I smell gas in the kitchen.");
-  await danger.getByRole("button", { name: "Confirm" }).click();
+  await danger.getByLabel(/What.s broken/).fill("I smell gas in the kitchen.");
+  await danger.getByRole("button", { name: "Find my repair" }).click();
   await expect(danger.getByRole("heading", { name: "Please get professional help" })).toBeVisible();
   const dangerId = /\/case\/([^/?]+)/.exec(danger.url())?.[1] ?? "";
   await danger.close();
@@ -139,16 +139,16 @@ async function tabTo(page: Page, match: { role: string; name: string | RegExp })
 test("a full case by keyboard alone, with a visible focus", async ({ page }) => {
   await page.goto("/");
   // The pages are drawn in the browser: press Tab only once there is something to focus.
-  await expect(page.getByRole("heading", { name: "What needs fixing?" })).toBeVisible();
-  await tabTo(page, { role: "textbox", name: "Describe the problem" });
+  await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+  await tabTo(page, { role: "textbox", name: /What.s broken/ });
   await page.keyboard.type("TAP-REPAIR The kitchen tap drips.");
-  await tabTo(page, { role: "button", name: "^Confirm" });
+  await tabTo(page, { role: "button", name: "^Find my repair" });
   await page.keyboard.press("Enter");
 
-  await expect(page.getByRole("heading", { name: "A few questions" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "A few quick questions" })).toBeVisible();
   await tabTo(page, { role: "textbox", name: "^How old is the tap\\?$" });
   await page.keyboard.type("About five years");
-  await tabTo(page, { role: "button", name: "^Confirm" });
+  await tabTo(page, { role: "button", name: "^Continue" });
   await page.keyboard.press("Enter");
 
   await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
@@ -159,4 +159,76 @@ test("a full case by keyboard alone, with a visible focus", async ({ page }) => 
   await tabTo(page, { role: "checkbox", name: "Done: step 1" });
   await page.keyboard.press("Space");
   await expect(page.getByLabel("Done: step 1")).toBeChecked();
+});
+
+// ITM-267: several photos on the start page, each with its own text alternative and remove button.
+test("several photos on the start page: named, removable by keyboard, no violation, no sideways scroll", async ({
+  page,
+}) => {
+  const jpeg = (name: string) => ({
+    name,
+    mimeType: "image/jpeg",
+    buffer: Buffer.from(
+      "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAAP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==",
+      "base64",
+    ),
+  });
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+    await page.getByLabel(/add a photo/i).setInputFiles([jpeg("a.jpg"), jpeg("b.jpg")]);
+    await expect(page.getByRole("img", { name: "Your photo: a.jpg" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
+    expect(await axeViolations(page)).toEqual([]);
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  }
+  await page.getByRole("button", { name: "Remove the photo a.jpg" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("img", { name: "Your photo: a.jpg" })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
+});
+
+// ITM-268: dictation on the start page, with a recognition that the test replaces.
+test("dictation: consent first, operable by keyboard, no violation", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+
+  await page.addInitScript(() => {
+    class FakeRecognition {
+      onresult: ((e: unknown) => void) | null = null;
+      onend: (() => void) | null = null;
+      start() {
+        setTimeout(
+          () =>
+            this.onresult?.({
+              resultIndex: 0,
+              results: [Object.assign([{ transcript: "the tap drips" }], { isFinal: true })],
+            }),
+          50,
+        );
+      }
+      stop() {
+        this.onend?.();
+      }
+    }
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeRecognition;
+  });
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: "Dictate your description" })).toBeVisible();
+    expect(await axeViolations(page)).toEqual([]);
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  }
+  await page.getByRole("button", { name: "Dictate your description" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText(/may send the audio to its provider/i)).toBeVisible();
+  expect(await axeViolations(page)).toEqual([]);
+  await page.getByRole("button", { name: "I agree" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel(/What.s broken/)).toHaveValue("the tap drips");
+  await page.getByRole("button", { name: "Stop dictating" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Dictate your description" })).toBeVisible();
 });

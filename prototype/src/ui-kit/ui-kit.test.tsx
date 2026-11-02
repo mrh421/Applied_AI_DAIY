@@ -11,6 +11,7 @@ import {
   Img,
   LinkButton,
   Page,
+  Progress,
   Select,
   StatusBadge,
   TextField,
@@ -265,5 +266,23 @@ describe("Page (GO-BACK, REFLOW)", () => {
       </Page>,
     );
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+});
+
+describe("Progress", () => {
+  it("announces one steady status and changes the visible line over time", () => {
+    vi.useFakeTimers();
+    try {
+      render(<Progress messages={["Reading…", "Checking…"]} />);
+      expect(screen.getByRole("status")).toHaveTextContent(/working on it/i);
+      expect(screen.getByText("Reading…")).toHaveAttribute("aria-hidden", "true");
+      act(() => {
+        vi.advanceTimersByTime(4100);
+      });
+      expect(screen.getByText("Checking…")).toBeInTheDocument();
+      expect(screen.queryByText("Reading…")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

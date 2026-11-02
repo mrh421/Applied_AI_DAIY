@@ -1,21 +1,69 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { MAX_PHOTOS } from "../case-model";
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
 import { useCaseSession } from "../case-session";
-import { Button, Page, TextField, announce } from "../ui-kit";
-import { AI_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
+import {
+  Button,
+  Icon,
+  IconButton,
+  NumberDot,
+  Page,
+  Progress,
+  Select,
+  TextField,
+  announce,
+} from "../ui-kit";
 
-/** The route `/`: free text, an optional photo and Confirm. With `caseId` the open case is shown again. */
+const HOW = [
+  { title: "Describe it", text: "Say what is broken, as you would to a friend." },
+  { title: "We check safety", text: "Risky jobs go to a professional; we ask what is missing." },
+  { title: "Fix it step by step", text: "A plain guide using the tools you already own." },
+];
+
+const EXAMPLES = [
+  "My drawer is sticking and no longer closes properly.",
+  "The kitchen tap keeps dripping even when closed tight.",
+  "A cabinet door hangs crooked and rubs against the frame.",
+];
+import {
+  DICTATION_LANGUAGES,
+  dictationLanguage,
+  rememberDictationLanguage,
+  useDictation,
+  type DictationLanguage,
+} from "./dictation";
+import { AI_NOTICE, DICTATION_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
+
+/** The route `/`: free text, optional photos and Confirm. With `caseId` the open case is shown again. */
 export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: string) => void }) {
   const { session, start } = useCaseSession(p.caseId);
   const [description, setDescription] = useState<string | null>(null);
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoNote, setPhotoNote] = useState<string | null>(null);
+  const [pickerKey, setPickerKey] = useState(0);
+  const previews = useMemo(() => photos.map((f) => URL.createObjectURL(f)), [photos]);
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
   const [error, setError] = useState<string | undefined>();
   const [consented, setConsented] = useState(hasConsent("keep-case-photos"));
   const [started, setStarted] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   const text = description ?? session?.record.description ?? "";
+
+  // Dictation adds what is spoken after the text that was there when it began.
+  const [language, setLanguage] = useState<DictationLanguage>(dictationLanguage);
+  const [askConsent, setAskConsent] = useState(false);
+  const base = useRef("");
+  const onSpoken = useCallback((spoken: string) => {
+    setDescription(base.current && spoken ? `${base.current} ${spoken}` : base.current + spoken);
+  }, []);
+  const dictation = useDictation(onSpoken);
+  const beginDictation = () => {
+    base.current = text.trim();
+    setAskConsent(false);
+    dictation.start(language);
+  };
   const startedId = started && session && session.pending === null ? session.record.id : null;
   const { onStarted } = p;
   useEffect(() => {
@@ -30,7 +78,10 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
     setError(undefined);
     setNotice(null);
     try {
-      const outcome = await start({ description: text.trim(), ...(photo ? { photo } : {}) });
+      const outcome = await start({
+        description: text.trim(),
+        ...(photos.length > 0 ? { photos } : {}),
+      });
       if (outcome.type === "notice") {
         announce(outcome.notice.text);
         setNotice(outcome.notice.text);
@@ -44,47 +95,220 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
   }
 
   return (
-    <Page title="What needs fixing?">
-      <p>{AI_NOTICE}</p>
-      <p>{PRIVACY_NOTICE_SHORT}</p>
-      <TextField
-        label="Describe the problem"
-        multiline
-        value={text}
-        onChange={setDescription}
-        {...(error ? { error } : {})}
-      />
-      <div className="grid gap-1">
-        <label htmlFor="case-photo" className="text-sm font-medium">
-          Add a photo (optional)
-        </label>
-        <input
-          id="case-photo"
-          type="file"
-          accept="image/*"
-          className="w-full min-w-0"
-          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-        />
-      </div>
-      {photo &&
-        (consented ? (
-          <p>The photo will be kept on this device.</p>
-        ) : (
-          <div className="grid gap-1">
-            <p>{CONSENT_PURPOSES["keep-case-photos"]}</p>
-            <Button
-              label="Keep the photo"
-              variant="secondary"
-              onPress={() => {
-                giveConsent("keep-case-photos");
-                setConsented(true);
-                announce("The photo will be kept on this device.");
-              }}
-            />
+    <Page title="Fix it yourself — safely." hideTitle>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-8">
+        <div>
+          <h1 className="text-4xl leading-tight md:text-6xl">
+            Fix it yourself — <em className="text-primary">safely.</em>
+          </h1>
+          <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+            Tell us what's broken in your own words. We check for risks, ask what's missing, and
+            guide you step by step — using what you already own.
+          </p>
+          <ol aria-label="How it works" className="mt-8 hidden gap-4 lg:grid">
+            {HOW.map((h, i) => (
+              <li key={h.title} className="flex gap-3">
+                <NumberDot n={i + 1} />
+                <span>
+                  <span className="block font-semibold">{h.title}</span>
+                  <span className="block text-sm text-muted-foreground">{h.text}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="rounded-3xl border border-border bg-card/70 p-6 shadow-soft backdrop-blur md:p-8">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
+            <section className="grid grid-cols-[minmax(0,1fr)] gap-3">
+              <TextField
+                label="What's broken? Describe it like you'd tell a friend."
+                multiline
+                value={text}
+                onChange={setDescription}
+                {...(error ? { error } : {})}
+              />
+              {dictation.supported && (
+                <div className="grid gap-2">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <Button
+                      label={dictation.listening ? "Stop dictating" : "Dictate your description"}
+                      icon="Mic"
+                      variant="secondary"
+                      onPress={() => {
+                        if (dictation.listening) dictation.stop();
+                        else if (hasConsent("dictate-with-browser")) beginDictation();
+                        else setAskConsent(true);
+                      }}
+                    />
+                    <div className="w-40">
+                      <Select
+                        label="Dictation language"
+                        value={language}
+                        options={DICTATION_LANGUAGES}
+                        onChange={(v) => {
+                          setLanguage(v);
+                          rememberDictationLanguage(v);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {dictation.listening && (
+                    <p role="status" className="text-sm font-medium text-primary">
+                      Listening…
+                    </p>
+                  )}
+                  {dictation.error && (
+                    <p role="alert" className="text-sm text-destructive">
+                      {dictation.error}
+                    </p>
+                  )}
+                  {askConsent && (
+                    <div className="grid gap-2 rounded-xl border border-border bg-secondary/60 p-4 text-sm">
+                      <p>{CONSENT_PURPOSES["dictate-with-browser"]}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          label="I agree"
+                          onPress={() => {
+                            giveConsent("dictate-with-browser");
+                            beginDictation();
+                          }}
+                        />
+                        <Button
+                          label="No, I will type"
+                          variant="secondary"
+                          onPress={() => setAskConsent(false)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
+                {EXAMPLES.map((ex) => (
+                  <button
+                    key={ex}
+                    type="button"
+                    onClick={() => setDescription(ex)}
+                    className="min-h-6 shrink-0 sm:shrink rounded-full border border-border bg-card px-3 py-1 text-left text-sm text-muted-foreground transition hover:border-primary hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  >
+                    {ex}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-3">
+                <label
+                  htmlFor="case-photo"
+                  className="inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-1.5 text-sm font-medium hover:bg-secondary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
+                >
+                  <Icon name="Camera" />{" "}
+                  {photos.length === 0 ? "Add a photo (optional)" : "Add another photo"}
+                  <input
+                    key={pickerKey}
+                    id="case-photo"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="sr-only"
+                    onChange={(e) => {
+                      const chosen = Array.from(e.target.files ?? []);
+                      const room = MAX_PHOTOS - photos.length;
+                      setPhotos([...photos, ...chosen.slice(0, room)]);
+                      const note =
+                        chosen.length > room
+                          ? `You can add up to ${MAX_PHOTOS} photos. The first ${MAX_PHOTOS} are kept.`
+                          : null;
+                      setPhotoNote(note);
+                      if (note) announce(note);
+                      setPickerKey((k) => k + 1);
+                    }}
+                  />
+                </label>
+              </div>
+              {photoNote && (
+                <p role="status" className="text-sm">
+                  {photoNote}
+                </p>
+              )}
+              {photos.length > 0 && (
+                <ul aria-label="Photos" className="flex flex-wrap gap-3">
+                  {photos.map((photo, i) => (
+                    <li key={`${photo.name}-${i}`} className="relative">
+                      <img
+                        src={previews[i]}
+                        alt={`Your photo: ${photo.name}`}
+                        className="size-24 rounded-xl border border-border object-cover"
+                      />
+                      <div className="absolute -right-2 -top-2">
+                        <IconButton
+                          label={`Remove the photo ${photo.name}`}
+                          icon="X"
+                          onPress={() => {
+                            setPhotos(photos.filter((_, k) => k !== i));
+                            setPhotoNote(null);
+                            announce(`The photo ${photo.name} was removed.`);
+                          }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {photos.length > 0 &&
+                (consented ? (
+                  <p className="text-sm text-muted-foreground">
+                    The photos will be kept on this device.
+                  </p>
+                ) : (
+                  <div className="grid gap-2 rounded-xl border border-border bg-secondary/60 p-4 text-sm">
+                    <p>{CONSENT_PURPOSES["keep-case-photos"]}</p>
+                    <div>
+                      <Button
+                        label="Keep the photos"
+                        variant="secondary"
+                        onPress={() => {
+                          giveConsent("keep-case-photos");
+                          setConsented(true);
+                          announce("The photos will be kept on this device.");
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+            </section>
+            {notice && <p role="status">{notice}</p>}
+            {session?.pending === "assess" && (
+              <Progress
+                messages={[
+                  "Reading your description…",
+                  ...(photos.length > 0
+                    ? [photos.length > 1 ? "Looking at your photos…" : "Looking at your photo…"]
+                    : []),
+                  "Checking for risks…",
+                  "Working out what to ask or do next…",
+                ]}
+              />
+            )}
+            <div className="grid gap-3">
+              <div className="grid sm:block">
+                <Button
+                  label="Find my repair"
+                  onPress={() => void confirm()}
+                  disabled={session?.pending != null}
+                />
+              </div>
+              <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                <span className="mt-0.5">
+                  <Icon name="ShieldCheck" />
+                </span>
+                <span>
+                  {AI_NOTICE} {PRIVACY_NOTICE_SHORT}
+                  {dictation.supported ? ` ${DICTATION_NOTICE}` : ""}
+                </span>
+              </p>
+            </div>
           </div>
-        ))}
-      {notice && <p>{notice}</p>}
-      <Button label="Confirm" onPress={() => void confirm()} disabled={session?.pending != null} />
+        </div>
+      </div>
     </Page>
   );
 }

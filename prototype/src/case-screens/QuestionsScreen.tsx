@@ -2,7 +2,17 @@ import { useState } from "react";
 
 import type { Answer, FollowUpQuestion } from "../case-model";
 import { useCaseSession } from "../case-session";
-import { Button, Checkbox, Page, TextField, announce } from "../ui-kit";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Eyebrow,
+  Icon,
+  Page,
+  Progress,
+  TextField,
+  announce,
+} from "../ui-kit";
 
 type Entry = { text: string; notSure: boolean };
 
@@ -20,9 +30,10 @@ function Questions(p: {
   return (
     <>
       {p.questions.map((q) => (
-        <section key={q.id} className="grid gap-1">
+        <section key={q.id} className="grid gap-2">
           <TextField
             label={q.text}
+            placeholder="Your answer (or “not sure”)"
             value={entry(q).notSure ? "" : entry(q).text}
             onChange={(text) => set(q, { text, notSure: false })}
           />
@@ -42,20 +53,31 @@ function Questions(p: {
           />
         </section>
       ))}
-      <Button
-        label="Confirm"
-        disabled={p.busy}
-        onPress={() =>
-          p.onSend(
-            p.questions.map((q) => ({
-              questionId: q.id,
-              topic: q.topic,
-              text: entry(q).notSure ? "" : entry(q).text.trim(),
-              notSure: entry(q).notSure,
-            })),
-          )
-        }
-      />
+      <div>
+        <Button
+          label="Continue"
+          disabled={p.busy}
+          onPress={() =>
+            p.onSend(
+              p.questions.map((q) => ({
+                questionId: q.id,
+                topic: q.topic,
+                text: entry(q).notSure ? "" : entry(q).text.trim(),
+                notSure: entry(q).notSure,
+              })),
+            )
+          }
+        />
+      </div>
+      {p.busy && (
+        <Progress
+          messages={[
+            "Thank you, reading your answers…",
+            "Checking for risks again…",
+            "Drafting your plan…",
+          ]}
+        />
+      )}
     </>
   );
 }
@@ -63,6 +85,7 @@ function Questions(p: {
 /** The route `/case/$id` while questions are open (EVERYDAY-LANGUAGE-QUESTIONS, REDUNDANT-ENTRY). */
 export function QuestionsScreen(p: { caseId: string }) {
   const { session, answer } = useCaseSession(p.caseId);
+  const [notice, setNotice] = useState<string | null>(null);
   const outcome = session?.record.outcome;
   if (!session || outcome?.type !== "questions") {
     return (
@@ -72,17 +95,48 @@ export function QuestionsScreen(p: { caseId: string }) {
     );
   }
   return (
-    <Page title="A few questions">
-      <p>Answer what you can. If you do not know, choose “not sure”.</p>
-      <Questions
-        key={`${outcome.round}-${outcome.questions.map((q) => q.id).join()}`}
-        questions={outcome.questions}
-        busy={session.pending !== null}
-        onSend={(answers) => {
-          announce("Sending your answers.");
-          void answer(answers);
-        }}
-      />
+    <Page title="A few quick questions" hideTitle>
+      <Card tone="soft">
+        <Eyebrow>Your problem</Eyebrow>
+        <p className="mt-1 text-lg">{session.record.description}</p>
+      </Card>
+      <Card className="grid gap-5">
+        <h1 className="flex items-center gap-2 text-2xl">
+          <span className="text-primary">
+            <Icon name="CircleHelp" />
+          </span>{" "}
+          A few quick questions
+        </h1>
+        <p className="text-muted-foreground">
+          So we don't guess — your answers make the advice safer and more accurate. If you do not
+          know, choose “not sure”.
+        </p>
+        <Questions
+          key={`${outcome.round}-${outcome.questions.map((q) => q.id).join()}`}
+          questions={outcome.questions}
+          busy={session.pending !== null}
+          onSend={(answers) => {
+            announce("Sending your answers.");
+            setNotice(null);
+            // A notice (timeout, rejected draft) must not vanish: the user stays here and can send again.
+            const fail = (text: string) => {
+              announce(text);
+              setNotice(text);
+            };
+            void answer(answers).then(
+              (out) => {
+                if (out.type === "notice") fail(out.notice.text);
+              },
+              () => fail("Your answers could not be saved on this device. Please try again."),
+            );
+          }}
+        />
+        {notice && (
+          <p role="alert" className="rounded-xl border border-warning/40 bg-warning/10 p-4">
+            {notice} You can press “Continue” to try again.
+          </p>
+        )}
+      </Card>
     </Page>
   );
 }

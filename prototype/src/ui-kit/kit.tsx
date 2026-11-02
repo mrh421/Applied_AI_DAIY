@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { cn } from "./cn";
 import { Icon, type IconName } from "./icons";
 import { buttonClass, type ButtonVariant } from "./button-style";
@@ -57,7 +57,7 @@ export function LinkButton(p: { label: string; href: string; external?: boolean 
 }
 
 const FIELD =
-  "min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-[invalid=true]:border-destructive";
+  "min-h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-[invalid=true]:border-destructive";
 
 function FieldError(p: { id: string; label: string; error: string }) {
   return (
@@ -69,6 +69,7 @@ function FieldError(p: { id: string; label: string; error: string }) {
 
 export function TextField(p: {
   label: string;
+  placeholder?: string;
   value: string;
   onChange: (v: string) => void;
   error?: string;
@@ -83,6 +84,7 @@ export function TextField(p: {
     id,
     value: p.value,
     autoComplete: p.autoComplete,
+    placeholder: p.placeholder,
     "aria-invalid": p.error ? true : undefined,
     "aria-describedby": p.error ? errorId : undefined,
     className: FIELD,
@@ -202,13 +204,84 @@ export function Dialog(p: {
   );
 }
 
+/** A rounded card on the page, the container of the Lovable design. */
+export function Card(p: {
+  children: ReactNode;
+  tone?: "plain" | "soft" | "warning";
+  className?: string;
+}) {
+  const tone = p.tone ?? "plain";
+  return (
+    <section
+      className={cn(
+        "rounded-2xl border p-5 md:p-6",
+        tone === "plain" && "border-border bg-card shadow-soft",
+        tone === "soft" && "border-transparent bg-secondary",
+        tone === "warning" && "border-warning-foreground/20 bg-warning text-warning-foreground",
+        p.className,
+      )}
+    >
+      {p.children}
+    </section>
+  );
+}
+
+/** The small uppercase label above a card's text ("Your problem", "Diagnosis"). */
+export function Eyebrow(p: { children: ReactNode; primary?: boolean }) {
+  return (
+    <p
+      className={cn(
+        "text-sm font-semibold uppercase tracking-wider",
+        p.primary ? "text-primary" : "text-muted-foreground",
+      )}
+    >
+      {p.children}
+    </p>
+  );
+}
+
+/** A pill with a short fact (time, difficulty, where an offer comes from). */
+export function Badge(p: { children: ReactNode; outline?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        p.outline
+          ? "border border-border text-foreground"
+          : "bg-secondary text-secondary-foreground",
+      )}
+    >
+      {p.children}
+    </span>
+  );
+}
+
+/** A round numbered marker for the sections of a form or the steps of a list. */
+export function NumberDot(p: { n: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="mr-2 inline-flex size-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
+    >
+      {p.n}
+    </span>
+  );
+}
+
 export function Page(p: {
   title: string;
+  /** The emphasised end of the title, set in the primary colour (the start page). */
+  accent?: string;
+  /** A line below the title. */
+  lead?: string;
+  /** The screen shows its own h1, for instance inside a card. */
+  hideTitle?: boolean;
   back?: { label: string; onBack: () => void };
   children: ReactNode;
 }) {
+  const hero = p.accent !== undefined;
   return (
-    <main className="mx-auto grid w-full min-w-0 max-w-2xl grid-cols-[minmax(0,1fr)] gap-4 break-words px-4 py-6">
+    <main className="mx-auto grid w-full min-w-0 max-w-6xl grid-cols-[minmax(0,1fr)] gap-6 break-words px-5 pb-24 pt-4">
       {p.back && (
         <div>
           <Button
@@ -219,8 +292,49 @@ export function Page(p: {
           />
         </div>
       )}
-      <h1 className="text-2xl font-semibold">{p.title}</h1>
+      {!p.hideTitle && (
+        <div className={hero ? "py-6 md:py-10" : undefined}>
+          <h1 className={hero ? "max-w-2xl text-4xl leading-tight md:text-6xl" : "text-3xl"}>
+            {p.title}
+            {hero && (
+              <>
+                {" "}
+                <em className="text-primary">{p.accent}</em>
+              </>
+            )}
+          </h1>
+          {p.lead && <p className="mt-4 max-w-xl text-lg text-muted-foreground">{p.lead}</p>}
+        </div>
+      )}
       {p.children}
     </main>
+  );
+}
+
+/**
+ * A busy indicator for the waits on the AI. A turning ring and a line that changes every few seconds
+ * show that the page is working; the line is hidden from assistive technology and one steady
+ * status message is read out instead. With reduced motion the ring stands still.
+ */
+export function Progress(p: { messages: string[]; label?: string }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (p.messages.length < 2) return;
+    const t = setInterval(() => setI((n) => Math.min(n + 1, p.messages.length - 1)), 4000);
+    return () => clearInterval(t);
+  }, [p.messages.length]);
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/60 p-4">
+      <span
+        aria-hidden="true"
+        className="size-6 shrink-0 animate-spin rounded-full border-[3px] border-primary/25 border-t-primary motion-reduce:animate-none"
+      />
+      <p role="status" className="sr-only">
+        {p.label ?? "Working on it. This can take up to half a minute."}
+      </p>
+      <p aria-hidden="true" className="text-sm text-foreground">
+        {p.messages[Math.min(i, p.messages.length - 1)]}
+      </p>
+    </div>
   );
 }

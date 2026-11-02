@@ -7,6 +7,7 @@ import { StorageFullError, localStore } from "../local-store";
 import {
   getCase,
   getPhoto,
+  getPhotos,
   listCases,
   removeCase,
   saveCase,
@@ -51,6 +52,27 @@ describe("MOD-history records (PROJECT-HISTORY)", () => {
     saveCase(record("c", "2026-02-01T00:00:00Z"));
     expect(listCases().map((c) => c.id)).toEqual(["b", "c", "a"]);
     expect(listCases().map((c) => c.status)).toEqual(["completed", "ongoing", "ongoing"]);
+  });
+
+  it("fills the fields that a record of an earlier version lacks", () => {
+    const old = {
+      id: "old",
+      createdAt: "2026-01-01T00:00:00Z",
+      rulesVersion: "1",
+      status: "ongoing",
+      description: "Rusty plate",
+      hadPhoto: true,
+      outcome: { type: "guidance", summary: "s", options: [{ id: "o1", title: "t" }] },
+    };
+    localStore.put("cases", "old", old);
+    const got = getCase("old") as CaseRecord;
+    expect(got.chosenOffers).toEqual({});
+    expect(got.explanations).toEqual({});
+    expect(got.checked).toEqual({});
+    expect(got.notes).toBe("");
+    expect(got.materialsUsed).toEqual([]);
+    expect(got.outcome).toMatchObject({ assumptions: [], notices: [], photoAlt: null });
+    expect(listCases()[0]?.outcome).toMatchObject({ options: [{ id: "o1", packages: [] }] });
   });
 
   it("gets one record, or undefined", () => {
@@ -115,6 +137,18 @@ describe("MOD-history photos (DEVICE-STORAGE-CONSENT)", () => {
     giveConsent("keep-case-photos");
     expect(await savePhoto("a", blob())).toBe(true);
     expect(await getPhoto("a")).toBeDefined();
+  });
+
+  it("keeps several photos of a case in order and deletes them with the case", async () => {
+    giveConsent("keep-case-photos");
+    saveCase(record("a", "2026-01-01T00:00:00Z", { hadPhoto: true, photoCount: 3 }));
+    for (const [i, t] of ["one", "two", "three"].entries()) {
+      await savePhoto("a", new Blob([t], { type: "image/jpeg" }), i);
+    }
+    const got = await getPhotos("a", 3);
+    expect(got).toHaveLength(3);
+    removeCase("a");
+    await vi.waitFor(async () => expect(await getPhotos("a", 3)).toHaveLength(0));
   });
 
   it("loses the photo when the consent is withdrawn", async () => {

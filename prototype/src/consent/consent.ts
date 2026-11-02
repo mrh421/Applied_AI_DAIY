@@ -1,12 +1,14 @@
 import { useSyncExternalStore } from "react";
 
-export type ConsentKind = "keep-case-photos";
+export type ConsentKind = "keep-case-photos" | "dictate-with-browser";
 
 export type ConsentRecord = { kind: ConsentKind; given: boolean; at: string };
 
 export const CONSENT_PURPOSES: Record<ConsentKind, string> = {
   "keep-case-photos":
-    "Keep the photo of a case on this device after the case, so you can see it again in your history.",
+    "Keep the photos of a case on this device after the case, so you can see them again in your history.",
+  "dictate-with-browser":
+    "Dictate with the speech recognition of your browser. Your browser may send the audio to its provider to recognise the words. DAIY does not receive or store the audio.",
 };
 
 const KEY = "daiy.v1.consents";

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
-import { SAFETY_RULES_VERSION } from "../case-model";
+import { MAX_PHOTOS, SAFETY_RULES_VERSION } from "../case-model";
 import type {
   Answer,
   CaseOutcome,
@@ -15,7 +15,7 @@ import type {
 } from "../case-model";
 import { answerStepQuestion, assessCase, explainSteps } from "../case-pipeline";
 import { precheck } from "../hazard-precheck";
-import { getCase, getPhoto, saveCase, savePhoto } from "../history";
+import { getCase, getPhotos, saveCase, savePhoto } from "../history";
 import type { CaseRecord } from "../history";
 import { deduct, listMaterials, saveMaterial, snapshot } from "../inventory";
 import { StorageFullError } from "../local-store";
@@ -25,7 +25,7 @@ import { prefillQuestions } from "./prefill";
 
 export type CaseSession = {
   record: CaseRecord;
-  photo: Blob | null;
+  photos: Blob[];
   pending: "assess" | "explain" | "question" | null;
   staleRules: boolean;
 };
@@ -58,7 +58,7 @@ function openRecord(id: string): CaseSession | null {
     const escalation = precheck([stored.description, ...stored.answers.map((a) => a.text)]);
     if (escalation) record = { ...stored, outcome: { type: "escalation", escalation } };
   }
-  const session: CaseSession = { record, photo: null, pending: null, staleRules };
+  const session: CaseSession = { record, photos: [], pending: null, staleRules };
   open.set(id, session);
   return session;
 }
@@ -146,10 +146,10 @@ async function assess(id: string): Promise<CaseOutcome> {
   setPending(id, "assess");
   try {
     for (let guard = 0; ; guard++) {
-      const { record, photo } = current(id);
+      const { record, photos } = current(id);
       const req: CaseRequest = {
         description: record.description,
-        ...(photo ? { photo: await toPhotoInput(photo) } : {}),
+        ...(photos.length > 0 ? { photos: await Promise.all(photos.map(toPhotoInput)) } : {}),
         answers: record.answers,
         round: record.round,
         inventory: snapshot(),
@@ -184,14 +184,16 @@ export function useCaseSession(caseId?: string) {
     () => null,
   );
 
-  const hadPhoto = session?.record.hadPhoto;
-  const hasPhoto = session?.photo != null;
+  const photoCount = session?.record.photoCount ?? 0;
+  const hasPhotos = (session?.photos.length ?? 0) > 0;
   useEffect(() => {
-    if (!id || !hadPhoto || hasPhoto) return;
-    void getPhoto(id).then((photo) => {
-      if (photo && !current(id).photo) publish(id, { ...current(id), photo });
+    if (!id || photoCount === 0 || hasPhotos) return;
+    void getPhotos(id, photoCount).then((photos) => {
+      if (photos.length > 0 && current(id).photos.length === 0) {
+        publish(id, { ...current(id), photos });
+      }
     });
-  }, [id, hadPhoto, hasPhoto]);
+  }, [id, photoCount, hasPhotos]);
 
   const need = (): string => {
     if (!id) throw new Error("no open case");
@@ -199,9 +201,11 @@ export function useCaseSession(caseId?: string) {
   };
 
   const start = useCallback(
-    async (input: { description: string; photo?: File }): Promise<CaseOutcome> => {
+    async (input: { description: string; photos?: File[] }): Promise<CaseOutcome> => {
       const newId = crypto.randomUUID();
-      const photo = input.photo ? await downscalePhoto(input.photo) : null;
+      const photos = await Promise.all(
+        (input.photos ?? []).slice(0, MAX_PHOTOS).map(downscalePhoto),
+      );
       const record: CaseRecord = {
         id: newId,
         createdAt: new Date().toISOString(),
@@ -209,7 +213,8 @@ export function useCaseSession(caseId?: string) {
         chosenOffers: {},
         status: "ongoing",
         description: input.description,
-        hadPhoto: photo !== null,
+        hadPhoto: photos.length > 0,
+        photoCount: photos.length,
         answers: [],
         round: 0,
         outcome: null,
@@ -221,9 +226,9 @@ export function useCaseSession(caseId?: string) {
         materialsUsed: [],
       };
       saveCase(record);
-      publish(newId, { record, photo, pending: null, staleRules: false });
+      publish(newId, { record, photos, pending: null, staleRules: false });
       setId(newId);
-      if (photo) await savePhoto(newId, photo);
+      for (const [i, photo] of photos.entries()) await savePhoto(newId, photo, i);
       return assess(newId);
     },
     [],

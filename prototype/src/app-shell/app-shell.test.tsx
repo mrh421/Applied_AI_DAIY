@@ -37,7 +37,7 @@ describe("App shell", () => {
   it("works without an account: the start page asks for no sign-in", async () => {
     await open("/");
     expect(screen.queryByText(/sign in|log in|password/i)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /start|continue|confirm/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /find my repair/i })).toBeInTheDocument();
   });
 
   it("renders no back action on the start page", async () => {

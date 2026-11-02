@@ -3,7 +3,17 @@ import { useEffect } from "react";
 import type { PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
 import { levelFor } from "../profile";
-import { Button, Page, StatusBadge, announce, type IconName } from "../ui-kit";
+import {
+  Button,
+  Card,
+  Eyebrow,
+  Icon,
+  Page,
+  Progress,
+  StatusBadge,
+  announce,
+  type IconName,
+} from "../ui-kit";
 import { EscalationView } from "./EscalationView";
 import { GuideView } from "./GuideView";
 
@@ -58,24 +68,26 @@ function PackageView(p: { pkg: WorkPackage; basics: Record<number, string> | und
   const { pkg } = p;
   const label = LABELS[pkg.label];
   return (
-    <section role="group" aria-label={pkg.title} className="grid gap-2 rounded-md border p-3">
-      <h3 className="font-medium">{pkg.title}</h3>
-      <div>
-        <StatusBadge tone={label.tone} icon={label.icon} text={label.text} />
-      </div>
-      <p>{pkg.reason}</p>
-      {pkg.decidingInformation.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium">This would change the label</h4>
-          <ul className="list-disc pl-5">
-            {pkg.decidingInformation.map((info) => (
-              <li key={info}>{info}</li>
-            ))}
-          </ul>
+    <section role="group" aria-label={pkg.title} className="grid gap-4">
+      <div className="grid gap-2 rounded-xl border border-border bg-background p-4">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <StatusBadge tone={label.tone} icon={label.icon} text={label.text} />
+          <h3 className="font-sans text-base font-semibold">{pkg.title}</h3>
         </div>
-      )}
-      {pkg.label === "diy-preparation" && pkg.agreeBeforehand && <p>{pkg.agreeBeforehand}</p>}
-      {pkg.label === "professional-only" && <HandoverBrief brief={pkg.handoverBrief} />}
+        <p>{pkg.reason}</p>
+        {pkg.decidingInformation.length > 0 && (
+          <div className="text-sm text-muted-foreground">
+            <h4 className="font-sans font-medium">This would change the label</h4>
+            <ul className="list-disc pl-5">
+              {pkg.decidingInformation.map((info) => (
+                <li key={info}>{info}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {pkg.label === "diy-preparation" && pkg.agreeBeforehand && <p>{pkg.agreeBeforehand}</p>}
+        {pkg.label === "professional-only" && <HandoverBrief brief={pkg.handoverBrief} />}
+      </div>
       {pkg.guide && <GuideView guide={pkg.guide} level={levelFor(pkg.area)} basics={p.basics} />}
     </section>
   );
@@ -125,22 +137,28 @@ export function OutcomeScreen(p: { caseId: string }) {
   const noBasics =
     hasGuide && !loading && !shown?.packages.some((pkg) => explanations[pkg.id] !== undefined);
 
+  const localNotices = outcome.notices.filter((n) => n.marks.includes("check-locally"));
+
   return (
-    <Page title="Your plan">
-      <p>{outcome.summary}</p>
-      {outcome.assumptions.length > 0 && (
-        <section>
-          <h2 className="font-medium">Assumptions</h2>
-          <ul className="list-disc pl-5">
-            {outcome.assumptions.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+    <Page title="Your plan" hideTitle>
+      <h1 className="sr-only">Your plan</h1>
+      <Card tone="soft">
+        <Eyebrow>Your problem</Eyebrow>
+        <p className="mt-1 text-lg">{outcome.summary}</p>
+        {outcome.assumptions.length > 0 && (
+          <section className="mt-3 text-sm text-muted-foreground">
+            <h2 className="font-sans font-semibold">Assumptions</h2>
+            <ul className="list-disc pl-5">
+              {outcome.assumptions.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </Card>
       {outcome.options.length > 1 && (
-        <section className="grid gap-1">
-          <h2 className="font-medium">Options</h2>
+        <section className="grid gap-2">
+          <h2 className="font-sans font-semibold">Options</h2>
           {outcome.options.map((o) =>
             o.id === shown?.id ? (
               <p key={o.id}>{o.title} (shown)</p>
@@ -156,14 +174,39 @@ export function OutcomeScreen(p: { caseId: string }) {
         </section>
       )}
       {shown && (
-        <section className="grid gap-3">
-          <h2 className="text-lg font-semibold">{shown.title}</h2>
-          {loading && <p>Explanations are being prepared.</p>}
+        <Card className="grid gap-4">
+          <div>
+            <h2 className="text-2xl">Who does what</h2>
+            <p className="mt-1 text-muted-foreground">
+              Your skill level changes how detailed the help is — never which work needs a
+              professional.
+            </p>
+            <p className="mt-3 font-semibold">{shown.title}</p>
+          </div>
+          {loading && <Progress messages={["Explanations are being prepared…", "Almost there…"]} />}
           {noBasics && <p>Explanations are not available right now. The steps are complete.</p>}
           {shown.packages.map((pkg) => (
             <PackageView key={pkg.id} pkg={pkg} basics={explanations[pkg.id]} />
           ))}
-        </section>
+        </Card>
+      )}
+      {localNotices.length > 0 && (
+        <Card tone="soft">
+          <h2 className="flex items-center gap-2 text-xl">
+            <span className="text-primary">
+              <Icon name="CircleHelp" />
+            </span>{" "}
+            Check locally
+          </h2>
+          <p className="mt-1 text-muted-foreground">
+            These rules depend on where you live — we can't confirm them for you.
+          </p>
+          <ul className="mt-3 list-disc space-y-1 pl-5">
+            {localNotices.map((n) => (
+              <li key={n.text}>{n.text}</li>
+            ))}
+          </ul>
+        </Card>
       )}
     </Page>
   );

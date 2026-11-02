@@ -39,7 +39,10 @@ const compatibility = (d: Offer["compatibility"]) =>
 function OfferCard(p: { offer: Offer; chosen: boolean; onChoose: (on: boolean) => void }) {
   const o = p.offer;
   return (
-    <article aria-label={o.title} className="grid gap-2 rounded-md border p-3">
+    <article
+      aria-label={o.title}
+      className="grid gap-2 rounded-xl border border-border bg-card p-4"
+    >
       <h3 className="font-medium">{o.title}</h3>
       <ul className="grid gap-1 text-sm">
         <li>{`Condition: ${o.condition === "new" ? "New" : "Second-hand"}`}</li>
@@ -80,7 +83,10 @@ function OfferCard(p: { offer: Offer; chosen: boolean; onChoose: (on: boolean) =
 
 function ModelCard({ model: m }: { model: ModelEntry }) {
   return (
-    <article aria-label={m.title} className="grid gap-2 rounded-md border p-3">
+    <article
+      aria-label={m.title}
+      className="grid gap-2 rounded-xl border border-border bg-card p-4"
+    >
       <h3 className="font-medium">{m.title}</h3>
       <ul className="grid gap-1 text-sm">
         <li>{`Dimensions: ${dimensions(m.dimensionsMm)}`}</li>
@@ -144,7 +150,7 @@ export function OffersScreen({ caseId, itemId }: { caseId: string; itemId: strin
   return (
     <Page title={`Offers for ${need.name}`} back={back}>
       {CATALOGUE_IS_SAMPLE && (
-        <p role="note" className="rounded-md border p-3 text-sm">
+        <p role="note" className="rounded-xl border border-border bg-card p-4 text-sm">
           Sample data: these offers are examples for demonstration, not live prices.
         </p>
       )}
@@ -162,7 +168,7 @@ export function OffersScreen({ caseId, itemId }: { caseId: string; itemId: strin
       )}
       {models.length > 0 && (
         <section aria-labelledby="models-heading" className="grid gap-2">
-          <h2 id="models-heading" className="text-xl font-semibold">
+          <h2 id="models-heading" className="text-xl">
             3D model suggestion
           </h2>
           {models.map((m) => (

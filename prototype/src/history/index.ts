@@ -1,6 +1,7 @@
 export {
   getCase,
   getPhoto,
+  getPhotos,
   listCases,
   removeCase,
   saveCase,

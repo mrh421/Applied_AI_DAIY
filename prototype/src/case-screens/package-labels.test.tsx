@@ -65,7 +65,7 @@ async function openOutcome() {
   let id = "";
   const view = render(<CaseInputScreen onStarted={(i) => (id = i)} />);
   await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
-  await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+  await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
   await waitFor(() => expect(id).not.toBe(""));
   view.unmount();
   return id;

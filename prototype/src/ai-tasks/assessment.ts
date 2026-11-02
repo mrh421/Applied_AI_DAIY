@@ -48,7 +48,7 @@ function render(req: CaseRequest): string {
 /** Sends the case, never a skill profile (ARC-011), and returns the unvalidated draft. */
 export function draftAssessment(req: CaseRequest): Promise<unknown> {
   const content: AiContent[] = [{ type: "text", text: render(req) }];
-  if (req.photo) content.push({ type: "image", ...req.photo });
+  for (const photo of req.photos ?? []) content.push({ type: "image", ...photo });
   return generateJson({
     system: instructions(req.round),
     content,

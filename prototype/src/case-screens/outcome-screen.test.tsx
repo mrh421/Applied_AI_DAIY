@@ -100,7 +100,7 @@ async function startWith(outcome: CaseOutcome) {
   let id = "";
   const view = render(<CaseInputScreen onStarted={(i) => (id = i)} />);
   await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
-  await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+  await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
   await waitFor(() => expect(id).not.toBe(""));
   view.unmount();
   return id;
@@ -193,7 +193,7 @@ describe("OutcomeScreen escalation and notice", () => {
     const onStarted = vi.fn();
     render(<CaseInputScreen onStarted={onStarted} />);
     await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     expect(await screen.findByText("You seem to be offline.")).toBeInTheDocument();
     expect(onStarted).not.toHaveBeenCalled();
   });

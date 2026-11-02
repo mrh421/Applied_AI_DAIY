@@ -156,4 +156,75 @@ describe("HistoryScreen", () => {
     expect(getCase("c1")?.notes).toBe("corrected");
     expect(getCase("c1")?.description).toBe("Dripping tap");
   });
+
+  it("lets the user continue an ongoing case and read a finished one again", async () => {
+    const user = userEvent.setup();
+    const step = (n: number, text: string) => ({
+      n,
+      text,
+      opensDevice: false,
+      switchesOffCircuit: false,
+      fixedSafetyStep: false,
+      imageIds: [],
+    });
+    const outcome = {
+      type: "guidance",
+      summary: "A tap drips.",
+      assumptions: [],
+      notices: [],
+      photoAlt: null,
+      options: [
+        {
+          id: "o1",
+          kind: "repair",
+          title: "Repair it",
+          packages: [
+            {
+              id: "p1",
+              title: "Change the seal",
+              area: "plumbing",
+              label: "diy",
+              reason: "Simple.",
+              labelUncertain: false,
+              decidingInformation: [],
+              handoverBrief: "Brief.",
+              flags: { opensMainsHousing: false, carriesPerson: false, waterRelated: false },
+              guide: {
+                diagnosis: "Worn.",
+                tools: [],
+                materials: [],
+                steps: [step(1, "Close the valve."), step(2, "Change the seal.")],
+                estimatedMinutes: { min: 5, max: 10 },
+                warnings: [],
+              },
+            },
+          ],
+        },
+      ],
+    } as unknown as CaseRecord["outcome"];
+    saveCase(record({ outcome, checked: { p1: [1] } }));
+    const { unmount } = render(<HistoryScreen />);
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    expect(
+      screen.getByRole("link", { name: "Continue the work: Change the seal" }),
+    ).toHaveAttribute("href", "/case/c1/work/p1");
+    expect(screen.getByRole("link", { name: "Read the plan again" })).toHaveAttribute(
+      "href",
+      "/case/c1",
+    );
+    expect(screen.getByRole("link", { name: "Materials and tools" })).toHaveAttribute(
+      "href",
+      "/case/c1/materials",
+    );
+    expect(screen.getByText(/1 of 2 steps done/)).toBeInTheDocument();
+    expect(screen.getByText(/Close the valve\. \(done\)/)).toBeInTheDocument();
+    unmount();
+
+    saveCase(record({ outcome, status: "completed", checked: { p1: [1, 2] } }));
+    render(<HistoryScreen />);
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    expect(
+      screen.getByRole("link", { name: "Read the steps again: Change the seal" }),
+    ).toBeInTheDocument();
+  });
 });

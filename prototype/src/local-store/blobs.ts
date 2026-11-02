@@ -27,6 +27,10 @@ export function getBlob(kind: BlobKind, id: string): Promise<Blob | undefined> {
   return get<Blob>(keyOf(kind, id));
 }
 
+export async function removeBlob(kind: BlobKind, id: string): Promise<void> {
+  await del(keyOf(kind, id));
+}
+
 export async function removeBlobs(kind: BlobKind): Promise<void> {
   const prefix = `${kind}:`;
   const all = await keys();
