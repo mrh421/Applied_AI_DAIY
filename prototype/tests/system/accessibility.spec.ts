@@ -64,6 +64,11 @@ const hasHorizontalScroll = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 
 test.describe("accessibility in the browser", () => {
+  // TST-023 · level: system · module: system
+  // guards: UC-025; ADEQUATE-CONTRAST; CLEAR-LABELS
+  // given: a stored case with a guide, one with an escalation and the data pages
+  // input: every screen of the app in a browser
+  // expect: axe reports no violation of WCAG 2.2 A and AA, contrast included
   test("no axe violation on any screen", async ({ page }) => {
     const paths = await buildCase(page);
     for (const path of paths) {
@@ -72,6 +77,11 @@ test.describe("accessibility in the browser", () => {
     }
   });
 
+  // TST-024 · level: system · module: system
+  // guards: UC-025; REFLOW; REFLOW-NO-TWO-DIMENSIONAL-SCROLLING
+  // given: a browser window 320 CSS pixels wide
+  // input: every screen of the app
+  // expect: no screen scrolls sideways and axe reports no violation
   test("no horizontal scrolling and no axe violation at 320 CSS pixels", async ({ page }) => {
     const paths = await buildCase(page);
     await page.setViewportSize({ width: 320, height: 640 });
@@ -82,6 +92,11 @@ test.describe("accessibility in the browser", () => {
     }
   });
 
+  // TST-025 · level: system · module: system
+  // guards: UC-026; REFLOW; LARGE-TEXT-CONTRAST
+  // given: a window 640 CSS pixels wide with the text enlarged to 200 percent
+  // input: every screen of the app
+  // expect: no screen scrolls sideways and axe reports no violation
   test("text at 200 percent stays readable: no sideways scrolling, no violation", async ({
     page,
   }) => {
@@ -136,6 +151,11 @@ async function tabTo(page: Page, match: { role: string; name: string | RegExp })
   throw new Error(`no stop reaches ${match.role} ${match.name}`);
 }
 
+// TST-026 · level: system · module: system
+// guards: UC-026; KEYBOARD-OPERABLE; FOCUS-VISIBLE
+// given: a person who uses the keyboard only
+// input: Tab, typing, Enter and Space through a whole case up to the check-off of a step
+// expect: every stop shows its focus, every control is reachable and the step is checked
 test("a full case by keyboard alone, with a visible focus", async ({ page }) => {
   await page.goto("/");
   // The pages are drawn in the browser: press Tab only once there is something to focus.
