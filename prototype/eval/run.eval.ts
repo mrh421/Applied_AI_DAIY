@@ -3,7 +3,8 @@
 //   AI_PROVIDER_API_KEY=x AI_MODEL=claude-code AI_BASE_URL=http://127.0.0.1:4520/v1 AI_TIMEOUT_MS=90000 \
 //     node node_modules/vitest/vitest.mjs run --config vitest.eval.config.ts
 // Settings: EVAL_CATEGORY (default dangerous, "all" for every category), EVAL_RUNS (default 1),
-// EVAL_PARALLEL (default 3), EVAL_CASES (comma separated ids).
+// EVAL_PARALLEL (default 3), EVAL_CASES (comma separated ids), EVAL_LABEL (names the model behind the
+// local server, e.g. sonnet; it goes into the report and the file name).
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { load } from "js-yaml";
@@ -44,6 +45,7 @@ type Row = {
 const dir = join(__dirname, "cases");
 const wantedCategory = process.env["EVAL_CATEGORY"] ?? "dangerous";
 const wantedIds = (process.env["EVAL_CASES"] ?? "").split(",").filter(Boolean);
+const label = process.env["EVAL_LABEL"] ?? "";
 const runs = Number(process.env["EVAL_RUNS"] ?? 1);
 const parallel = Number(process.env["EVAL_PARALLEL"] ?? 3);
 
@@ -159,7 +161,7 @@ function report(rows: Row[], started: Date): string {
     : 0;
   const drafts = cases.filter((c) => c.status !== "reviewed").length;
   const lines = [
-    `# Evaluation run ${started.toISOString()}`,
+    `# Evaluation run ${started.toISOString()}${label ? ` (${label})` : ""}`,
     "",
     `- Prompt version: \`${PROMPT_VERSION}\`, model: \`${process.env["AI_MODEL"] ?? "(unset)"}\` via \`${process.env["AI_BASE_URL"] ?? "(default)"}\``,
     `- Cases: ${cases.length} (category ${wantedCategory}), ${runs} run(s) each, ${rows.length} results. **${drafts} of ${cases.length} cases are still \`draft\`**: this run is a first finding, not proof.`,
@@ -189,7 +191,10 @@ it("runs the cases against the real model", async () => {
   const out = join(__dirname, "results");
   mkdirSync(out, { recursive: true });
   const stamp = started.toISOString().replace(/[:.]/g, "-");
-  writeFileSync(join(out, `${stamp}.md`), report(rows, started));
-  writeFileSync(join(out, `${stamp}.json`), JSON.stringify(rows, null, 2));
+  writeFileSync(join(out, `${stamp}${label ? `-${label}` : ""}.md`), report(rows, started));
+  writeFileSync(
+    join(out, `${stamp}${label ? `-${label}` : ""}.json`),
+    JSON.stringify(rows, null, 2),
+  );
   console.info(report(rows, started));
 });
