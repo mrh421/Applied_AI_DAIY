@@ -15,6 +15,17 @@ describe("MOD-profile", () => {
     expect(getProfile()).toEqual({ levels: {} });
   });
 
+  it("reads a stored profile of another shape without failing and keeps only valid levels", () => {
+    for (const data of [{}, { levels: null }, { levels: "x" }, null, "text"]) {
+      localStore.put("profile", "profile", data);
+      expect(getProfile()).toEqual({ levels: {} });
+    }
+    localStore.put("profile", "profile", {
+      levels: { plumbing: "experienced", garden: "intermediate", cooking: "beginner" },
+    });
+    expect(getProfile()).toEqual({ levels: { plumbing: "experienced" } });
+  });
+
   it("gives beginner for an unset area (DEFAULT-BEGINNER)", () => {
     expect(levelFor("plumbing")).toBe("beginner");
   });
