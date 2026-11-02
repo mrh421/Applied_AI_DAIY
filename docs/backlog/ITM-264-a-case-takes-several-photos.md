@@ -13,8 +13,6 @@ modules:
   - MOD-history
   - MOD-consent
   - MOD-case-screens
-builds_on:
-  - ITM-263
 tests:
   - unit
   - component

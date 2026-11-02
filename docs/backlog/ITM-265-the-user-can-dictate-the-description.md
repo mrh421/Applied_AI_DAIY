@@ -11,8 +11,6 @@ modules:
   - MOD-case-screens
   - MOD-consent
   - MOD-ui-kit
-builds_on:
-  - ITM-263
 tests:
   - unit
   - component
