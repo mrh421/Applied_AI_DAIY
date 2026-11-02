@@ -1,5 +1,5 @@
 ---
-id: ITM-261
+id: ITM-269
 title: The tests of the safety chain and the browser declare themselves
 level: system
 realises:
@@ -18,7 +18,7 @@ tests:
 origin:
   - mrh (2026-11-02): set up Agent M's Tests section for the product; it counts only tests that declare themselves (MOD-test-document), so its pages showed no test at any level
 ---
-# ITM-261 The tests of the safety chain and the browser declare themselves
+# ITM-269 The tests of the safety chain and the browser declare themselves
 
 **REGISTER**
 
