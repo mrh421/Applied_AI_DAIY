@@ -18,6 +18,30 @@ We build D.AI.Y in **one run** through the whole cycle of [Agent M](https://gith
 
 ---
 
+## Where we stand (2026-11-02)
+
+The plan above is the plan of 24.10. This section is the state for the meeting; the sprint table below keeps the original numbering (0–9). In Agent M we ran **11 sprints** (`sprint/daiy/01` to `11`), because Claude Code finishes an item in hours and the sprints ended up smaller than planned.
+
+| Planned | What happened |
+|---|---|
+| Own AI access, safety core, escalation | Done (sprints daiy/01–03). The Lovable gateway is gone; the pre-check runs before the AI and enforcement after it |
+| Work packages, profile, guidance, inventory, materials, history | Done (daiy/04–08), with the sample data of the catalogue |
+| Second-hand first, comparison, 3D models, cost estimate | Done on **sample data** (daiy/04–09); no real retailer or model source |
+| Screens reachable, accessible, tested in the browser | Done (daiy/09–10): 774 unit tests and 8 browser tests, CI green; the browser tests include axe checks (WCAG 2.2 AA), 320 px wide, 200 % text and a keyboard-only flow |
+| Look and feel of the prototype | Done in daiy/11 after the first hand test: the Lovable look, up to four photos per case, dictation of the description with the browser's speech recognition (with consent) |
+| Accounts and sync (FR-08, NFR-10) | **Not built**, recorded as *Won't* for this run. Profile, inventory and history stay on the device |
+| AI test cases against the real model (level 2) | The cases are written; the runner against the real model is **not built** yet |
+| Usability test (level 3) | **Not run** yet |
+| Release (sprint 8) and manual (sprint 9) | **Not started**; Agent M's release stage is untouched |
+
+**Found by hand-testing, fixed:** pages crashed on data stored by earlier builds (now read defensively); the work page was empty when the AI repeated or mangled ids; failures of the AI were silent (now shown as a message); a case could not be continued or re-read from the history; the AI never saw the photo.
+
+**Found by hand-testing, open or on a branch:** (1) texts that the safety layer adds itself were English only, so a German case mixed languages: German versions are on a branch (ITM-270); the escalation texts and the screens stay English. (2) The fixed step "Shut off the water supply first" appeared for a vase, because the AI flagged it as water related; the prompt now limits that flag to work on a supply or drain line (on a branch, not tested with the real AI). (3) The AI's answer is slow (8 to 25 s a call on the local setup); a loading animation was added. (4) The sample 3D model links do not resolve, so no model is ever shown.
+
+**What Agent M did well and what we did around it** (for the retrospective of the whole run): it gave the requirements, use cases and architecture with sources and gates, and it tracks an item as done through a merged pull request that names its id. We built several items by hand because parallel jobs wrote three versions of the same screen, a job returned something that was not JSON, and its Tests page did not count our tests until we declared them in its format (ITM-269).
+
+---
+
 ## Process
 
 We declare Agent M's **scrum-wip** model plus the **prototyping** practice.
@@ -280,6 +304,33 @@ Every backlog item:
 
 ---
 
+## A version both colleagues can use
+
+Today the app runs on mrh's laptop: a build, a local AI server that uses mrh's Claude Code, and `localhost`. That is not something a colleague can open. What we need is **one link plus one password** that works without installing anything.
+
+**What the app needs to run.** One Node process (`.output/server/index.mjs`) that serves the pages and makes the AI calls on the server; the AI key never goes to the browser. Four settings: `AI_PROVIDER_API_KEY`, `AI_MODEL`, `AI_BASE_URL`, `AI_TIMEOUT_MS`. Profile, inventory and history live in the browser of each person, so there is no database and nothing to migrate. Each colleague's data stays on their own device.
+
+| Option | What it is | Verdict |
+|---|---|---|
+| **A · Small hosted demo** | The production build on a small host in the EU (ITM-260), a real AI key with a spending limit, a password in front | **Recommended.** Works from any browser; the cost is the AI calls |
+| B · Tunnel to mrh's laptop | A public link to the local build and to the local Claude Code AI server | Only as an emergency for a demo: it runs on mrh's own subscription, works only while the laptop is on, and the server was built for personal use, not for sharing |
+| C · Everyone runs it locally | Clone, install, build, own AI key | Too much for the colleagues; keeps the problem of the key |
+
+**Steps for A, in order:**
+
+1. **An AI key with a limit.** Decide who owns it and who pays. Set a monthly cap at the provider, and choose a fast, cheap model that reads images (the local setup is fast with a small model). Estimate: a case is about 3 to 6 calls.
+2. **A password gate.** One shared password in front of the app so that only we can spend the key. It is a small item (decision pending: demo password, yes or no). Without it the link is open to everyone who finds it.
+3. **The privacy screen and the notice.** The app already tells the person what is sent to the AI. The privacy screen with the consents (ITM-239) and local export and erase (ITM-237) are postponed; for a closed demo of colleagues the notice is enough, for anything public they are needed first.
+4. **A host.** Any host that runs a Node process, in the EU, with HTTPS and the four settings as secrets. Rebuild on every merge into `main`; the CI that already exists builds and tests the same output.
+5. **A smoke test on the live address.** Run the 10 browser tests against the URL, and one real case with a photo and one with dictation on a phone.
+6. **A short handout.** The link, the password, three sample cases, and how to report a finding (what you typed and a screenshot).
+
+**What can go wrong:** the AI is slow or down (the app shows a message, and the cases can be retried); data stored by an older build crashes a page (fixed by reading defensively, but a version number for stored data is still open); dictation works only in browsers with speech recognition (Chrome and Edge, not Firefox) and sends the sound to the browser's provider; a leaked password or key (cap and rotate).
+
+**Decisions we need in the meeting:** who owns and pays the AI key and how big the cap is; which host; password gate yes or no; whether the colleagues test with their own cases or with our three sample cases.
+
+---
+
 ## What we need from the team
 
 - [ ] Book 2–3 people for the prototype check on Mon 26.10 / Tue 27.10 (existing prototype)
@@ -288,3 +339,6 @@ Every backlog item:
 - [ ] Confirm the Product Owner's decisions in [`docs/sources/SRC-po-daiy/`](sources/SRC-po-daiy/2026-10-25/decisions.md) (still a draft) before the source is registered
 - [ ] Review the AI test cases by Tue 27.10, especially the dangerous and classification cases
 - [ ] Join the release and demo on Wed 04.11 and the closing on Thu 05.11
+- [ ] For the shared version (see [A version both colleagues can use](#a-version-both-colleagues-can-use)): decide the AI key and its cap, the host and the password gate
+- [ ] Decide whether the real retailer and 3D-model search (today sample data) is in this run or a later one
+- [ ] Read the German safety texts (ITM-270 branch) once; they are worded by Claude Code
