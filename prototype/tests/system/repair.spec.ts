@@ -39,6 +39,17 @@ test("a repair: question, guide, check-off that survives a reload", async ({ pag
   // The case is in the history.
   await page.getByRole("link", { name: "History" }).click();
   await expect(page.getByText("TAP-REPAIR The kitchen tap drips.")).toBeVisible();
+
+  // The case can be picked up again and read again from the history (UC-016).
+  await page.getByRole("button", { name: "Open" }).click();
+  await expect(page.getByText(/Replace the seal: 2 of 3 steps done/)).toBeVisible();
+  await page.getByRole("link", { name: "Continue the work: Replace the seal" }).click();
+  await expect(page.getByLabel("Done: step 2")).toBeChecked();
+  await page.goto("/history");
+  await page.getByRole("button", { name: "Open" }).click();
+  await page.getByRole("link", { name: "Read the plan again" }).click();
+  await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
+  await expect(page.getByText("A tap drips.")).toBeVisible();
 });
 
 test("the whole flow needs no account", async ({ page }) => {

@@ -2,12 +2,15 @@ import { useState } from "react";
 
 import { saveCase, useHistory, type CaseRecord } from "../history";
 import { activeOption, guidesOf, quantity } from "../materials-screens";
-import { Button, Page, StatusBadge, TextField, announce } from "../ui-kit";
+import { Button, LinkButton, Page, StatusBadge, TextField, announce } from "../ui-kit";
 
 function Record({ record, onBack }: { record: CaseRecord; onBack: () => void }) {
   const [notes, setNotes] = useState(record.notes);
   const option = activeOption(record);
-  const steps = option ? guidesOf(option).flatMap((g) => g.steps) : [];
+  const packages = option?.packages.filter((p) => p.guide) ?? [];
+  const outcomeType = record.outcome?.type;
+  const completed = record.status === "completed";
+  const base = `/case/${record.id}`;
 
   const save = () => {
     saveCase({ ...record, notes });
@@ -17,15 +20,46 @@ function Record({ record, onBack }: { record: CaseRecord; onBack: () => void }) 
   return (
     <Page title="Your case" back={{ label: "Back to history", onBack }}>
       <p>{record.description}</p>
+      <nav aria-label="Continue or read again" className="flex flex-wrap gap-2">
+        {outcomeType === "questions" && (
+          <LinkButton label="Continue with the questions" href={base} />
+        )}
+        {outcomeType === "guidance" && <LinkButton label="Read the plan again" href={base} />}
+        {outcomeType === "escalation" && <LinkButton label="Read the advice again" href={base} />}
+        {outcomeType === "guidance" && (
+          <LinkButton label="Materials and tools" href={`${base}/materials`} />
+        )}
+        {packages.map((p) => (
+          <LinkButton
+            key={p.id}
+            label={`${completed ? "Read the steps again" : "Continue the work"}: ${p.title}`}
+            href={`${base}/work/${p.id}`}
+          />
+        ))}
+      </nav>
       <h2 className="text-xl font-semibold">Steps</h2>
-      {steps.length === 0 ? (
+      {packages.length === 0 ? (
         <p>This case has no steps yet.</p>
       ) : (
-        <ol className="grid list-decimal gap-1 pl-6">
-          {steps.map((s, i) => (
-            <li key={i}>{s.text}</li>
-          ))}
-        </ol>
+        packages.map((p) => {
+          const steps = p.guide?.steps ?? [];
+          const done = record.checked[p.id] ?? [];
+          return (
+            <section key={p.id} className="grid gap-1">
+              <h3 className="font-semibold">
+                {p.title}: {done.length} of {steps.length} steps done
+              </h3>
+              <ol className="grid list-decimal gap-1 pl-6">
+                {steps.map((s) => (
+                  <li key={s.n}>
+                    {s.text}
+                    {done.includes(s.n) ? " (done)" : ""}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })
       )}
       <h2 className="text-xl font-semibold">Materials used</h2>
       {record.materialsUsed.length === 0 ? (
@@ -47,7 +81,7 @@ function Record({ record, onBack }: { record: CaseRecord; onBack: () => void }) 
   );
 }
 
-/** Ongoing and completed cases; only the notes of a record are edited here (UC-021). */
+/** Ongoing and completed cases. A case can be picked up again or read again; the notes are edited here (UC-016, UC-021). */
 export function HistoryScreen() {
   const cases = useHistory();
   const [openId, setOpenId] = useState<string | null>(null);
