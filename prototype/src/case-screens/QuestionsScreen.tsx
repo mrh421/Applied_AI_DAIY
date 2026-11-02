@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { Answer, FollowUpQuestion } from "../case-model";
 import { useCaseSession } from "../case-session";
-import { Button, Checkbox, Page, TextField, announce } from "../ui-kit";
+import { Button, Card, Checkbox, Eyebrow, Icon, Page, TextField, announce } from "../ui-kit";
 
 type Entry = { text: string; notSure: boolean };
 
@@ -20,9 +20,10 @@ function Questions(p: {
   return (
     <>
       {p.questions.map((q) => (
-        <section key={q.id} className="grid gap-1">
+        <section key={q.id} className="grid gap-2">
           <TextField
             label={q.text}
+            placeholder="Your answer (or “not sure”)"
             value={entry(q).notSure ? "" : entry(q).text}
             onChange={(text) => set(q, { text, notSure: false })}
           />
@@ -43,7 +44,7 @@ function Questions(p: {
         </section>
       ))}
       <Button
-        label="Confirm"
+        label="Continue"
         disabled={p.busy}
         onPress={() =>
           p.onSend(
@@ -72,17 +73,32 @@ export function QuestionsScreen(p: { caseId: string }) {
     );
   }
   return (
-    <Page title="A few questions">
-      <p>Answer what you can. If you do not know, choose “not sure”.</p>
-      <Questions
-        key={`${outcome.round}-${outcome.questions.map((q) => q.id).join()}`}
-        questions={outcome.questions}
-        busy={session.pending !== null}
-        onSend={(answers) => {
-          announce("Sending your answers.");
-          void answer(answers);
-        }}
-      />
+    <Page title="A few quick questions" hideTitle>
+      <Card tone="soft">
+        <Eyebrow>Your problem</Eyebrow>
+        <p className="mt-1 text-lg">{session.record.description}</p>
+      </Card>
+      <Card className="grid gap-5">
+        <h2 className="flex items-center gap-2 text-2xl">
+          <span className="text-primary">
+            <Icon name="CircleHelp" />
+          </span>{" "}
+          A few quick questions
+        </h2>
+        <p className="text-muted-foreground">
+          So we don't guess — your answers make the advice safer and more accurate. If you do not
+          know, choose “not sure”.
+        </p>
+        <Questions
+          key={`${outcome.round}-${outcome.questions.map((q) => q.id).join()}`}
+          questions={outcome.questions}
+          busy={session.pending !== null}
+          onSend={(answers) => {
+            announce("Sending your answers.");
+            void answer(answers);
+          }}
+        />
+      </Card>
     </Page>
   );
 }

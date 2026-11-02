@@ -57,7 +57,7 @@ export function LinkButton(p: { label: string; href: string; external?: boolean 
 }
 
 const FIELD =
-  "min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-[invalid=true]:border-destructive";
+  "min-h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-[invalid=true]:border-destructive";
 
 function FieldError(p: { id: string; label: string; error: string }) {
   return (
@@ -69,6 +69,7 @@ function FieldError(p: { id: string; label: string; error: string }) {
 
 export function TextField(p: {
   label: string;
+  placeholder?: string;
   value: string;
   onChange: (v: string) => void;
   error?: string;
@@ -83,6 +84,7 @@ export function TextField(p: {
     id,
     value: p.value,
     autoComplete: p.autoComplete,
+    placeholder: p.placeholder,
     "aria-invalid": p.error ? true : undefined,
     "aria-describedby": p.error ? errorId : undefined,
     className: FIELD,
@@ -202,13 +204,84 @@ export function Dialog(p: {
   );
 }
 
+/** A rounded card on the page, the container of the Lovable design. */
+export function Card(p: {
+  children: ReactNode;
+  tone?: "plain" | "soft" | "warning";
+  className?: string;
+}) {
+  const tone = p.tone ?? "plain";
+  return (
+    <section
+      className={cn(
+        "rounded-2xl border p-5 md:p-6",
+        tone === "plain" && "border-border bg-card shadow-soft",
+        tone === "soft" && "border-transparent bg-secondary",
+        tone === "warning" && "border-warning-foreground/20 bg-warning text-warning-foreground",
+        p.className,
+      )}
+    >
+      {p.children}
+    </section>
+  );
+}
+
+/** The small uppercase label above a card's text ("Your problem", "Diagnosis"). */
+export function Eyebrow(p: { children: ReactNode; primary?: boolean }) {
+  return (
+    <p
+      className={cn(
+        "text-sm font-semibold uppercase tracking-wider",
+        p.primary ? "text-primary" : "text-muted-foreground",
+      )}
+    >
+      {p.children}
+    </p>
+  );
+}
+
+/** A pill with a short fact (time, difficulty, where an offer comes from). */
+export function Badge(p: { children: ReactNode; outline?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        p.outline
+          ? "border border-border text-foreground"
+          : "bg-secondary text-secondary-foreground",
+      )}
+    >
+      {p.children}
+    </span>
+  );
+}
+
+/** A round numbered marker for the sections of a form or the steps of a list. */
+export function NumberDot(p: { n: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="mr-2 inline-flex size-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
+    >
+      {p.n}
+    </span>
+  );
+}
+
 export function Page(p: {
   title: string;
+  /** The emphasised end of the title, set in the primary colour (the start page). */
+  accent?: string;
+  /** A line below the title. */
+  lead?: string;
+  /** The title stays for screen readers; the screen shows its own heading in a card. */
+  hideTitle?: boolean;
   back?: { label: string; onBack: () => void };
   children: ReactNode;
 }) {
+  const hero = p.accent !== undefined;
   return (
-    <main className="mx-auto grid w-full min-w-0 max-w-2xl grid-cols-[minmax(0,1fr)] gap-4 break-words px-4 py-6">
+    <main className="mx-auto grid w-full min-w-0 max-w-4xl grid-cols-[minmax(0,1fr)] gap-6 break-words px-5 pb-24 pt-4">
       {p.back && (
         <div>
           <Button
@@ -219,7 +292,23 @@ export function Page(p: {
           />
         </div>
       )}
-      <h1 className="text-2xl font-semibold">{p.title}</h1>
+      <div className={hero ? "py-6 md:py-10" : p.hideTitle ? "contents" : undefined}>
+        <h1
+          className={cn(
+            hero ? "max-w-2xl text-4xl leading-tight md:text-6xl" : "text-3xl",
+            p.hideTitle && "sr-only",
+          )}
+        >
+          {p.title}
+          {hero && (
+            <>
+              {" "}
+              <em className="text-primary">{p.accent}</em>
+            </>
+          )}
+        </h1>
+        {p.lead && <p className="mt-4 max-w-xl text-lg text-muted-foreground">{p.lead}</p>}
+      </div>
       {p.children}
     </main>
   );

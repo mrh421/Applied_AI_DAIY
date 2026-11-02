@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
 import { useCaseSession } from "../case-session";
-import { Button, Page, TextField, announce } from "../ui-kit";
+import { Button, Icon, Page, TextField, announce } from "../ui-kit";
+
+const EXAMPLES = [
+  "My drawer is sticking and no longer closes properly.",
+  "The kitchen tap keeps dripping even when closed tight.",
+  "A cabinet door hangs crooked and rubs against the frame.",
+];
 import { AI_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
 
 /** The route `/`: free text, an optional photo and Confirm. With `caseId` the open case is shown again. */
@@ -44,47 +50,91 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
   }
 
   return (
-    <Page title="What needs fixing?">
-      <p>{AI_NOTICE}</p>
-      <p>{PRIVACY_NOTICE_SHORT}</p>
-      <TextField
-        label="Describe the problem"
-        multiline
-        value={text}
-        onChange={setDescription}
-        {...(error ? { error } : {})}
-      />
-      <div className="grid gap-1">
-        <label htmlFor="case-photo" className="text-sm font-medium">
-          Add a photo (optional)
-        </label>
-        <input
-          id="case-photo"
-          type="file"
-          accept="image/*"
-          className="w-full min-w-0"
-          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-        />
-      </div>
-      {photo &&
-        (consented ? (
-          <p>The photo will be kept on this device.</p>
-        ) : (
-          <div className="grid gap-1">
-            <p>{CONSENT_PURPOSES["keep-case-photos"]}</p>
-            <Button
-              label="Keep the photo"
-              variant="secondary"
-              onPress={() => {
-                giveConsent("keep-case-photos");
-                setConsented(true);
-                announce("The photo will be kept on this device.");
-              }}
+    <Page
+      title="Fix it yourself —"
+      accent="safely."
+      lead="Tell us what's broken in your own words. We check for risks, ask what's missing, and guide you step by step — using what you already own."
+    >
+      <div className="rounded-3xl border border-border bg-card/70 p-6 shadow-soft backdrop-blur md:p-8">
+        <div className="grid gap-8">
+          <section className="grid gap-3">
+            <TextField
+              label="What's broken? Describe it like you'd tell a friend."
+              multiline
+              value={text}
+              onChange={setDescription}
+              {...(error ? { error } : {})}
             />
+            <div className="flex flex-wrap gap-2">
+              {EXAMPLES.map((ex) => (
+                <button
+                  key={ex}
+                  type="button"
+                  onClick={() => setDescription(ex)}
+                  className="min-h-6 rounded-full border border-border bg-card px-3 py-1 text-left text-sm text-muted-foreground transition hover:border-primary hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  {ex}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3">
+              <label
+                htmlFor="case-photo"
+                className="inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-1.5 text-sm font-medium hover:bg-secondary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
+              >
+                <Icon name="Camera" /> Add a photo (optional)
+                <input
+                  id="case-photo"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+                />
+              </label>
+              {photo && <span className="text-sm text-muted-foreground">{photo.name}</span>}
+            </div>
+            {photo &&
+              (consented ? (
+                <p className="text-sm text-muted-foreground">
+                  The photo will be kept on this device.
+                </p>
+              ) : (
+                <div className="grid gap-2 rounded-xl border border-border bg-secondary/60 p-4 text-sm">
+                  <p>{CONSENT_PURPOSES["keep-case-photos"]}</p>
+                  <div>
+                    <Button
+                      label="Keep the photo"
+                      variant="secondary"
+                      onPress={() => {
+                        giveConsent("keep-case-photos");
+                        setConsented(true);
+                        announce("The photo will be kept on this device.");
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+          </section>
+          {notice && <p role="status">{notice}</p>}
+          <div className="grid gap-3">
+            <div>
+              <Button
+                label="Find my repair"
+                onPress={() => void confirm()}
+                disabled={session?.pending != null}
+              />
+            </div>
+            <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <span className="mt-0.5">
+                <Icon name="ShieldCheck" />
+              </span>
+              <span>
+                {AI_NOTICE} {PRIVACY_NOTICE_SHORT}
+              </span>
+            </p>
           </div>
-        ))}
-      {notice && <p>{notice}</p>}
-      <Button label="Confirm" onPress={() => void confirm()} disabled={session?.pending != null} />
+        </div>
+      </div>
     </Page>
   );
 }

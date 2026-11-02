@@ -1,7 +1,7 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-import { Button } from "../ui-kit";
+import { Button, Icon } from "../ui-kit";
 
 // These screens bring their own back control.
 const OWN_BACK = [/\/materials$/, /\/offers\/[^/]+$/];
@@ -33,23 +33,34 @@ export function Layout({ children }: { children: ReactNode }) {
   const showBack = pathname !== "/" && !OWN_BACK.some((r) => r.test(pathname));
 
   return (
-    <>
-      <header className="mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-4 gap-y-2 px-4 pt-4">
+    <div className="min-h-screen bg-background bg-hero">
+      <header className="mx-auto flex w-full max-w-4xl items-center justify-between gap-4 px-5 py-6">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight"
+        >
+          <Icon name="Sprout" /> <span>D.AI.Y</span>
+        </Link>
+        <span className="hidden items-center gap-1.5 text-sm text-muted-foreground sm:flex">
+          <Icon name="Leaf" /> Repair first. Reuse second.
+        </span>
+      </header>
+      <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center gap-x-4 gap-y-2 px-5">
         <nav aria-label="Main" className="flex flex-wrap gap-x-4 gap-y-1">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="min-h-6 text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              activeProps={{ "aria-current": "page" }}
+              className="min-h-6 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              activeProps={{ "aria-current": "page", className: "text-foreground underline" }}
             >
               {n.label}
             </Link>
           ))}
         </nav>
         {showBack && <Button label="Back" icon="ArrowLeft" variant="secondary" onPress={goBack} />}
-      </header>
+      </div>
       {children}
-    </>
+    </div>
   );
 }

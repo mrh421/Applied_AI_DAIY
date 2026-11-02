@@ -5,14 +5,14 @@ import { expect, test } from "@playwright/test";
 
 test("a repair: question, guide, check-off that survives a reload", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "What needs fixing?" })).toBeVisible();
-  await page.getByLabel("Describe the problem").fill("TAP-REPAIR The kitchen tap drips.");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+  await page.getByLabel(/What.s broken/).fill("TAP-REPAIR The kitchen tap drips.");
+  await page.getByRole("button", { name: "Find my repair" }).click();
 
   // The assessment asks one question first.
-  await expect(page.getByRole("heading", { name: "A few questions" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "A few quick questions" })).toBeVisible();
   await page.getByLabel("How old is the tap?", { exact: true }).fill("About five years");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
 
   // Then the plan with its steps.
   await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
