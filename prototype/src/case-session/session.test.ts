@@ -76,9 +76,9 @@ describe("start and answer", () => {
     pipe.assessCase.mockResolvedValue(guidance);
     const { result } = renderHook(() => useCaseSession());
     const file = new File(["abc"], "p.jpg", { type: "image/jpeg" });
-    await act(() => result.current.start({ description: "Tap", photo: file }));
-    expect(reqOf(0).photo).toEqual({ mediaType: "image/jpeg", dataBase64: btoa("abc") });
-    expect(result.current.session?.photo).toBeTruthy();
+    await act(() => result.current.start({ description: "Tap", photos: [file] }));
+    expect(reqOf(0).photos).toEqual([{ mediaType: "image/jpeg", dataBase64: btoa("abc") }]);
+    expect(result.current.session?.photos).toHaveLength(1);
     expect(result.current.session?.record.hadPhoto).toBe(true);
   });
 
@@ -152,14 +152,14 @@ describe("open store (GO-BACK) and history", () => {
     await act(() =>
       first.result.current.start({
         description: "Tap",
-        photo: new File(["abc"], "p.jpg", { type: "image/jpeg" }),
+        photos: [new File(["abc"], "p.jpg", { type: "image/jpeg" })],
       }),
     );
     const id = first.result.current.session!.record.id;
     first.unmount();
     const second = renderHook(() => useCaseSession(id));
     expect(second.result.current.session?.record.description).toBe("Tap");
-    expect(second.result.current.session?.photo).toBeTruthy();
+    expect(second.result.current.session?.photos).toHaveLength(1);
   });
 
   it("saves the record after every change and a check-off survives a reload", async () => {

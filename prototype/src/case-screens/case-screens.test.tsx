@@ -68,7 +68,7 @@ describe("CaseInputScreen", () => {
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
     const req: CaseRequest = pipe.assessCase.mock.calls[0]![0].data;
     expect(req.description).toBe("My tap drips");
-    expect(req.photo).toBeUndefined();
+    expect(req.photos).toBeUndefined();
     await waitFor(() => expect(onStarted).toHaveBeenCalledTimes(1));
   });
 
@@ -87,10 +87,10 @@ describe("CaseInputScreen", () => {
       screen.getByLabelText(/photo/i),
       new File(["abc"], "p.jpg", { type: "image/jpeg" }),
     );
-    expect(screen.getByText(/after the case, so you can see it again/i)).toBeInTheDocument();
+    expect(screen.getByText(/after the case, so you can see them again/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
-    expect(pipe.assessCase.mock.calls[0]![0].data.photo).toMatchObject({
+    expect(pipe.assessCase.mock.calls[0]![0].data.photos?.[0]).toMatchObject({
       mediaType: "image/jpeg",
     });
     expect(hasConsent("keep-case-photos")).toBe(false);
@@ -108,8 +108,35 @@ describe("CaseInputScreen", () => {
       "src",
       "blob:preview",
     );
-    await userEvent.click(screen.getByRole("button", { name: "Remove the photo" }));
+    await userEvent.click(screen.getByRole("button", { name: "Remove the photo tap.jpg" }));
     expect(screen.queryByRole("img", { name: /your photo/i })).not.toBeInTheDocument();
+  });
+
+  it("takes up to four photos, shows each one and removes just the chosen one", async () => {
+    let n = 0;
+    URL.createObjectURL = vi.fn(() => `blob:preview-${++n}`);
+    URL.revokeObjectURL = vi.fn();
+    pipe.assessCase.mockResolvedValue(questions());
+    render(<CaseInputScreen />);
+    const file = (name: string) => new File([name], name, { type: "image/jpeg" });
+    await userEvent.upload(screen.getByLabelText(/add a photo/i), [file("a.jpg"), file("b.jpg")]);
+    await userEvent.upload(screen.getByLabelText(/add another photo/i), [
+      file("c.jpg"),
+      file("d.jpg"),
+      file("e.jpg"),
+    ]);
+    expect(screen.getAllByRole("img", { name: /your photo/i })).toHaveLength(4);
+    expect(screen.getByRole("status")).toHaveTextContent(/up to 4 photos/i);
+    expect(screen.queryByRole("img", { name: "Your photo: e.jpg" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Remove the photo b.jpg" }));
+    expect(screen.getAllByRole("img", { name: /your photo/i })).toHaveLength(3);
+    expect(screen.getByRole("img", { name: "Your photo: a.jpg" })).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: "Your photo: b.jpg" })).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/describe/i), "Rust");
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
+    await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
+    const req: CaseRequest = pipe.assessCase.mock.calls[0]![0].data;
+    expect(req.photos).toHaveLength(3);
   });
 
   it("gives the consent with one action", async () => {

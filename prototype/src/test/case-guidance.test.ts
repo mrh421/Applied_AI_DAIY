@@ -117,11 +117,11 @@ describe("a case from the first description to a guide (UC-001, UC-002)", () => 
     const { result } = renderHook(() => useCaseSession());
     const file = new File(["abc"], "tap.jpg", { type: "image/jpeg" });
 
-    await act(() => result.current.start({ description: "The tap drips.", photo: file }));
+    await act(() => result.current.start({ description: "The tap drips.", photos: [file] }));
 
     expect(result.current.session?.record.hadPhoto).toBe(true);
-    expect(result.current.session?.photo).toBeTruthy();
-    expect(requestOf(0).photo).toEqual({ mediaType: "image/jpeg", dataBase64: btoa("abc") });
+    expect(result.current.session?.photos).toHaveLength(1);
+    expect(requestOf(0).photos).toEqual([{ mediaType: "image/jpeg", dataBase64: btoa("abc") }]);
   });
 });
 

@@ -97,7 +97,7 @@ describe("draftAssessment", () => {
   });
 
   it("passes the photo as image content, and none when absent", async () => {
-    await draftAssessment(caseReq({ photo: { mediaType: "image/jpeg", dataBase64: "QUJD" } }));
+    await draftAssessment(caseReq({ photos: [{ mediaType: "image/jpeg", dataBase64: "QUJD" }] }));
     expect(lastCall().content).toContainEqual({
       type: "image",
       mediaType: "image/jpeg",

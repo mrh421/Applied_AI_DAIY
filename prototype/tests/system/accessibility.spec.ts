@@ -160,3 +160,31 @@ test("a full case by keyboard alone, with a visible focus", async ({ page }) => 
   await page.keyboard.press("Space");
   await expect(page.getByLabel("Done: step 1")).toBeChecked();
 });
+
+// ITM-264: several photos on the start page, each with its own text alternative and remove button.
+test("several photos on the start page: named, removable by keyboard, no violation, no sideways scroll", async ({
+  page,
+}) => {
+  const jpeg = (name: string) => ({
+    name,
+    mimeType: "image/jpeg",
+    buffer: Buffer.from(
+      "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAAP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==",
+      "base64",
+    ),
+  });
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+    await page.getByLabel(/add a photo/i).setInputFiles([jpeg("a.jpg"), jpeg("b.jpg")]);
+    await expect(page.getByRole("img", { name: "Your photo: a.jpg" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
+    expect(await axeViolations(page)).toEqual([]);
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  }
+  await page.getByRole("button", { name: "Remove the photo a.jpg" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("img", { name: "Your photo: a.jpg" })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
+});
