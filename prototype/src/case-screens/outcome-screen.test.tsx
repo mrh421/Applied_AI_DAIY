@@ -119,6 +119,39 @@ describe("OutcomeScreen guidance", () => {
     expect(screen.getByText("Water may still drip from the pipe.")).toBeInTheDocument();
   });
 
+  it("shows the estimated cost of the option, a range when the AI estimated the prices", async () => {
+    const priced = {
+      ...guidance,
+      options: [
+        {
+          id: "o1",
+          kind: "repair" as const,
+          title: "Repair the tap",
+          packages: [
+            {
+              ...pkg,
+              guide: {
+                ...pkg.guide!,
+                materials: [{ ...pkg.guide!.materials[0]!, estimatedPrice: { min: 12, max: 25 } }],
+              },
+            },
+          ],
+        },
+      ],
+    } as CaseOutcome;
+    const id = await startWith(priced);
+    render(<OutcomeScreen caseId={id} />);
+    expect(screen.getByTestId("cost-summary")).toHaveTextContent(
+      "Materials: about 12 EUR to 25 EUR (an estimate, please check the prices)",
+    );
+  });
+
+  it("says that prices are unknown when there is neither an offer nor an estimate", async () => {
+    const id = await startWith(guidance);
+    render(<OutcomeScreen caseId={id} />);
+    expect(screen.getByTestId("cost-summary")).toHaveTextContent("some prices are unknown");
+  });
+
   it("numbers the steps (NUMBERED-STEPS)", async () => {
     const id = await startWith(guidance);
     render(<OutcomeScreen caseId={id} />);

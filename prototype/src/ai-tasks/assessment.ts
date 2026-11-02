@@ -15,6 +15,7 @@ function instructions(round: CaseRequest["round"]): string {
     "- Name what information is missing. Ask for it in follow-up questions (set each question's topic), in everyday language.",
     "- If the case concerns a device, ask for its model and variant before you name any part.",
     "- Never present an assumption as a fact. List assumptions as assumptions.",
+    "- For each material, set estimatedPrice to a rough price range in euro for the whole quantity named, as a typical retail price in Germany, for example {min: 12, max: 25}. Set it to null when you cannot tell. Never name a shop or a product link. It is an estimate, not an offer.",
     "- Set the risk, the hazards, the flags and the kinds of the schema honestly. Use the inventory to prefer what the person already owns.",
     "- Split a project with several tasks into work packages. Give each package one label, a short reason and a handover brief for a professional.",
     "- If a label is uncertain, choose the stricter label, set labelUncertain and state the deciding information that would change it.",

@@ -1,12 +1,10 @@
 import { useState } from "react";
 
-import { searchOffers, type Offer } from "../catalogue";
-import { estimateCosts } from "../cost-estimate";
 import { useCaseSession } from "../case-session";
 import { useInventory } from "../inventory";
-import { matchStock } from "../stock-matching";
 import { StatusBadge, TextField } from "../ui-kit";
-import { activeOption, guidesOf, money, parseAmount } from "./plan";
+import { costsOf, totalText } from "./costs";
+import { parseAmount } from "./plan";
 
 /** A budget field, the total per option against it, and the prices and fits to check. */
 export function BudgetPanel({ caseId }: { caseId: string }) {
@@ -34,21 +32,7 @@ export function BudgetPanel({ caseId }: { caseId: string }) {
   };
 
   const options = record.outcome?.type === "guidance" ? record.outcome.options : [];
-  const { costs, noneWithinBudget } = estimateCosts(
-    options.map((o) => {
-      const match = matchStock(guidesOf(o), inventory);
-      const chosen: Record<string, Offer | null> = {};
-      for (const m of match.materials) {
-        const id = record.chosenOffers[m.need.id];
-        if (m.status.kind === "available" || id === undefined) continue;
-        const found = searchOffers({ name: m.need.name, spec: m.need.spec }, m.status.missing);
-        const offer = found.offers.find((x) => x.id === id);
-        if (offer) chosen[m.need.id] = offer;
-      }
-      return { optionId: o.id, match, chosen };
-    }),
-    record.budget,
-  );
+  const { costs, noneWithinBudget } = costsOf(record, options, inventory, record.budget);
 
   return (
     <section aria-label="Cost estimate" className="grid gap-3">
@@ -64,20 +48,25 @@ export function BudgetPanel({ caseId }: { caseId: string }) {
         return (
           <div key={c.optionId} className="grid gap-1">
             <h3 className="font-medium">{title}</h3>
-            <p>
-              {`Total: ${money(c.total)}`}
-              {c.incomplete ? " (some prices are unknown)" : ""}
-            </p>
+            <p>{`Total: ${totalText(c)}`}</p>
             {c.budget === "within" && (
               <StatusBadge tone="ok" icon="CircleCheck" text="within budget" />
+            )}
+            {c.budget === "may-exceed" && (
+              <StatusBadge tone="warning" icon="CircleHelp" text="may exceed budget" />
             )}
             {c.budget === "exceeds" && (
               <StatusBadge tone="danger" icon="CircleX" text="exceeds budget" />
             )}
             <ul className="list-disc pl-5 text-sm">
               {c.lines.flatMap((l) => [
-                l.amount === null && !l.fromOwnStock ? (
+                l.amount === null && !l.estimate && !l.fromOwnStock ? (
                   <li key={`${l.name}-none`}>{`No price found: ${l.name}`}</li>
+                ) : null,
+                l.estimate ? (
+                  <li key={`${l.name}-est`}>
+                    {`Estimated price: ${l.name}, about ${Math.round(l.estimate.min)} to ${Math.round(l.estimate.max)} EUR`}
+                  </li>
                 ) : null,
                 l.priceToCheck ? (
                   <li key={`${l.name}-price`}>{`Price to check: ${l.name}`}</li>

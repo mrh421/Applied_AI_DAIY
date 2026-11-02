@@ -119,6 +119,13 @@ describe("draftAssessment", () => {
     expect(s).toContain("language of the user");
   });
 
+  it("asks for a rough price range per material and forbids shops and links", async () => {
+    await draftAssessment(caseReq());
+    const s = lastCall().system;
+    expect(s).toMatch(/estimatedPrice.*rough price range/);
+    expect(s).toMatch(/Never name a shop/);
+  });
+
   it("forbids questions at round 2 and not before", async () => {
     await draftAssessment(caseReq({ round: 2 }));
     const r2 = `${lastCall().system}\n${textOf(lastCall())}`;

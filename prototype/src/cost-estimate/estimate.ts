@@ -8,14 +8,18 @@ export type CostLine = {
   fromOwnStock: boolean;
   priceToCheck: boolean;
   fitToCheck: boolean;
+  /** The AI's rough price range for the whole quantity, given only when no offer of the catalogue fits. */
+  estimate?: { min: number; max: number };
 };
 
 export type OptionCost = {
   optionId: string;
   total: Money;
   incomplete: boolean;
+  /** The total as a range, given when some price is an AI estimate: the known prices plus the estimates. */
+  estimatedTotal?: { min: number; max: number };
   lines: CostLine[];
-  budget: "within" | "exceeds" | "no-budget";
+  budget: "within" | "may-exceed" | "exceeds" | "no-budget";
 };
 
 type Option = {
@@ -50,7 +54,15 @@ function costLine(m: MaterialMatch, chosen: Record<string, Offer | null>): CostL
     unitPrice !== null &&
     offer.packSize.unit === missing.unit;
   if (!usable) {
-    return { name, amount: null, fromOwnStock: false, priceToCheck: false, fitToCheck: false };
+    const guess = m.need.estimatedPrice;
+    return {
+      name,
+      amount: null,
+      fromOwnStock: false,
+      priceToCheck: false,
+      fitToCheck: false,
+      ...(guess ? { estimate: { min: guess.min, max: Math.max(guess.min, guess.max) } } : {}),
+    };
   }
   const packs = Math.ceil(missing.amount / offer.packSize.amount);
   return {
@@ -62,6 +74,18 @@ function costLine(m: MaterialMatch, chosen: Record<string, Offer | null>): CostL
   };
 }
 
+/** Within only when even the upper end of the estimate fits; exceeds only when even the lower end does not. */
+function budgetStatus(
+  total: number,
+  estimated: { min: number; max: number } | undefined,
+  budget: Money | null,
+): OptionCost["budget"] {
+  if (budget === null) return "no-budget";
+  if (!estimated) return total <= budget.amount ? "within" : "exceeds";
+  if (estimated.max <= budget.amount) return "within";
+  return estimated.min > budget.amount ? "exceeds" : "may-exceed";
+}
+
 /** The estimated cost of each option, compared with the budget (TOTAL-COST-ESTIMATE, BUDGET-RESPECTED). */
 export function estimateCosts(
   options: Option[],
@@ -70,12 +94,21 @@ export function estimateCosts(
   const costs = options.map((o): OptionCost => {
     const lines = o.match.materials.map((m) => costLine(m, o.chosen));
     const total = cents(lines.reduce((sum, l) => sum + (l.amount?.amount ?? 0), 0));
+    const estimates = lines.flatMap((l) => (l.estimate ? [l.estimate] : []));
+    const estimatedTotal =
+      estimates.length > 0
+        ? {
+            min: cents(total + estimates.reduce((sum, e) => sum + e.min, 0)),
+            max: cents(total + estimates.reduce((sum, e) => sum + e.max, 0)),
+          }
+        : undefined;
     return {
       optionId: o.optionId,
       total: { amount: total, currency: "EUR" },
-      incomplete: lines.some((l) => l.amount === null),
+      incomplete: lines.some((l) => l.amount === null && !l.estimate),
+      ...(estimatedTotal ? { estimatedTotal } : {}),
       lines,
-      budget: budget === null ? "no-budget" : total <= budget.amount ? "within" : "exceeds",
+      budget: budgetStatus(total, estimatedTotal, budget),
     };
   });
   const noneWithinBudget =
