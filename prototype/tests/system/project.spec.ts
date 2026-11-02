@@ -3,6 +3,11 @@ import { expect, test } from "@playwright/test";
 // UC-005, UC-007, UC-008: a project with work packages: one to do yourself, one for a professional,
 // with the materials of the guide against the inventory.
 
+// TST-020 · level: system · module: system
+// guards: UC-005; UC-007; PACKAGE-LABEL; HANDOVER-BRIEF; MATERIALS-LIST
+// given: the production build, a stored tool, and a project whose plan has one package to do yourself and one for a professional
+// input: the description of the project
+// expect: the plan shows both labels and the brief for the professional with a copy action, and the materials page lists the materials against the inventory
 test("a project with a DIY package, a professional package and its materials", async ({ page }) => {
   await page.goto("/inventory");
   await page.getByLabel("Tool name").fill("Spanner");
