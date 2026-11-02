@@ -118,6 +118,18 @@ describe("ExecutionScreen", () => {
     expect(pipe.explainSteps.mock.calls[0]![0].data).toMatchObject({ onlyStep: 2, simpler: true });
   });
 
+  it("says at the step when the explanation fails, and lets the user try again", async () => {
+    seed(guidance([diyPackage]));
+    pipe.explainSteps.mockResolvedValue({
+      type: "notice",
+      notice: { reason: "offline", text: "The AI did not answer in time.", missing: [] },
+    });
+    render(<ExecutionScreen caseId="c1" packageId="p1" />);
+    await userEvent.click(screen.getByRole("button", { name: /explain step 2 again/i }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("The AI did not answer in time.");
+    expect(screen.getByRole("button", { name: /explain step 2 again/i })).toBeEnabled();
+  });
+
   it("shows the answer to a question in the context of the step", async () => {
     seed(guidance([diyPackage]));
     pipe.answerStepQuestion.mockResolvedValue({ type: "answer", text: "Turn it anticlockwise." });
