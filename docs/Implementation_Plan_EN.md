@@ -27,10 +27,10 @@ The plan above is the plan of 24.10. This section is the state for the meeting; 
 | Own AI access, safety core, escalation | Done (sprints daiy/01–03). The Lovable gateway is gone; the pre-check runs before the AI and enforcement after it |
 | Work packages, profile, guidance, inventory, materials, history | Done (daiy/04–08), with the sample data of the catalogue |
 | Second-hand first, comparison, 3D models, cost estimate | Done on **sample data** (daiy/04–09); no real retailer or model source |
-| Screens reachable, accessible, tested in the browser | Done (daiy/09–10): 774 unit tests and 8 browser tests, CI green; the browser tests include axe checks (WCAG 2.2 AA), 320 px wide, 200 % text and a keyboard-only flow |
+| Screens reachable, accessible, tested in the browser | Done (daiy/09–10): 786 unit tests and 10 browser tests, CI green; the browser tests include axe checks (WCAG 2.2 AA), 320 px wide, 200 % text and a keyboard-only flow |
 | Look and feel of the prototype | Done in daiy/11 after the first hand test: the Lovable look, up to four photos per case, dictation of the description with the browser's speech recognition (with consent) |
 | Accounts and sync (FR-08, NFR-10) | **Not built**, recorded as *Won't* for this run. Profile, inventory and history stay on the device |
-| AI test cases against the real model (level 2) | The cases are written; the runner against the real model is **not built** yet |
+| AI test cases against the real model (level 2) | The cases are drafted in `prototype/eval/`; the runner against the real model is **not built** yet |
 | Usability test (level 3) | **Not run** yet |
 | Release (sprint 8) and manual (sprint 9) | **Not started**; Agent M's release stage is untouched |
 
@@ -318,7 +318,7 @@ Today the app runs on mrh's laptop: a build, a local AI server that uses mrh's C
 
 **Steps for A, in order:**
 
-1. **An AI key with a limit.** Decide who owns it and who pays. Set a monthly cap at the provider, and choose a fast, cheap model that reads images (the local setup is fast with a small model). Estimate: a case is about 3 to 6 calls.
+1. **An AI key with a limit.** Decide who owns it and who pays. Set a monthly cap at the provider, and choose a fast, cheap model that reads images (the local setup is fast with a small model). Rough estimate, to be measured: a case takes a few calls (assessment, questions, explanations, step questions).
 2. **A password gate.** One shared password in front of the app so that only we can spend the key. It is a small item (decision pending: demo password, yes or no). Without it the link is open to everyone who finds it.
 3. **The privacy screen and the notice.** The app already tells the person what is sent to the AI. The privacy screen with the consents (ITM-239) and local export and erase (ITM-237) are postponed; for a closed demo of colleagues the notice is enough, for anything public they are needed first.
 4. **A host.** Any host that runs a Node process, in the EU, with HTTPS and the four settings as secrets. Rebuild on every merge into `main`; the CI that already exists builds and tests the same output.
