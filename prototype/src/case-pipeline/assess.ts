@@ -1,7 +1,7 @@
 import { draftAssessment } from "../ai-tasks";
 import { rankOptions, schemas } from "../case-model";
 import type { CaseOutcome } from "../case-model";
-import { precheck } from "../hazard-precheck";
+import { detectLanguage, precheck } from "../hazard-precheck";
 import { noticesFor } from "../legal-notices";
 import { checkAssessmentDraft } from "../output-check";
 import { enforceSafety } from "../safety-enforcement";
@@ -27,7 +27,8 @@ async function pipe(input: unknown): Promise<{ outcome: CaseOutcome; failures: s
   }
 
   const checked = checkAssessmentDraft(raw, { round: req.round });
-  const ctx = { round: req.round, answers: req.answers };
+  const language = detectLanguage([req.description, ...req.answers.map((a) => a.text)]);
+  const ctx = { round: req.round, answers: req.answers, language };
   let draft;
   if (checked.ok) {
     draft = checked.value;

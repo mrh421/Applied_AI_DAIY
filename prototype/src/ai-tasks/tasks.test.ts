@@ -126,6 +126,13 @@ describe("draftAssessment", () => {
     expect(s).toMatch(/Never name a shop/);
   });
 
+  it("limits the water flag to work on a water supply or drain line", async () => {
+    await draftAssessment(caseReq());
+    const s = lastCall().system;
+    expect(s).toMatch(/waterRelated.*water supply or drain line/);
+    expect(s).toMatch(/vase/);
+  });
+
   it("forbids questions at round 2 and not before", async () => {
     await draftAssessment(caseReq({ round: 2 }));
     const r2 = `${lastCall().system}\n${textOf(lastCall())}`;

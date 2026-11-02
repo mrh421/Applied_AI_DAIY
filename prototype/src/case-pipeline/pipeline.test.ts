@@ -137,6 +137,25 @@ describe("assessCase", () => {
     expect(o.notices.map((x) => x.kind)).toEqual(["permit-free"]);
   });
 
+  it("asks the fixed device questions in the language of the description", async () => {
+    ai.draftAssessment.mockResolvedValue({
+      ...answerDraft,
+      device: { concernsDevice: true, modelKnown: false },
+    });
+    const german = await runAssess({
+      ...caseRequest,
+      description: "Mein Drucker ist kaputt und druckt nicht mehr.",
+    });
+    const english = await runAssess(caseRequest);
+    for (const [o, word] of [
+      [german, "Typenschild"],
+      [english, "rating plate"],
+    ] as const) {
+      if (o.type !== "questions") throw new Error(`expected questions, got ${o.type}`);
+      expect(o.questions[0]!.text).toContain(word);
+    }
+  });
+
   it("carries 'check locally' for a fence case (location-dependent rule)", async () => {
     ai.draftAssessment.mockResolvedValue({
       ...answerDraft,
