@@ -23,15 +23,47 @@ export type CaseRecord = {
   materialsUsed: { name: string; quantity: Quantity; inventoryItemId?: string }[];
 };
 
+/**
+ * A stored case as the screens expect it. A record written by an earlier version may lack fields that
+ * were added later (offers, explanations, notices, assumptions, ...); each missing field gets its empty
+ * value, so opening an old case never takes a page down.
+ */
+export function normalizeCase(stored: CaseRecord): CaseRecord {
+  const outcome = stored.outcome;
+  return {
+    ...stored,
+    answers: stored.answers ?? [],
+    round: stored.round ?? 0,
+    chosenOptionId: stored.chosenOptionId ?? null,
+    chosenOffers: stored.chosenOffers ?? {},
+    explanations: stored.explanations ?? {},
+    checked: stored.checked ?? {},
+    notes: stored.notes ?? "",
+    budget: stored.budget ?? null,
+    materialsUsed: stored.materialsUsed ?? [],
+    outcome:
+      outcome?.type === "guidance"
+        ? {
+            ...outcome,
+            assumptions: outcome.assumptions ?? [],
+            notices: outcome.notices ?? [],
+            photoAlt: outcome.photoAlt ?? null,
+            options: (outcome.options ?? []).map((o) => ({ ...o, packages: o.packages ?? [] })),
+          }
+        : (outcome ?? null),
+  };
+}
+
 export function listCases(): CaseRecord[] {
   return localStore
     .list<CaseRecord>("cases")
-    .map((r) => r.data)
+    .map((r) => normalizeCase(r.data))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function getCase(id: string): CaseRecord | undefined {
-  return localStore.get<CaseRecord>("cases", id)?.data;
+  const stored = localStore.get<CaseRecord>("cases", id)?.data;
+  return stored ? normalizeCase(stored) : undefined;
 }
 
 export function saveCase(record: CaseRecord): void {
