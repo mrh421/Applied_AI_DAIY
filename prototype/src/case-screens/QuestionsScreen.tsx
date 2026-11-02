@@ -43,20 +43,22 @@ function Questions(p: {
           />
         </section>
       ))}
-      <Button
-        label="Continue"
-        disabled={p.busy}
-        onPress={() =>
-          p.onSend(
-            p.questions.map((q) => ({
-              questionId: q.id,
-              topic: q.topic,
-              text: entry(q).notSure ? "" : entry(q).text.trim(),
-              notSure: entry(q).notSure,
-            })),
-          )
-        }
-      />
+      <div>
+        <Button
+          label="Continue"
+          disabled={p.busy}
+          onPress={() =>
+            p.onSend(
+              p.questions.map((q) => ({
+                questionId: q.id,
+                topic: q.topic,
+                text: entry(q).notSure ? "" : entry(q).text.trim(),
+                notSure: entry(q).notSure,
+              })),
+            )
+          }
+        />
+      </div>
     </>
   );
 }
@@ -79,12 +81,12 @@ export function QuestionsScreen(p: { caseId: string }) {
         <p className="mt-1 text-lg">{session.record.description}</p>
       </Card>
       <Card className="grid gap-5">
-        <h2 className="flex items-center gap-2 text-2xl">
+        <h1 className="flex items-center gap-2 text-2xl">
           <span className="text-primary">
             <Icon name="CircleHelp" />
           </span>{" "}
           A few quick questions
-        </h2>
+        </h1>
         <p className="text-muted-foreground">
           So we don't guess — your answers make the advice safer and more accurate. If you do not
           know, choose “not sure”.

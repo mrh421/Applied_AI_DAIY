@@ -10,7 +10,10 @@ export function CaseNav({ caseId }: { caseId: string }) {
     outcome.options.find((o) => o.id === session?.record.chosenOptionId) ?? outcome.options[0];
   const packages = option?.packages.filter((p) => p.guide) ?? [];
   return (
-    <nav aria-label="Next steps" className="mx-auto grid w-full max-w-2xl gap-2 px-4 pb-6">
+    <nav
+      aria-label="Next steps"
+      className="mx-auto flex w-full max-w-4xl flex-wrap gap-2 px-5 pb-24"
+    >
       <LinkButton label="Materials and tools" href={`/case/${caseId}/materials`} />
       {packages.map((p) => (
         <LinkButton

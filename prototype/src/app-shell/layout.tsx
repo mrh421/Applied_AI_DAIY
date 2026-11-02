@@ -39,7 +39,10 @@ export function Layout({ children }: { children: ReactNode }) {
           to="/"
           className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight"
         >
-          <Icon name="Sprout" /> <span>D.AI.Y</span>
+          <span className="text-primary [&>svg]:size-6">
+            <Icon name="Sprout" />
+          </span>{" "}
+          <span>D.AI.Y</span>
         </Link>
         <span className="hidden items-center gap-1.5 text-sm text-muted-foreground sm:flex">
           <Icon name="Leaf" /> Repair first. Reuse second.

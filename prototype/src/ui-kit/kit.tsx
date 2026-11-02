@@ -274,7 +274,7 @@ export function Page(p: {
   accent?: string;
   /** A line below the title. */
   lead?: string;
-  /** The title stays for screen readers; the screen shows its own heading in a card. */
+  /** The screen shows its own h1, for instance inside a card. */
   hideTitle?: boolean;
   back?: { label: string; onBack: () => void };
   children: ReactNode;
@@ -292,23 +292,20 @@ export function Page(p: {
           />
         </div>
       )}
-      <div className={hero ? "py-6 md:py-10" : p.hideTitle ? "contents" : undefined}>
-        <h1
-          className={cn(
-            hero ? "max-w-2xl text-4xl leading-tight md:text-6xl" : "text-3xl",
-            p.hideTitle && "sr-only",
-          )}
-        >
-          {p.title}
-          {hero && (
-            <>
-              {" "}
-              <em className="text-primary">{p.accent}</em>
-            </>
-          )}
-        </h1>
-        {p.lead && <p className="mt-4 max-w-xl text-lg text-muted-foreground">{p.lead}</p>}
-      </div>
+      {!p.hideTitle && (
+        <div className={hero ? "py-6 md:py-10" : undefined}>
+          <h1 className={hero ? "max-w-2xl text-4xl leading-tight md:text-6xl" : "text-3xl"}>
+            {p.title}
+            {hero && (
+              <>
+                {" "}
+                <em className="text-primary">{p.accent}</em>
+              </>
+            )}
+          </h1>
+          {p.lead && <p className="mt-4 max-w-xl text-lg text-muted-foreground">{p.lead}</p>}
+        </div>
+      )}
       {p.children}
     </main>
   );
