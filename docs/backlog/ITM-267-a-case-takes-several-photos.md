@@ -1,5 +1,5 @@
 ---
-id: ITM-264
+id: ITM-267
 title: A case takes several photos
 level: module
 realises:
@@ -20,7 +20,7 @@ tests:
 origin:
   - mrh (2026-11-02): a photo that was attached to a case was not seen by the AI and not shown on the start page; the user wants to attach several photos and see them in a small window
 ---
-# ITM-264 A case takes several photos
+# ITM-267 A case takes several photos
 
 **REGISTER**
 
@@ -38,4 +38,4 @@ On the start page the user attaches up to four photos to a case. Each chosen pho
 
 ## Priority
 
-Should: planned for sprint 11, after ITM-263 (the start page takes its look from it).
+Should: planned for sprint 11, after ITM-266 (the start page takes its look from it).

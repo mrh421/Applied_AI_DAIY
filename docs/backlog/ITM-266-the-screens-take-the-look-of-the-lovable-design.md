@@ -1,5 +1,5 @@
 ---
-id: ITM-263
+id: ITM-266
 title: The screens take the look of the Lovable design
 level: module
 realises:
@@ -18,7 +18,7 @@ tests:
 origin:
   - mrh (2026-11-02): the team chose six screens of the Lovable prototype as the key screens of the presentation; to keep the product from looking less careful than the prototype, the screens take its look exactly (colours, type, spacing, card shapes), without taking back its logic
 ---
-# ITM-263 The screens take the look of the Lovable design
+# ITM-266 The screens take the look of the Lovable design
 
 **REGISTER**
 
