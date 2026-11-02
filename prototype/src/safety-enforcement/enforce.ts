@@ -14,9 +14,11 @@ import type {
   WorkPackage,
 } from "../case-model";
 import { detectHazards, escalationFor, opensHousing } from "../hazard-precheck";
-import { FIXED_QUESTIONS, FIXED_TEXTS } from "./fixed";
+import { FIXED_BY_LANGUAGE, isFixedText } from "./fixed";
+import type { FixedLanguage, FixedTexts } from "./fixed";
 
-export type EnforceContext = { round: 0 | 1 | 2; answers: Answer[] };
+/** `language` is the language of the fixed texts and questions (the language the person writes in). */
+export type EnforceContext = { round: 0 | 1 | 2; answers: Answer[]; language?: FixedLanguage };
 
 const unique = <T>(items: T[]): T[] => [...new Set(items)];
 
@@ -74,22 +76,23 @@ function fixedStep(text: string): Step {
   };
 }
 
-function withFixedSafetySteps(pkg: WorkPackage, guide: Guide): Guide {
+function withFixedSafetySteps(pkg: WorkPackage, guide: Guide, fixed: FixedTexts): Guide {
   let steps = [...guide.steps];
-  const has = (text: string) => steps.some((s) => s.text === text);
+  const has = (key: keyof FixedTexts) => steps.some((s) => isFixedText(key, s.text));
   const firstOpening = steps.findIndex((s) => s.opensDevice);
-  if (firstOpening >= 0 && !has(FIXED_TEXTS.unplug)) {
-    steps.splice(firstOpening, 0, fixedStep(FIXED_TEXTS.unplug));
+  if (firstOpening >= 0 && !has("unplug")) {
+    steps.splice(firstOpening, 0, fixedStep(fixed.unplug));
   }
-  if (pkg.flags.waterRelated && !has(FIXED_TEXTS.shutOffWater)) {
-    steps = [fixedStep(FIXED_TEXTS.shutOffWater), ...steps];
+  if (pkg.flags.waterRelated && !has("shutOffWater")) {
+    steps = [fixedStep(fixed.shutOffWater), ...steps];
   }
   const lockOut =
-    guide.steps.some((s) => s.switchesOffCircuit) && !guide.warnings.includes(FIXED_TEXTS.lockOut);
+    guide.steps.some((s) => s.switchesOffCircuit) &&
+    !guide.warnings.some((w) => isFixedText("lockOut", w));
   return {
     ...guide,
     steps: steps.map((s, i) => ({ ...s, n: i + 1 })),
-    warnings: lockOut ? [...guide.warnings, FIXED_TEXTS.lockOut] : guide.warnings,
+    warnings: lockOut ? [...guide.warnings, fixed.lockOut] : guide.warnings,
     materials: guide.materials.map((m) =>
       m.safetyCritical === "unclear" ? { ...m, safetyCritical: "yes" } : m,
     ),
@@ -97,7 +100,7 @@ function withFixedSafetySteps(pkg: WorkPackage, guide: Guide): Guide {
 }
 
 /** Rules 6 to 11 for one package. */
-function shapePackage(original: WorkPackage): WorkPackage {
+function shapePackage(original: WorkPackage, fixed: FixedTexts): WorkPackage {
   let label = original.label;
   if (original.flags.opensMainsHousing || original.guide?.steps.some((s) => opensHousing(s.text))) {
     label = stricterLabel(label, "professional-only");
@@ -110,14 +113,16 @@ function shapePackage(original: WorkPackage): WorkPackage {
     const { guide: _guide, ...rest } = pkg;
     return rest;
   }
-  if (label === "diy-preparation") pkg.agreeBeforehand = FIXED_TEXTS.agreeBeforehand;
-  if (pkg.guide) pkg.guide = withFixedSafetySteps(pkg, pkg.guide);
+  if (label === "diy-preparation") pkg.agreeBeforehand = fixed.agreeBeforehand;
+  if (pkg.guide) pkg.guide = withFixedSafetySteps(pkg, pkg.guide, fixed);
   return pkg;
 }
 
 export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): CaseOutcome {
   const draft = structuredClone(input);
   const { answers, round } = ctx;
+  const { texts: FIXED_TEXTS, questions: FIXED_QUESTIONS } =
+    FIXED_BY_LANGUAGE[ctx.language ?? "en"];
 
   // 1. Escalation
   if (draft.outOfScope !== null || draft.risk === "high" || draft.risk === "critical") {
@@ -217,7 +222,7 @@ export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): Case
   }
 
   // 6 to 11
-  options = mapPackages(options, shapePackage);
+  options = mapPackages(options, (p) => shapePackage(p, FIXED_TEXTS));
 
   // 12. Result
   return {
