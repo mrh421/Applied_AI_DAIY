@@ -19,7 +19,7 @@ export function CaseNav({ caseId }: { caseId: string }) {
         <LinkButton
           key={p.id}
           label={`Start the work: ${p.title}`}
-          href={`/case/${caseId}/work/${p.id}`}
+          href={`/case/${caseId}/work/${encodeURIComponent(p.id)}`}
         />
       ))}
     </nav>

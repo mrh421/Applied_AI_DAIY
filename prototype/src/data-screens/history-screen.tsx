@@ -33,7 +33,7 @@ function Record({ record, onBack }: { record: CaseRecord; onBack: () => void }) 
           <LinkButton
             key={p.id}
             label={`${completed ? "Read the steps again" : "Continue the work"}: ${p.title}`}
-            href={`${base}/work/${p.id}`}
+            href={`${base}/work/${encodeURIComponent(p.id)}`}
           />
         ))}
       </nav>

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { uniqueIds } from "./assess";
 import { AiError } from "../ai-gateway";
 import type { AiErrorCode } from "../ai-gateway";
 import type { UserNotice } from "../case-model";
@@ -256,5 +257,20 @@ describe("answerStepQuestion", () => {
   it("gives technical-error for an AiError", async () => {
     ai.draftStepAnswer.mockRejectedValue(new AiError("unavailable", "x"));
     expect(notice(await runStepQuestion(stepQuestionRequest)).reason).toBe("technical-error");
+  });
+});
+
+describe("uniqueIds", () => {
+  it("renames repeated and unsafe ids of options and packages and keeps good ones", () => {
+    const pkg = (id: string) => ({ id });
+    const out = uniqueIds([
+      { id: "a", packages: [pkg("p1"), pkg("p1")] },
+      { id: "a", packages: [pkg("p1"), pkg("Rost/Wachs ä")] },
+    ]);
+    expect(out.map((o) => o.id)).toEqual(["a", "option-2"]);
+    const ids = out.flatMap((o) => o.packages.map((p) => p.id));
+    expect(new Set(ids).size).toBe(4);
+    expect(ids[0]).toBe("p1");
+    expect(ids.every((id) => /^[A-Za-z0-9_-]+$/.test(id))).toBe(true);
   });
 });

@@ -20,10 +20,12 @@ export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?:
   const back = p.onBack ? { back: { label: "Back", onBack: p.onBack } } : {};
 
   const outcome = session?.record.outcome;
+  // The chosen option first: cases stored before the ids were made unique may repeat an id across options.
+  const options = outcome?.type === "guidance" ? outcome.options : [];
+  const chosen = options.find((o) => o.id === session?.record.chosenOptionId) ?? options[0];
   const pkg =
-    outcome?.type === "guidance"
-      ? outcome.options.flatMap((o) => o.packages).find((x) => x.id === p.packageId)
-      : undefined;
+    chosen?.packages.find((x) => x.id === p.packageId) ??
+    options.flatMap((o) => o.packages).find((x) => x.id === p.packageId);
   if (!session || !pkg?.guide) {
     return (
       <Page title="The work" {...back}>
