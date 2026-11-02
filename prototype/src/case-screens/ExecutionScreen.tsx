@@ -14,12 +14,11 @@ function Answer(p: { outcome: StepAnswerOutcome }) {
 
 /** The route `/case/$id/work/$packageId`: the steps of one package, one at a time. */
 export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?: () => void }) {
-  const { session, checkStep, reExplain, askStep } = useCaseSession(p.caseId);
+  const { session, checkStep, askStep } = useCaseSession(p.caseId);
   const [questions, setQuestions] = useState<Record<number, string>>({});
   const [answers, setAnswers] = useState<Record<number, StepAnswerOutcome>>({});
-  // The step a request is running for, and what went wrong with an explanation: both are shown at the step.
-  const [working, setWorking] = useState<{ n: number; what: "explain" | "question" } | null>(null);
-  const [explainNotes, setExplainNotes] = useState<Record<number, string>>({});
+  // The step a question is running for; its progress is shown at the step.
+  const [working, setWorking] = useState<number | null>(null);
   const back = p.onBack ? { back: { label: "Back", onBack: p.onBack } } : {};
 
   const outcome = session?.record.outcome;
@@ -101,37 +100,6 @@ export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?:
                     <span>{basics[s.n]}</span>
                   </p>
                 )}
-                <div>
-                  <Button
-                    label={`Explain step ${s.n} again`}
-                    icon="RotateCcw"
-                    variant="secondary"
-                    disabled={busy}
-                    onPress={() => {
-                      announce("Explaining the step again.");
-                      setExplainNotes((x) => ({ ...x, [s.n]: "" }));
-                      setWorking({ n: s.n, what: "explain" });
-                      const fail = (text: string) => {
-                        announce(text);
-                        setExplainNotes((x) => ({ ...x, [s.n]: text }));
-                      };
-                      void reExplain(pkg.id, s.n)
-                        .then((out) => {
-                          if (out.type === "notice") fail(out.notice.text);
-                        })
-                        .catch(() => fail("The step could not be explained. Please try again."))
-                        .finally(() => setWorking(null));
-                    }}
-                  />
-                </div>
-                {working?.n === s.n && working.what === "explain" && (
-                  <Progress messages={["Explaining the step in simpler words…", "Almost there…"]} />
-                )}
-                {explainNotes[s.n] && (
-                  <p role="alert" className="rounded-xl border border-warning/40 bg-warning/10 p-3">
-                    {explainNotes[s.n]}
-                  </p>
-                )}
                 <TextField
                   label={`Question about step ${s.n}`}
                   value={questions[s.n] ?? ""}
@@ -145,14 +113,14 @@ export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?:
                     disabled={busy || !(questions[s.n] ?? "").trim()}
                     onPress={() => {
                       announce("Asking your question.");
-                      setWorking({ n: s.n, what: "question" });
+                      setWorking(s.n);
                       void askStep(pkg.id, s.n, (questions[s.n] ?? "").trim())
                         .then((out) => setAnswers((a) => ({ ...a, [s.n]: out })))
                         .finally(() => setWorking(null));
                     }}
                   />
                 </div>
-                {working?.n === s.n && working.what === "question" && (
+                {working === s.n && (
                   <Progress messages={["Looking at your question…", "Almost there…"]} />
                 )}
                 {answers[s.n] && <Answer outcome={answers[s.n]!} />}
