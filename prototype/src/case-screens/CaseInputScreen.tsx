@@ -57,7 +57,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
 
   return (
     <Page title="Fix it yourself — safely." hideTitle>
-      <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-8">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-8">
         <div>
           <h1 className="text-4xl leading-tight md:text-6xl">
             Fix it yourself — <em className="text-primary">safely.</em>
@@ -79,8 +79,8 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
           </ol>
         </div>
         <div className="rounded-3xl border border-border bg-card/70 p-6 shadow-soft backdrop-blur md:p-8">
-          <div className="grid gap-8">
-            <section className="grid gap-3">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
+            <section className="grid grid-cols-[minmax(0,1fr)] gap-3">
               <TextField
                 label="What's broken? Describe it like you'd tell a friend."
                 multiline
@@ -94,7 +94,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                     key={ex}
                     type="button"
                     onClick={() => setDescription(ex)}
-                    className="min-h-6 shrink-0 rounded-full border border-border bg-card px-3 py-1 text-left text-sm text-muted-foreground transition hover:border-primary hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    className="min-h-6 shrink-0 sm:shrink rounded-full border border-border bg-card px-3 py-1 text-left text-sm text-muted-foreground transition hover:border-primary hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     {ex}
                   </button>
