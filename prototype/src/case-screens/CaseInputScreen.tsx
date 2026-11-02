@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { MAX_PHOTOS } from "../case-model";
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
@@ -10,6 +10,7 @@ import {
   NumberDot,
   Page,
   Progress,
+  Select,
   TextField,
   announce,
 } from "../ui-kit";
@@ -25,7 +26,14 @@ const EXAMPLES = [
   "The kitchen tap keeps dripping even when closed tight.",
   "A cabinet door hangs crooked and rubs against the frame.",
 ];
-import { AI_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
+import {
+  DICTATION_LANGUAGES,
+  dictationLanguage,
+  rememberDictationLanguage,
+  useDictation,
+  type DictationLanguage,
+} from "./dictation";
+import { AI_NOTICE, DICTATION_NOTICE, PRIVACY_NOTICE_SHORT } from "./notices";
 
 /** The route `/`: free text, optional photos and Confirm. With `caseId` the open case is shown again. */
 export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: string) => void }) {
@@ -42,6 +50,20 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
   const [notice, setNotice] = useState<string | null>(null);
 
   const text = description ?? session?.record.description ?? "";
+
+  // Dictation adds what is spoken after the text that was there when it began.
+  const [language, setLanguage] = useState<DictationLanguage>(dictationLanguage);
+  const [askConsent, setAskConsent] = useState(false);
+  const base = useRef("");
+  const onSpoken = useCallback((spoken: string) => {
+    setDescription(base.current && spoken ? `${base.current} ${spoken}` : base.current + spoken);
+  }, []);
+  const dictation = useDictation(onSpoken);
+  const beginDictation = () => {
+    base.current = text.trim();
+    setAskConsent(false);
+    dictation.start(language);
+  };
   const startedId = started && session && session.pending === null ? session.record.id : null;
   const { onStarted } = p;
   useEffect(() => {
@@ -105,6 +127,62 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                 onChange={setDescription}
                 {...(error ? { error } : {})}
               />
+              {dictation.supported && (
+                <div className="grid gap-2">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <Button
+                      label={dictation.listening ? "Stop dictating" : "Dictate your description"}
+                      icon="Mic"
+                      variant="secondary"
+                      onPress={() => {
+                        if (dictation.listening) dictation.stop();
+                        else if (hasConsent("dictate-with-browser")) beginDictation();
+                        else setAskConsent(true);
+                      }}
+                    />
+                    <div className="w-40">
+                      <Select
+                        label="Dictation language"
+                        value={language}
+                        options={DICTATION_LANGUAGES}
+                        onChange={(v) => {
+                          setLanguage(v);
+                          rememberDictationLanguage(v);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {dictation.listening && (
+                    <p role="status" className="text-sm font-medium text-primary">
+                      Listening…
+                    </p>
+                  )}
+                  {dictation.error && (
+                    <p role="alert" className="text-sm text-destructive">
+                      {dictation.error}
+                    </p>
+                  )}
+                  {askConsent && (
+                    <div className="grid gap-2 rounded-xl border border-border bg-secondary/60 p-4 text-sm">
+                      <p>{CONSENT_PURPOSES["dictate-with-browser"]}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          label="I agree"
+                          onPress={() => {
+                            giveConsent("dictate-with-browser");
+                            beginDictation();
+                          }}
+                        />
+                        <Button
+                          label="No, I will type"
+                          variant="secondary"
+                          onPress={() => setAskConsent(false)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
                 {EXAMPLES.map((ex) => (
                   <button
@@ -224,6 +302,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                 </span>
                 <span>
                   {AI_NOTICE} {PRIVACY_NOTICE_SHORT}
+                  {dictation.supported ? ` ${DICTATION_NOTICE}` : ""}
                 </span>
               </p>
             </div>
