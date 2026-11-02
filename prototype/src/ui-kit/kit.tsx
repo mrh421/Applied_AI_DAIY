@@ -281,7 +281,7 @@ export function Page(p: {
 }) {
   const hero = p.accent !== undefined;
   return (
-    <main className="mx-auto grid w-full min-w-0 max-w-4xl grid-cols-[minmax(0,1fr)] gap-6 break-words px-5 pb-24 pt-4">
+    <main className="mx-auto grid w-full min-w-0 max-w-6xl grid-cols-[minmax(0,1fr)] gap-6 break-words px-5 pb-24 pt-4">
       {p.back && (
         <div>
           <Button

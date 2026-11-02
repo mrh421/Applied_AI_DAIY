@@ -34,7 +34,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background bg-hero">
-      <header className="mx-auto flex w-full max-w-4xl items-center justify-between gap-4 px-5 py-6">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 py-6">
         <Link
           to="/"
           className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight"
@@ -48,13 +48,13 @@ export function Layout({ children }: { children: ReactNode }) {
           <Icon name="Leaf" /> Repair first. Reuse second.
         </span>
       </header>
-      <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center gap-x-4 gap-y-2 px-5">
-        <nav aria-label="Main" className="flex flex-wrap gap-x-4 gap-y-1">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-5">
+        <nav aria-label="Main" className="flex gap-x-4 gap-y-1 overflow-x-auto">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="min-h-6 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="min-h-6 whitespace-nowrap text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               activeProps={{ "aria-current": "page", className: "text-foreground underline" }}
             >
               {n.label}
