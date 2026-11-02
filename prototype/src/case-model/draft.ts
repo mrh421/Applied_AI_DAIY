@@ -41,6 +41,11 @@ export const materialNeedSchema = z.object({
   replacementPart: z.boolean(),
   safetyCritical: z.enum(["yes", "no", "unclear"]),
   printable: z.boolean(),
+  /** A rough price range in euro for the whole quantity named, null when the model cannot tell. An estimate, never an offer. */
+  estimatedPrice: z
+    .object({ min: z.number().nonnegative(), max: z.number().nonnegative() })
+    .nullable()
+    .optional(),
 });
 export type MaterialNeed = z.infer<typeof materialNeedSchema>;
 

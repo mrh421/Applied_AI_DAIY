@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import type { PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
+import { CostSummary } from "../materials-screens";
 import { levelFor } from "../profile";
 import {
   Button,
@@ -190,6 +191,7 @@ export function OutcomeScreen(p: { caseId: string }) {
           ))}
         </Card>
       )}
+      {shown && <CostSummary record={session.record} option={shown} />}
       {localNotices.length > 0 && (
         <Card tone="soft">
           <h2 className="flex items-center gap-2 text-xl">

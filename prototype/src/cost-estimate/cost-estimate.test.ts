@@ -226,3 +226,54 @@ describe("estimateCosts", () => {
     expect(r.noneWithinBudget).toBe(false);
   });
 });
+
+describe("estimateCosts with price estimates of the AI", () => {
+  const guess = (n: MaterialNeed, min: number, max: number): MaterialNeed => ({
+    ...n,
+    estimatedPrice: { min, max },
+  });
+  const run = (budget: number | null, cheapest?: Offer) => {
+    searched.cheapest = cheapest;
+    return estimateCosts(
+      [
+        {
+          optionId: "o",
+          match: match(
+            line(guess(need("filament", piece(1)), 10, 20), "missing", 1),
+            line(need("cloth", piece(1)), "available"),
+          ),
+          chosen: {},
+        },
+      ],
+      budget === null ? null : eur(budget),
+    ).costs[0]!;
+  };
+
+  it("uses the estimate for a material without an offer and gives the total as a range", () => {
+    const c = run(null);
+    expect(c.lines[0]!.estimate).toEqual({ min: 10, max: 20 });
+    expect(c.estimatedTotal).toEqual({ min: 10, max: 20 });
+    expect(c.incomplete).toBe(false);
+    expect(c.total.amount).toBe(0);
+  });
+  it("prefers an offer of the catalogue over the estimate", () => {
+    const c = run(null, offer("o1", verified(eur(7))));
+    expect(c.lines[0]!.estimate).toBeUndefined();
+    expect(c.estimatedTotal).toBeUndefined();
+    expect(c.total.amount).toBe(7);
+  });
+  it("says within only when the upper end fits, exceeds only when the lower end does not", () => {
+    expect(run(25).budget).toBe("within");
+    expect(run(15).budget).toBe("may-exceed");
+    expect(run(5).budget).toBe("exceeds");
+  });
+  it("stays incomplete for a material with neither", () => {
+    searched.cheapest = undefined;
+    const c = estimateCosts(
+      [{ optionId: "o", match: match(line(need("x", piece(1)), "missing", 1)), chosen: {} }],
+      null,
+    ).costs[0]!;
+    expect(c.incomplete).toBe(true);
+    expect(c.estimatedTotal).toBeUndefined();
+  });
+});
