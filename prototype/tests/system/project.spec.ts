@@ -13,9 +13,9 @@ test("a project with a DIY package, a professional package and its materials", a
 
   await page.getByRole("link", { name: "New case" }).click();
   await page
-    .getByLabel("Describe the problem")
+    .getByLabel(/What.s broken/)
     .fill("PROJECT The tap drips and the bathroom ceiling needs repainting.");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByRole("button", { name: "Find my repair" }).click();
 
   await expect(page.getByRole("heading", { name: "Your plan" })).toBeVisible();
   await expect(page.getByText("DIY", { exact: true })).toBeVisible();

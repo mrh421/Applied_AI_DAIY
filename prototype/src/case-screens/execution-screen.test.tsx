@@ -105,19 +105,6 @@ describe("ExecutionScreen", () => {
     expect(getCase("c1")?.checked).toEqual({ p1: [] });
   });
 
-  it("explains a step again, simpler", async () => {
-    seed(guidance([diyPackage]));
-    pipe.explainSteps.mockResolvedValue({
-      type: "explanation",
-      packageId: "p1",
-      steps: [{ n: 2, basics: "Simpler words for step two." }],
-    });
-    render(<ExecutionScreen caseId="c1" packageId="p1" />);
-    await userEvent.click(screen.getByRole("button", { name: /explain step 2 again/i }));
-    expect(await screen.findByText("Simpler words for step two.")).toBeInTheDocument();
-    expect(pipe.explainSteps.mock.calls[0]![0].data).toMatchObject({ onlyStep: 2, simpler: true });
-  });
-
   it("shows the answer to a question in the context of the step", async () => {
     seed(guidance([diyPackage]));
     pipe.answerStepQuestion.mockResolvedValue({ type: "answer", text: "Turn it anticlockwise." });

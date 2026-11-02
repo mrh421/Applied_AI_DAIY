@@ -8,8 +8,8 @@ test("a gas smell escalates and no instructions are given", async ({ page }) => 
     if (r.url().includes("/_serverFn/")) aiCalls.push(r.url());
   });
   await page.goto("/");
-  await page.getByLabel("Describe the problem").fill("I smell gas in the kitchen.");
-  await page.getByRole("button", { name: "Confirm" }).click();
+  await page.getByLabel(/What.s broken/).fill("I smell gas in the kitchen.");
+  await page.getByRole("button", { name: "Find my repair" }).click();
 
   await expect(page.getByRole("heading", { name: "Please get professional help" })).toBeVisible();
   await expect(page.getByText("Who to contact")).toBeVisible();

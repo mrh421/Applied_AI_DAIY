@@ -123,6 +123,14 @@
   }
 }
 
+/* Large monitors: the whole page grows with the screen, 16 px up to 1706 px wide, 24 px at 2560 px
+   (the look of 150 % browser zoom on a 2560 px monitor). Everything is in rem, so layout and type scale together. */
+@media (min-width: 1706px) {
+  html {
+    font-size: clamp(16px, 0.9375vw, 24px);
+  }
+}
+
 @utility bg-hero {
   background-image: var(--gradient-hero);
 }

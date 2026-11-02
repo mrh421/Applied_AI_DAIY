@@ -4,7 +4,7 @@ import { toolHint } from "../catalogue";
 import { useCaseSession } from "../case-session";
 import { saveMaterial, saveTool, useInventory } from "../inventory";
 import { matchStock, type StockStatus } from "../stock-matching";
-import { Button, Checkbox, LinkButton, Page, StatusBadge, announce } from "../ui-kit";
+import { Button, Checkbox, Icon, LinkButton, Page, StatusBadge, announce } from "../ui-kit";
 import { BudgetPanel } from "./budget-panel";
 import { DeductDialog } from "./deduct-dialog";
 import { activeOption, guidesOf, quantity } from "./plan";
@@ -79,12 +79,18 @@ export function MaterialsScreen({ caseId }: { caseId: string }) {
     <Page title="Materials and tools" back={back}>
       {match.materials.length > 0 && (
         <section aria-labelledby="materials-heading" className="grid gap-2">
-          <h2 id="materials-heading" className="text-xl font-semibold">
+          <h2 id="materials-heading" className="flex items-center gap-2 text-xl">
+            <span className="text-primary">
+              <Icon name="Package" />
+            </span>{" "}
             Materials
           </h2>
           <ul aria-label="Materials" className="grid gap-3">
             {match.materials.map((m) => (
-              <li key={m.need.id} className="grid gap-1 rounded-md border p-3">
+              <li
+                key={m.need.id}
+                className="grid gap-1 rounded-xl border border-border bg-card p-4"
+              >
                 <span className="font-medium">{`${m.need.name}, ${quantity(m.need.quantity)}`}</span>
                 <Status status={m.status} />
                 {m.status.kind !== "available" && (
@@ -108,12 +114,18 @@ export function MaterialsScreen({ caseId }: { caseId: string }) {
 
       {match.missingTools.length > 0 && (
         <section aria-labelledby="missing-tools-heading" className="grid gap-2">
-          <h2 id="missing-tools-heading" className="text-xl font-semibold">
+          <h2 id="missing-tools-heading" className="flex items-center gap-2 text-xl">
+            <span className="text-primary">
+              <Icon name="Wrench" />
+            </span>{" "}
             Missing tools
           </h2>
           <ul aria-label="Missing tools" className="grid gap-3">
             {match.missingTools.map((t) => (
-              <li key={t.need.id} className="grid gap-1 rounded-md border p-3">
+              <li
+                key={t.need.id}
+                className="grid gap-1 rounded-xl border border-border bg-card p-4"
+              >
                 <span className="font-medium">{t.need.name}</span>
                 {toolHint(t.need) && <span>{toolHint(t.need)}</span>}
                 <Checkbox
@@ -129,7 +141,7 @@ export function MaterialsScreen({ caseId }: { caseId: string }) {
 
       {match.ownedTools.length > 0 && (
         <section aria-labelledby="owned-tools-heading" className="grid gap-2">
-          <h2 id="owned-tools-heading" className="text-xl font-semibold">
+          <h2 id="owned-tools-heading" className="text-xl">
             Tools you own
           </h2>
           <ul aria-label="Tools you own" className="list-disc pl-5">
@@ -141,7 +153,10 @@ export function MaterialsScreen({ caseId }: { caseId: string }) {
       )}
 
       {owned.size > 0 && (
-        <section aria-label="Save to inventory" className="grid gap-2 rounded-md border p-3">
+        <section
+          aria-label="Save to inventory"
+          className="grid gap-2 rounded-xl border border-border bg-card p-4"
+        >
           <p>Save the items you own to your inventory? You can also skip this.</p>
           <div className="flex flex-wrap gap-2">
             <Button label="Save to inventory" onPress={save} />

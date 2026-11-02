@@ -53,6 +53,27 @@ describe("MOD-history records (PROJECT-HISTORY)", () => {
     expect(listCases().map((c) => c.status)).toEqual(["completed", "ongoing", "ongoing"]);
   });
 
+  it("fills the fields that a record of an earlier version lacks", () => {
+    const old = {
+      id: "old",
+      createdAt: "2026-01-01T00:00:00Z",
+      rulesVersion: "1",
+      status: "ongoing",
+      description: "Rusty plate",
+      hadPhoto: true,
+      outcome: { type: "guidance", summary: "s", options: [{ id: "o1", title: "t" }] },
+    };
+    localStore.put("cases", "old", old);
+    const got = getCase("old") as CaseRecord;
+    expect(got.chosenOffers).toEqual({});
+    expect(got.explanations).toEqual({});
+    expect(got.checked).toEqual({});
+    expect(got.notes).toBe("");
+    expect(got.materialsUsed).toEqual([]);
+    expect(got.outcome).toMatchObject({ assumptions: [], notices: [], photoAlt: null });
+    expect(listCases()[0]?.outcome).toMatchObject({ options: [{ id: "o1", packages: [] }] });
+  });
+
   it("gets one record, or undefined", () => {
     saveCase(record("a", "2026-01-01T00:00:00Z"));
     expect(getCase("a")?.description).toBe("Tap drips");

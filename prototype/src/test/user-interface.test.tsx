@@ -27,7 +27,7 @@ afterEach(cleanup);
 describe("user interface: the case routes", () => {
   it.each(ROUTES)("%s renders and has no accessibility violation", async (path, title) => {
     await open(path);
-    expect(await screen.findByText(title, { selector: "h1, h2" })).toBeInTheDocument();
+    expect((await screen.findAllByText(title, { selector: "h1, h2" })).length).toBeGreaterThan(0);
     expect(await violations()).toEqual([]);
   });
 

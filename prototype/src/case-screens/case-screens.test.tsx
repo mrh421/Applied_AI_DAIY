@@ -64,7 +64,7 @@ describe("CaseInputScreen", () => {
     const onStarted = vi.fn();
     render(<CaseInputScreen onStarted={onStarted} />);
     await userEvent.type(screen.getByLabelText(/describe/i), "My tap drips");
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
     const req: CaseRequest = pipe.assessCase.mock.calls[0]![0].data;
     expect(req.description).toBe("My tap drips");
@@ -74,7 +74,7 @@ describe("CaseInputScreen", () => {
 
   it("does not start with an empty description and names the field", async () => {
     render(<CaseInputScreen />);
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     expect(pipe.assessCase).not.toHaveBeenCalled();
     expect(screen.getByText(/describe.*:/i)).toBeInTheDocument();
   });
@@ -88,12 +88,28 @@ describe("CaseInputScreen", () => {
       new File(["abc"], "p.jpg", { type: "image/jpeg" }),
     );
     expect(screen.getByText(/after the case, so you can see it again/i)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
     expect(pipe.assessCase.mock.calls[0]![0].data.photo).toMatchObject({
       mediaType: "image/jpeg",
     });
     expect(hasConsent("keep-case-photos")).toBe(false);
+  });
+
+  it("shows the chosen photo as a small picture and removes it again", async () => {
+    URL.createObjectURL = vi.fn(() => "blob:preview");
+    URL.revokeObjectURL = vi.fn();
+    render(<CaseInputScreen />);
+    await userEvent.upload(
+      screen.getByLabelText(/add a photo/i),
+      new File(["abc"], "tap.jpg", { type: "image/jpeg" }),
+    );
+    expect(screen.getByRole("img", { name: "Your photo: tap.jpg" })).toHaveAttribute(
+      "src",
+      "blob:preview",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Remove the photo" }));
+    expect(screen.queryByRole("img", { name: /your photo/i })).not.toBeInTheDocument();
   });
 
   it("gives the consent with one action", async () => {
@@ -113,7 +129,7 @@ describe("QuestionsScreen", () => {
     let id = "";
     const view = render(<CaseInputScreen onStarted={(i) => (id = i)} />);
     await userEvent.type(screen.getByLabelText(/describe/i), "Tap drips");
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Find my repair" }));
     await waitFor(() => expect(id).not.toBe(""));
     view.unmount();
     return id;
@@ -136,12 +152,24 @@ describe("QuestionsScreen", () => {
     });
     render(<QuestionsScreen caseId={id} />);
     await userEvent.click(screen.getAllByRole("checkbox", { name: /not sure/i })[0]!);
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(2));
     const req: CaseRequest = pipe.assessCase.mock.calls[1]![0].data;
     expect(req.answers).toEqual([
       { questionId: "q1", topic: "tap.kind", text: "", notSure: true },
       { questionId: "q2", topic: "tap.age", text: "About 10 years", notSure: false },
     ]);
+  });
+
+  it("tells the user when sending the answers fails and lets them send again", async () => {
+    const id = await startWithQuestions();
+    pipe.assessCase.mockResolvedValueOnce({
+      type: "notice",
+      notice: { reason: "offline", text: "The AI did not answer in time.", missing: [] },
+    });
+    render(<QuestionsScreen caseId={id} />);
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("The AI did not answer in time.");
+    expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
   });
 });

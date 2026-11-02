@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { StepAnswerOutcome } from "../case-model";
 import { useCaseSession } from "../case-session";
-import { Button, Checkbox, Page, TextField, announce } from "../ui-kit";
+import { Button, Card, Checkbox, Icon, Page, Progress, TextField, announce, cn } from "../ui-kit";
 import { EscalationView } from "./EscalationView";
 
 function Answer(p: { outcome: StepAnswerOutcome }) {
@@ -14,16 +14,20 @@ function Answer(p: { outcome: StepAnswerOutcome }) {
 
 /** The route `/case/$id/work/$packageId`: the steps of one package, one at a time. */
 export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?: () => void }) {
-  const { session, checkStep, reExplain, askStep } = useCaseSession(p.caseId);
+  const { session, checkStep, askStep } = useCaseSession(p.caseId);
   const [questions, setQuestions] = useState<Record<number, string>>({});
   const [answers, setAnswers] = useState<Record<number, StepAnswerOutcome>>({});
+  // The step a question is running for; its progress is shown at the step.
+  const [working, setWorking] = useState<number | null>(null);
   const back = p.onBack ? { back: { label: "Back", onBack: p.onBack } } : {};
 
   const outcome = session?.record.outcome;
+  // The chosen option first: cases stored before the ids were made unique may repeat an id across options.
+  const options = outcome?.type === "guidance" ? outcome.options : [];
+  const chosen = options.find((o) => o.id === session?.record.chosenOptionId) ?? options[0];
   const pkg =
-    outcome?.type === "guidance"
-      ? outcome.options.flatMap((o) => o.packages).find((x) => x.id === p.packageId)
-      : undefined;
+    chosen?.packages.find((x) => x.id === p.packageId) ??
+    options.flatMap((o) => o.packages).find((x) => x.id === p.packageId);
   if (!session || !pkg?.guide) {
     return (
       <Page title="The work" {...back}>
@@ -37,55 +41,94 @@ export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?:
   const current = pkg.guide.steps.find((s) => !done.includes(s.n))?.n;
   const busy = session.pending !== null;
 
+  const total = pkg.guide.steps.length;
+  const pct = total === 0 ? 0 : Math.round((done.length / total) * 100);
+
   return (
     <Page title={pkg.title} {...back}>
-      {current === undefined && <p>All steps are done.</p>}
-      <ol aria-label="Steps" className="grid list-decimal gap-4 pl-5">
-        {pkg.guide.steps.map((s) => (
-          <li key={s.n} className="grid gap-2">
-            {s.n === current && <strong>Current step: {s.n}</strong>}
-            <span>{s.text}</span>
-            <Checkbox
-              label={`Done: step ${s.n}`}
-              checked={done.includes(s.n)}
-              onChange={(v) => checkStep(pkg.id, s.n, v)}
-            />
-            {basics[s.n] && <p className="text-sm">{basics[s.n]}</p>}
-            <div>
-              <Button
-                label={`Explain step ${s.n} again`}
-                variant="secondary"
-                disabled={busy}
-                onPress={() => {
-                  announce("Explaining the step again.");
-                  void reExplain(pkg.id, s.n).then((out) => {
-                    if (out.type === "notice") announce(out.notice.text);
-                  });
-                }}
-              />
-            </div>
-            <TextField
-              label={`Question about step ${s.n}`}
-              value={questions[s.n] ?? ""}
-              onChange={(v) => setQuestions((q) => ({ ...q, [s.n]: v }))}
-            />
-            <div>
-              <Button
-                label={`Ask about step ${s.n}`}
-                variant="secondary"
-                disabled={busy || !(questions[s.n] ?? "").trim()}
-                onPress={() => {
-                  announce("Asking your question.");
-                  void askStep(pkg.id, s.n, (questions[s.n] ?? "").trim()).then((out) =>
-                    setAnswers((a) => ({ ...a, [s.n]: out })),
-                  );
-                }}
-              />
-            </div>
-            {answers[s.n] && <Answer outcome={answers[s.n]!} />}
-          </li>
-        ))}
-      </ol>
+      <Card className="grid gap-4">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-2xl">Step by step</h2>
+          <p className="text-sm text-muted-foreground">
+            {done.length} of {total} done
+          </p>
+        </div>
+        <div aria-hidden="true" className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+        </div>
+        {current === undefined && <p>All steps are done.</p>}
+        <ol aria-label="Steps" className="grid gap-3">
+          {pkg.guide.steps.map((s) => {
+            const isDone = done.includes(s.n);
+            return (
+              <li
+                key={s.n}
+                className={cn(
+                  "grid gap-2 rounded-2xl border bg-card p-4",
+                  s.n === current ? "border-primary" : "border-border",
+                )}
+              >
+                {s.n === current && (
+                  <strong className="text-sm text-primary">Current step: {s.n}</strong>
+                )}
+                <div className="flex gap-3">
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "inline-flex size-7 shrink-0 items-center justify-center rounded-full border text-sm",
+                      isDone
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border",
+                    )}
+                  >
+                    {isDone ? <Icon name="Check" /> : s.n}
+                  </span>
+                  <span
+                    className={cn("min-w-0 flex-1", isDone && "text-muted-foreground line-through")}
+                  >
+                    {s.text}
+                  </span>
+                </div>
+                <Checkbox
+                  label={`Done: step ${s.n}`}
+                  checked={isDone}
+                  onChange={(v) => checkStep(pkg.id, s.n, v)}
+                />
+                {basics[s.n] && (
+                  <p className="rounded-lg bg-secondary/60 p-3 text-sm">
+                    <span className="font-semibold">In simple words: </span>
+                    <span>{basics[s.n]}</span>
+                  </p>
+                )}
+                <TextField
+                  label={`Question about step ${s.n}`}
+                  value={questions[s.n] ?? ""}
+                  onChange={(v) => setQuestions((q) => ({ ...q, [s.n]: v }))}
+                />
+                <div>
+                  <Button
+                    label={`Ask about step ${s.n}`}
+                    icon="MessageCircle"
+                    variant="secondary"
+                    disabled={busy || !(questions[s.n] ?? "").trim()}
+                    onPress={() => {
+                      announce("Asking your question.");
+                      setWorking(s.n);
+                      void askStep(pkg.id, s.n, (questions[s.n] ?? "").trim())
+                        .then((out) => setAnswers((a) => ({ ...a, [s.n]: out })))
+                        .finally(() => setWorking(null));
+                    }}
+                  />
+                </div>
+                {working === s.n && (
+                  <Progress messages={["Looking at your question…", "Almost there…"]} />
+                )}
+                {answers[s.n] && <Answer outcome={answers[s.n]!} />}
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
     </Page>
   );
 }
