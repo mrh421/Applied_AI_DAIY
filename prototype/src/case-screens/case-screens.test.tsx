@@ -160,4 +160,16 @@ describe("QuestionsScreen", () => {
       { questionId: "q2", topic: "tap.age", text: "About 10 years", notSure: false },
     ]);
   });
+
+  it("tells the user when sending the answers fails and lets them send again", async () => {
+    const id = await startWithQuestions();
+    pipe.assessCase.mockResolvedValueOnce({
+      type: "notice",
+      notice: { reason: "offline", text: "The AI did not answer in time.", missing: [] },
+    });
+    render(<QuestionsScreen caseId={id} />);
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("The AI did not answer in time.");
+    expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
+  });
 });

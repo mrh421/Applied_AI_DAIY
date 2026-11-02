@@ -85,6 +85,7 @@ function Questions(p: {
 /** The route `/case/$id` while questions are open (EVERYDAY-LANGUAGE-QUESTIONS, REDUNDANT-ENTRY). */
 export function QuestionsScreen(p: { caseId: string }) {
   const { session, answer } = useCaseSession(p.caseId);
+  const [notice, setNotice] = useState<string | null>(null);
   const outcome = session?.record.outcome;
   if (!session || outcome?.type !== "questions") {
     return (
@@ -116,9 +117,25 @@ export function QuestionsScreen(p: { caseId: string }) {
           busy={session.pending !== null}
           onSend={(answers) => {
             announce("Sending your answers.");
-            void answer(answers);
+            setNotice(null);
+            // A notice (timeout, rejected draft) must not vanish: the user stays here and can send again.
+            const fail = (text: string) => {
+              announce(text);
+              setNotice(text);
+            };
+            void answer(answers).then(
+              (out) => {
+                if (out.type === "notice") fail(out.notice.text);
+              },
+              () => fail("Your answers could not be saved on this device. Please try again."),
+            );
           }}
         />
+        {notice && (
+          <p role="alert" className="rounded-xl border border-warning/40 bg-warning/10 p-4">
+            {notice} You can press “Continue” to try again.
+          </p>
+        )}
       </Card>
     </Page>
   );
