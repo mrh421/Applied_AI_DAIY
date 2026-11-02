@@ -1,10 +1,10 @@
 import "fake-indexeddb/auto";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CaseOutcome, CaseRequest } from "../case-model";
-import { hasConsent } from "../consent";
+import { giveConsent, hasConsent } from "../consent";
 import { localStore } from "../local-store";
 
 const pipe = vi.hoisted(() => ({
@@ -137,6 +137,83 @@ describe("CaseInputScreen", () => {
     await waitFor(() => expect(pipe.assessCase).toHaveBeenCalledTimes(1));
     const req: CaseRequest = pipe.assessCase.mock.calls[0]![0].data;
     expect(req.photos).toHaveLength(3);
+  });
+
+  describe("dictation (ITM-265)", () => {
+    class FakeRecognition {
+      static last: FakeRecognition | undefined;
+      lang = "";
+      continuous = false;
+      interimResults = false;
+      onresult: ((e: unknown) => void) | null = null;
+      onerror: ((e: { error: string }) => void) | null = null;
+      onend: (() => void) | null = null;
+      started = false;
+      constructor() {
+        FakeRecognition.last = this;
+      }
+      start() {
+        this.started = true;
+      }
+      stop() {
+        this.started = false;
+        this.onend?.();
+      }
+      say(text: string) {
+        this.onresult?.({
+          resultIndex: 0,
+          results: [Object.assign([{ transcript: text }], { isFinal: false })],
+        });
+      }
+    }
+
+    afterEach(() => {
+      delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+      FakeRecognition.last = undefined;
+    });
+
+    it("shows no dictation button where the browser has no speech recognition", () => {
+      render(<CaseInputScreen />);
+      expect(screen.queryByRole("button", { name: /dictate/i })).not.toBeInTheDocument();
+    });
+
+    it("asks for the consent first, then listens and adds the words after the typed text", async () => {
+      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition = FakeRecognition;
+      render(<CaseInputScreen />);
+      await userEvent.type(screen.getByLabelText(/describe/i), "My tap");
+      await userEvent.click(screen.getByRole("button", { name: "Dictate your description" }));
+      expect(FakeRecognition.last).toBeUndefined();
+      expect(screen.getByText(/may send the audio to its provider/i)).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "I agree" }));
+      expect(hasConsent("dictate-with-browser")).toBe(true);
+      expect(FakeRecognition.last?.started).toBe(true);
+      expect(screen.getByRole("status")).toHaveTextContent("Listening…");
+      expect(screen.getByRole("button", { name: "Stop dictating" })).toBeInTheDocument();
+      act(() => FakeRecognition.last!.say("drips all night"));
+      expect(screen.getByLabelText(/describe/i)).toHaveValue("My tap drips all night");
+      await userEvent.click(screen.getByRole("button", { name: "Stop dictating" }));
+      expect(screen.queryByText("Listening…")).not.toBeInTheDocument();
+    });
+
+    it("opens no microphone when the consent is refused", async () => {
+      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition = FakeRecognition;
+      render(<CaseInputScreen />);
+      await userEvent.click(screen.getByRole("button", { name: "Dictate your description" }));
+      await userEvent.click(screen.getByRole("button", { name: "No, I will type" }));
+      expect(FakeRecognition.last).toBeUndefined();
+      expect(hasConsent("dictate-with-browser")).toBe(false);
+      expect(screen.getByLabelText(/describe/i)).toBeEnabled();
+    });
+
+    it("says what to do when the microphone is refused", async () => {
+      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition = FakeRecognition;
+      giveConsent("dictate-with-browser");
+      render(<CaseInputScreen />);
+      await userEvent.click(screen.getByRole("button", { name: "Dictate your description" }));
+      act(() => FakeRecognition.last!.onerror?.({ error: "not-allowed" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent(/microphone is not allowed/i);
+      expect(screen.getByLabelText(/describe/i)).toBeEnabled();
+    });
   });
 
   it("gives the consent with one action", async () => {

@@ -188,3 +188,47 @@ test("several photos on the start page: named, removable by keyboard, no violati
   await expect(page.getByRole("img", { name: "Your photo: a.jpg" })).toHaveCount(0);
   await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
 });
+
+// ITM-265: dictation on the start page, with a recognition that the test replaces.
+test("dictation: consent first, operable by keyboard, no violation", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
+
+  await page.addInitScript(() => {
+    class FakeRecognition {
+      onresult: ((e: unknown) => void) | null = null;
+      onend: (() => void) | null = null;
+      start() {
+        setTimeout(
+          () =>
+            this.onresult?.({
+              resultIndex: 0,
+              results: [Object.assign([{ transcript: "the tap drips" }], { isFinal: true })],
+            }),
+          50,
+        );
+      }
+      stop() {
+        this.onend?.();
+      }
+    }
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeRecognition;
+  });
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: "Dictate your description" })).toBeVisible();
+    expect(await axeViolations(page)).toEqual([]);
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  }
+  await page.getByRole("button", { name: "Dictate your description" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText(/may send the audio to its provider/i)).toBeVisible();
+  expect(await axeViolations(page)).toEqual([]);
+  await page.getByRole("button", { name: "I agree" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel(/What.s broken/)).toHaveValue("the tap drips");
+  await page.getByRole("button", { name: "Stop dictating" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Dictate your description" })).toBeVisible();
+});
