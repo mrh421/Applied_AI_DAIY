@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// ITM-265: dictation with the speech recognition of the browser (Web Speech API). Some browsers send
+// ITM-268: dictation with the speech recognition of the browser (Web Speech API). Some browsers send
 // the audio to the provider of the browser, which is why the screen asks for a consent first.
 
 export type DictationLanguage = "de-DE" | "en-US";

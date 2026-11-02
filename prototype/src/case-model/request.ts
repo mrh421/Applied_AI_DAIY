@@ -9,7 +9,7 @@ export const photoInputSchema = z.object({
 });
 export type PhotoInput = z.infer<typeof photoInputSchema>;
 
-/** At most this many photos belong to one case (ITM-264). */
+/** At most this many photos belong to one case (ITM-267). */
 export const MAX_PHOTOS = 4;
 
 export const answerSchema = z.object({

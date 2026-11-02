@@ -139,7 +139,7 @@ describe("CaseInputScreen", () => {
     expect(req.photos).toHaveLength(3);
   });
 
-  describe("dictation (ITM-265)", () => {
+  describe("dictation (ITM-268)", () => {
     class FakeRecognition {
       static last: FakeRecognition | undefined;
       lang = "";
