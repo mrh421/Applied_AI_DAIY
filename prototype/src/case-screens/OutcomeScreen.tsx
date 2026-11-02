@@ -3,7 +3,17 @@ import { useEffect } from "react";
 import type { PackageLabel, SolutionOption, WorkPackage } from "../case-model";
 import { useCaseSession } from "../case-session";
 import { levelFor } from "../profile";
-import { Button, Card, Eyebrow, Icon, Page, StatusBadge, announce, type IconName } from "../ui-kit";
+import {
+  Button,
+  Card,
+  Eyebrow,
+  Icon,
+  Page,
+  Progress,
+  StatusBadge,
+  announce,
+  type IconName,
+} from "../ui-kit";
 import { EscalationView } from "./EscalationView";
 import { GuideView } from "./GuideView";
 
@@ -173,7 +183,7 @@ export function OutcomeScreen(p: { caseId: string }) {
             </p>
             <p className="mt-3 font-semibold">{shown.title}</p>
           </div>
-          {loading && <p>Explanations are being prepared.</p>}
+          {loading && <Progress messages={["Explanations are being prepared…", "Almost there…"]} />}
           {noBasics && <p>Explanations are not available right now. The steps are complete.</p>}
           {shown.packages.map((pkg) => (
             <PackageView key={pkg.id} pkg={pkg} basics={explanations[pkg.id]} />

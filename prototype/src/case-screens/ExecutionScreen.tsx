@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { StepAnswerOutcome } from "../case-model";
 import { useCaseSession } from "../case-session";
-import { Button, Card, Checkbox, Icon, Page, TextField, announce, cn } from "../ui-kit";
+import { Button, Card, Checkbox, Icon, Page, Progress, TextField, announce, cn } from "../ui-kit";
 import { EscalationView } from "./EscalationView";
 
 function Answer(p: { outcome: StepAnswerOutcome }) {
@@ -42,6 +42,14 @@ export function ExecutionScreen(p: { caseId: string; packageId: string; onBack?:
 
   return (
     <Page title={pkg.title} {...back}>
+      {busy && (
+        <Progress
+          messages={[
+            session.pending === "question" ? "Looking at your question…" : "Explaining the step…",
+            "Almost there…",
+          ]}
+        />
+      )}
       <Card className="grid gap-4">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-2xl">Step by step</h2>

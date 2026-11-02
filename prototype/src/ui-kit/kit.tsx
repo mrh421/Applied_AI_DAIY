@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { cn } from "./cn";
 import { Icon, type IconName } from "./icons";
 import { buttonClass, type ButtonVariant } from "./button-style";
@@ -308,5 +308,33 @@ export function Page(p: {
       )}
       {p.children}
     </main>
+  );
+}
+
+/**
+ * A busy indicator for the waits on the AI. A turning ring and a line that changes every few seconds
+ * show that the page is working; the line is hidden from assistive technology and one steady
+ * status message is read out instead. With reduced motion the ring stands still.
+ */
+export function Progress(p: { messages: string[]; label?: string }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (p.messages.length < 2) return;
+    const t = setInterval(() => setI((n) => Math.min(n + 1, p.messages.length - 1)), 4000);
+    return () => clearInterval(t);
+  }, [p.messages.length]);
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/60 p-4">
+      <span
+        aria-hidden="true"
+        className="size-6 shrink-0 animate-spin rounded-full border-[3px] border-primary/25 border-t-primary motion-reduce:animate-none"
+      />
+      <p role="status" className="sr-only">
+        {p.label ?? "Working on it. This can take up to half a minute."}
+      </p>
+      <p aria-hidden="true" className="text-sm text-foreground">
+        {p.messages[Math.min(i, p.messages.length - 1)]}
+      </p>
+    </div>
   );
 }

@@ -2,7 +2,17 @@ import { useState } from "react";
 
 import type { Answer, FollowUpQuestion } from "../case-model";
 import { useCaseSession } from "../case-session";
-import { Button, Card, Checkbox, Eyebrow, Icon, Page, TextField, announce } from "../ui-kit";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Eyebrow,
+  Icon,
+  Page,
+  Progress,
+  TextField,
+  announce,
+} from "../ui-kit";
 
 type Entry = { text: string; notSure: boolean };
 
@@ -59,6 +69,15 @@ function Questions(p: {
           }
         />
       </div>
+      {p.busy && (
+        <Progress
+          messages={[
+            "Thank you, reading your answers…",
+            "Checking for risks again…",
+            "Drafting your plan…",
+          ]}
+        />
+      )}
     </>
   );
 }

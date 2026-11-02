@@ -16,6 +16,7 @@ export {
   LinkButton,
   NumberDot,
   Page,
+  Progress,
   Select,
   StatusBadge,
   TextField,

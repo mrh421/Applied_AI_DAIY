@@ -2,7 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
 import { useCaseSession } from "../case-session";
-import { Button, Icon, IconButton, NumberDot, Page, TextField, announce } from "../ui-kit";
+import {
+  Button,
+  Icon,
+  IconButton,
+  NumberDot,
+  Page,
+  Progress,
+  TextField,
+  announce,
+} from "../ui-kit";
 
 const HOW = [
   { title: "Describe it", text: "Say what is broken, as you would to a friend." },
@@ -164,6 +173,16 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                 ))}
             </section>
             {notice && <p role="status">{notice}</p>}
+            {session?.pending === "assess" && (
+              <Progress
+                messages={[
+                  "Reading your description…",
+                  ...(photo ? ["Looking at your photo…"] : []),
+                  "Checking for risks…",
+                  "Working out what to ask or do next…",
+                ]}
+              />
+            )}
             <div className="grid gap-3">
               <div className="grid sm:block">
                 <Button
