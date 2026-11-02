@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { CONSENT_PURPOSES, giveConsent, hasConsent } from "../consent";
 import { useCaseSession } from "../case-session";
-import { Button, Icon, NumberDot, Page, TextField, announce } from "../ui-kit";
+import { Button, Icon, IconButton, NumberDot, Page, TextField, announce } from "../ui-kit";
 
 const HOW = [
   { title: "Describe it", text: "Say what is broken, as you would to a friend." },
@@ -22,6 +22,9 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
   const { session, start } = useCaseSession(p.caseId);
   const [description, setDescription] = useState<string | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
+  const [pickerKey, setPickerKey] = useState(0);
+  const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo]);
+  useEffect(() => () => (preview ? URL.revokeObjectURL(preview) : undefined), [preview]);
   const [error, setError] = useState<string | undefined>();
   const [consented, setConsented] = useState(hasConsent("keep-case-photos"));
   const [started, setStarted] = useState(false);
@@ -107,6 +110,7 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                 >
                   <Icon name="Camera" /> Add a photo (optional)
                   <input
+                    key={pickerKey}
                     id="case-photo"
                     type="file"
                     accept="image/*"
@@ -114,8 +118,29 @@ export function CaseInputScreen(p: { caseId?: string; onStarted?: (caseId: strin
                     onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
                   />
                 </label>
-                {photo && <span className="text-sm text-muted-foreground">{photo.name}</span>}
               </div>
+              {photo && preview && (
+                <ul aria-label="Photos" className="flex flex-wrap gap-3">
+                  <li className="relative">
+                    <img
+                      src={preview}
+                      alt={`Your photo: ${photo.name}`}
+                      className="size-24 rounded-xl border border-border object-cover"
+                    />
+                    <div className="absolute -right-2 -top-2">
+                      <IconButton
+                        label="Remove the photo"
+                        icon="X"
+                        onPress={() => {
+                          setPhoto(null);
+                          setPickerKey((k) => k + 1);
+                          announce("The photo was removed.");
+                        }}
+                      />
+                    </div>
+                  </li>
+                </ul>
+              )}
               {photo &&
                 (consented ? (
                   <p className="text-sm text-muted-foreground">

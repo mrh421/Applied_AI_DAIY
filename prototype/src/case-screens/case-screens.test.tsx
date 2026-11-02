@@ -96,6 +96,22 @@ describe("CaseInputScreen", () => {
     expect(hasConsent("keep-case-photos")).toBe(false);
   });
 
+  it("shows the chosen photo as a small picture and removes it again", async () => {
+    URL.createObjectURL = vi.fn(() => "blob:preview");
+    URL.revokeObjectURL = vi.fn();
+    render(<CaseInputScreen />);
+    await userEvent.upload(
+      screen.getByLabelText(/add a photo/i),
+      new File(["abc"], "tap.jpg", { type: "image/jpeg" }),
+    );
+    expect(screen.getByRole("img", { name: "Your photo: tap.jpg" })).toHaveAttribute(
+      "src",
+      "blob:preview",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Remove the photo" }));
+    expect(screen.queryByRole("img", { name: /your photo/i })).not.toBeInTheDocument();
+  });
+
   it("gives the consent with one action", async () => {
     render(<CaseInputScreen />);
     await userEvent.upload(
