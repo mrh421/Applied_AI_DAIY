@@ -26,6 +26,7 @@ jobs:
           repository: mrh421/agent-m
           ref: 29308ccb26afaf38334d7844d150422485354ab7
           path: instance
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
