@@ -200,6 +200,11 @@ describe("OutcomeScreen guidance", () => {
 });
 
 describe("OutcomeScreen escalation and notice", () => {
+  // TST-065 · level: component · module: MOD-case-screens
+  // guards: ESCALATION-REASON; HAZARD-PROFESSIONAL; NO-GUIDE-FOR-HAZARDS
+  // given: a case whose outcome is a critical escalation for gas with an action and a professional
+  // input: the outcome screen is opened
+  // expect: risk, reason, action and professional are shown, no list of steps appears, and no explanation of steps is requested
   it("shows risk, reason, actions and professional and no steps (ESCALATION-REASON, HAZARD-PROFESSIONAL)", async () => {
     const id = await startWith({
       type: "escalation",
@@ -221,6 +226,11 @@ describe("OutcomeScreen escalation and notice", () => {
     expect(pipe.explainSteps).not.toHaveBeenCalled();
   });
 
+  // TST-066 · level: component · module: MOD-case-screens
+  // guards: UNDERSTANDABLE-ERROR-NOTICE
+  // given: an assessment that fails with a notice that the person seems to be offline
+  // input: the person types a description and presses Find my repair
+  // expect: the notice text is shown on the input screen and the case does not move on
   it("shows the notice of a failed assessment on the case input and does not move on (UNDERSTANDABLE-ERROR-NOTICE)", async () => {
     pipe.assessCase.mockResolvedValueOnce({
       type: "notice",

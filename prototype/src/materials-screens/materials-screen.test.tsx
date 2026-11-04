@@ -70,6 +70,11 @@ beforeEach(async () => {
 });
 
 describe("materials list", () => {
+  // TST-058 · level: component · module: MOD-materials-screens
+  // guards: OWN-STOCK-FIRST; PARTLY-AVAILABLE
+  // given: a materials list with one item in stock, one partly in stock and one missing
+  // input: the materials screen is opened
+  // expect: the items come in that order, each with its status as text (Available; Partly available with the missing amount; Missing)
   it("lists own stock first, with each status as text (OWN-STOCK-FIRST, PARTLY-AVAILABLE)", () => {
     render(<MaterialsScreen caseId="c1" />);
     const items = within(screen.getByRole("list", { name: "Materials" })).getAllByRole("listitem");
@@ -80,12 +85,22 @@ describe("materials list", () => {
     ]);
   });
 
+  // TST-059 · level: component · module: MOD-materials-screens
+  // guards: SUGGESTIONS-ONLY-FOR-MISSING
+  // given: a materials list with one item in stock, one partly in stock and one missing
+  // input: the materials screen is opened
+  // expect: links to offers exist only for the partly available and the missing item
   it("links to offers only for items that are not fully available (SUGGESTIONS-ONLY-FOR-MISSING)", () => {
     render(<MaterialsScreen caseId="c1" />);
     const links = screen.getAllByRole("link").map((a) => a.getAttribute("href"));
     expect(links).toEqual(["/case/c1/offers/m-washer", "/case/c1/offers/m-gasket"]);
   });
 
+  // TST-060 · level: component · module: MOD-materials-screens
+  // guards: MISSING-TOOLS-SEPARATE; RENT-OR-BORROW-HINT
+  // given: a case that needs a tool the person owns and two the person lacks
+  // input: the materials screen is opened
+  // expect: the missing tools stand in their own list apart from the materials, the owned tool in a list of tools owned, and the rent-or-borrow hint appears for the drill
   it("lists missing tools apart, with the rent-or-borrow hint where sensible (MISSING-TOOLS-SEPARATE)", () => {
     render(<MaterialsScreen caseId="c1" />);
     const missing = within(screen.getByRole("list", { name: "Missing tools" }));
@@ -130,6 +145,11 @@ describe("saving owned items (OFFER-SAVE-OWNED-ITEMS)", () => {
 });
 
 describe("budget panel (TOTAL-COST-ESTIMATE, BUDGET-RESPECTED, UNCHECKED-PRICE-OR-FIT-MARKED)", () => {
+  // TST-061 · level: component · module: MOD-materials-screens
+  // guards: TOTAL-COST-ESTIMATE; BUDGET-RESPECTED
+  // given: offers that make the materials cost 16 EUR and a budget of 10 EUR
+  // input: the materials screen is opened
+  // expect: the cost panel says Total: 16.00 EUR, says the option exceeds the budget, and says that no option stays within it
   it("states the total per option and whether it is within the budget, as text", () => {
     cat.offers = [priced(4)];
     hook.session = session(plan, { budget: { amount: 10, currency: "EUR" } });
@@ -150,6 +170,11 @@ describe("budget panel (TOTAL-COST-ESTIMATE, BUDGET-RESPECTED, UNCHECKED-PRICE-O
     );
   });
 
+  // TST-062 · level: component · module: MOD-materials-screens
+  // guards: UNCHECKED-PRICE-OR-FIT-MARKED
+  // given: an offer whose price is unverified and an offer whose fit is unverified
+  // input: the materials screen is opened
+  // expect: the cost panel names the item whose price is to check and the item whose fit is to check
   it("marks prices and fits that still need checking", () => {
     cat.offers = [
       offer({

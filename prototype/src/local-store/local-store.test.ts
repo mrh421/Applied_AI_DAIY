@@ -31,6 +31,11 @@ const remote = (
 ): StoredRecord<unknown> => ({ id, collection: "materials", updatedAt, deleted, data });
 
 describe("MOD-local-store records", () => {
+  // TST-045 · level: unit · module: MOD-local-store
+  // guards: PROFILE-ON-DEVICE
+  // given: an empty device storage
+  // input: a profile record is put into the store
+  // expect: the record is kept in the device's own storage under the key of the profile collection and can be read and listed again
   it("persists a record under the key of its collection (PROFILE-ON-DEVICE)", () => {
     const stored = localStore.put("profile", "p1", { level: "beginner" });
     expect(stored).toMatchObject({ id: "p1", collection: "profile", deleted: false });
@@ -156,6 +161,11 @@ describe("MOD-local-store subscribe", () => {
 describe("MOD-local-store blobs (DEVICE-STORAGE-CONSENT)", () => {
   const photo = () => new Blob(["jpeg"], { type: "image/jpeg" });
 
+  // TST-046 · level: unit · module: MOD-local-store
+  // guards: DEVICE-STORAGE-CONSENT
+  // given: no consent to keep case photos
+  // input: a photo is put into the store
+  // expect: the store refuses with the missing consent keep-case-photos and holds no photo
   it("refuses a blob without consent", async () => {
     await expect(localStore.putBlob("case-photo", "c1", photo())).rejects.toBeInstanceOf(
       ConsentMissingError,
@@ -173,6 +183,11 @@ describe("MOD-local-store blobs (DEVICE-STORAGE-CONSENT)", () => {
     expect(await localStore.getBlob("case-photo", "c1")).toBeDefined();
   });
 
+  // TST-047 · level: unit · module: MOD-local-store
+  // guards: CONSENT-WITHDRAWAL
+  // given: consent to keep case photos and two stored photos
+  // input: the consent is withdrawn
+  // expect: both photos are gone
   it("purges the photos when the consent is withdrawn (CONSENT-WITHDRAWAL)", async () => {
     giveConsent("keep-case-photos");
     await localStore.putBlob("case-photo", "c1", photo());
@@ -191,6 +206,11 @@ describe("MOD-local-store blobs (DEVICE-STORAGE-CONSENT)", () => {
 });
 
 describe("MOD-local-store clearAll (DELETE-ALL-DATA)", () => {
+  // TST-048 · level: unit · module: MOD-local-store
+  // guards: DELETE-ALL-DATA
+  // given: records of profile, materials, tools and cases, a consent, a sync key and a stored photo
+  // input: all data is deleted
+  // expect: no key of the storage register remains, the storage is empty and the photo is gone
   it("leaves no register key and no blob", async () => {
     localStore.put("profile", "p", 1);
     localStore.put("materials", "m", 1);
