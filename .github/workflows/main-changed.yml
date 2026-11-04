@@ -21,6 +21,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
@@ -47,6 +49,8 @@ jobs:
             fi
             git fetch origin +$branch:$branch
           done
+          # The test results of the Tests card: the branch the instance reads them from, where the repository holds it.
+          git fetch origin +test-results:test-results || true
       - name: Store the records of this commit
         run: |
           for attempt in 1 2 3; do
