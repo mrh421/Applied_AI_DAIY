@@ -1,6 +1,8 @@
 # Presentation
 
-[`DAIY_pre-presentation_v4.pptx`](DAIY_pre-presentation_v4.pptx) is the team deck. The repository is the source of truth; the deck follows it.
+[`DAIY_pre-presentation_v5.pptx`](DAIY_pre-presentation_v5.pptx) is the team deck. The repository is the source of truth; the deck follows it.
+
+v5 is the team's v4 plus five new slides in the Realization section (Agent M overview, requirements, use cases, architecture). Slides after the Realization divider moved back by five. The checklist below was written for v4 and its slide numbers have not been re-checked.
 
 ## Slides that no longer match the repository (checked 2026-10-24)
 
