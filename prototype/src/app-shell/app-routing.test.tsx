@@ -1,3 +1,6 @@
+// Level: component
+// Module: MOD-app-shell
+
 import {
   createMemoryHistory,
   createRouter,

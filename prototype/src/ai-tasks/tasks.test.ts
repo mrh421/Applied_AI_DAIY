@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-ai-tasks
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AiError } from "../ai-gateway";

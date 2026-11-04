@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-legal-notices
+
 import { describe, expect, it } from "vitest";
 
 import type { NoticeKind } from "../case-model";

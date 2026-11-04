@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-safety-enforcement
+
 import { describe, expect, it } from "vitest";
 
 import { FIXED_TOPICS } from "../case-model";

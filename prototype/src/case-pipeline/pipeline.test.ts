@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-case-pipeline
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { uniqueIds } from "./assess";

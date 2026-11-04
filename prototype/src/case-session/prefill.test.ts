@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-case-session
+
 import { describe, expect, it } from "vitest";
 
 import type { Answer, FollowUpQuestion } from "../case-model";

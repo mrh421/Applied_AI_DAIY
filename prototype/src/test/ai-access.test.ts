@@ -1,3 +1,4 @@
+// Level: unit
 // @vitest-environment node
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 

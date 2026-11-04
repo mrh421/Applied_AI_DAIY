@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-cost-estimate
+
 import { describe, expect, it, vi } from "vitest";
 
 import type { MaterialNeed, Quantity } from "../case-model";

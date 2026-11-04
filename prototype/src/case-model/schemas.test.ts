@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-case-model
+
 import { describe, expect, it } from "vitest";
 
 import { FIXED_TOPICS, SAFETY_RULES_VERSION, SKILL_AREAS, schemas } from "./index";

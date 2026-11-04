@@ -1,3 +1,6 @@
+// Level: component
+// Module: MOD-case-session
+
 import "fake-indexeddb/auto";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

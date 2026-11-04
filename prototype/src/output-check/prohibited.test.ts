@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-output-check
+
 import { describe, expect, it } from "vitest";
 
 import { findProhibitedClaims, PROHIBITED_CLAIMS } from "./prohibited";

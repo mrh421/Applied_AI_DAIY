@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-stock-matching
+
 import { describe, expect, it } from "vitest";
 
 import type { Guide, MaterialNeed, Quantity, ToolNeed } from "../case-model";

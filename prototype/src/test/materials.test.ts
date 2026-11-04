@@ -1,3 +1,5 @@
+// Level: unit
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Guide, MaterialNeed, Quantity } from "../case-model";

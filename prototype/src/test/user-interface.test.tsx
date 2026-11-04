@@ -1,3 +1,5 @@
+// Level: component
+
 import "fake-indexeddb/auto";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";

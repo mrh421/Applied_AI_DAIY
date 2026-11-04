@@ -1,3 +1,5 @@
+// Level: unit
+// Module: MOD-ai-gateway
 // @vitest-environment node
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
