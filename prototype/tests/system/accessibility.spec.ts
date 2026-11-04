@@ -181,7 +181,11 @@ test("a full case by keyboard alone, with a visible focus", async ({ page }) => 
   await expect(page.getByLabel("Done: step 1")).toBeChecked();
 });
 
-// ITM-267: several photos on the start page, each with its own text alternative and remove button.
+// TST-027 · level: system · module: system
+// guards: UC-001; UC-025; OPTIONAL-PHOTO; CLEAR-LABELS
+// given: the start page with several photos added
+// input: adding two photos and removing one by keyboard
+// expect: each photo has a text alternative and a remove button, the removed one is gone, no axe violation and no sideways scroll
 test("several photos on the start page: named, removable by keyboard, no violation, no sideways scroll", async ({
   page,
 }) => {
@@ -209,7 +213,11 @@ test("several photos on the start page: named, removable by keyboard, no violati
   await expect(page.getByRole("img", { name: "Your photo: b.jpg" })).toBeVisible();
 });
 
-// ITM-268: dictation on the start page, with a recognition that the test replaces.
+// TST-028 · level: system · module: system
+// guards: UC-001; UC-025; FREE-TEXT-INPUT
+// given: the start page and a speech recognition the test replaces
+// input: asking for dictation, giving the consent and dictating by keyboard
+// expect: the consent comes first, dictation is operable by keyboard and axe reports no violation
 test("dictation: consent first, operable by keyboard, no violation", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Fix it yourself — safely." })).toBeVisible();
