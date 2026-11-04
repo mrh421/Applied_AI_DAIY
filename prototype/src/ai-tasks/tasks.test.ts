@@ -136,6 +136,21 @@ describe("draftAssessment", () => {
     expect(s).toMatch(/vase/);
   });
 
+  // TST-097 · level: unit · module: MOD-ai-tasks
+  // guards: PACKAGE-LABEL; PRECHECK-SPARES-PROJECT-PACKAGES; OUTPUT-COMPLETENESS-CHECK
+  // given: the instructions of an assessment
+  // input: the instructions are read
+  // expect: they tell the AI to split a project instead of marking the whole case out of scope, never to call an immediate hazard anything but critical, to give every DIY package a guide, and to answer in the language of the description
+  it("tells the AI to split a project, to give every DIY package a guide and to keep the language", async () => {
+    await draftAssessment(caseReq());
+    const s = lastCall().system;
+    expect(s).toMatch(/outOfScope.*only when the whole case cannot be split/);
+    expect(s).toMatch(/professional-only with its handover brief/);
+    expect(s).toMatch(/immediate hazard.*always sets the risk of the case to critical/);
+    expect(s).toMatch(/diy or diy-preparation has a guide/);
+    expect(s).toMatch(/language of the person's description/);
+  });
+
   it("forbids questions at round 2 and not before", async () => {
     await draftAssessment(caseReq({ round: 2 }));
     const r2 = `${lastCall().system}\n${textOf(lastCall())}`;
