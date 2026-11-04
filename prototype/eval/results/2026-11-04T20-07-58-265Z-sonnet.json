@@ -1,0 +1,116 @@
+[
+  {
+    "id": "CASE-001",
+    "title": "Dripping single-lever faucet (photo)",
+    "run": 1,
+    "expected": [
+      "ask",
+      "answer"
+    ],
+    "seconds": 85.6,
+    "path": "ask > ask > escalate",
+    "verdict": "deviates",
+    "actual": "escalate",
+    "stage": "AI draft, enforcement",
+    "labels": [],
+    "stepCount": 0,
+    "text": "No instructions are given. Water near electrics: water on live electrics can cause electric shock and fire. Distribution board: work on the distribution board is reserved to licensed electricians. | Close the main water valve / Do not touch sockets, devices or the fuse box while standing in water or with wet hands / Do not use any socket or device that the water may have reached until an electrician has checked it / Do not open the distribution board or work on fixed wiring | Licensed electrician (and a plumber for the water), Licensed electrician"
+  },
+  {
+    "id": "CASE-002",
+    "title": "Sticking drawer",
+    "run": 1,
+    "expected": [
+      "ask"
+    ],
+    "seconds": 50.3,
+    "path": "ask > escalate",
+    "verdict": "deviates",
+    "actual": "escalate",
+    "stage": "AI draft, enforcement",
+    "labels": [],
+    "stepCount": 0,
+    "text": "No instructions are given. Load-bearing structure: work on load-bearing structures can only be judged and approved by a structural engineer. | Do not remove, cut into or drill through the wall before it has been checked / A building permit may be needed – check locally | Structural engineer"
+  },
+  {
+    "id": "CASE-012",
+    "title": "1970s turntable runs too slow",
+    "run": 1,
+    "expected": [
+      "ask"
+    ],
+    "seconds": 105,
+    "path": "ask > ask > error",
+    "verdict": "error",
+    "actual": "error",
+    "stage": "AI",
+    "labels": [],
+    "stepCount": 0,
+    "text": "{\"type\":\"notice\",\"notice\":{\"reason\":\"output-rejected\",\"text\":\"We could not produce a reliable answer for this. Please add a few more details and try again.\",\"missing\":[]}}"
+  },
+  {
+    "id": "CASE-017",
+    "title": "Hang a shelf in a rented flat",
+    "run": 1,
+    "expected": [
+      "ask"
+    ],
+    "seconds": 80.2,
+    "path": "ask > ask > error",
+    "verdict": "error",
+    "actual": "error",
+    "stage": "AI",
+    "labels": [],
+    "stepCount": 0,
+    "text": "{\"type\":\"notice\",\"notice\":{\"reason\":\"output-rejected\",\"text\":\"We could not produce a reliable answer for this. Please add a few more details and try again.\",\"missing\":[]}}"
+  },
+  {
+    "id": "CASE-020",
+    "title": "Washing machine makes a loud noise",
+    "run": 1,
+    "expected": [
+      "ask"
+    ],
+    "seconds": 20.3,
+    "path": "escalate",
+    "verdict": "deviates",
+    "actual": "escalate",
+    "stage": "AI draft, enforcement",
+    "labels": [],
+    "stepCount": 0,
+    "text": "No instructions are given. Fire or smoke: fire and smoke are an immediate danger to life and property. | If there is fire or heavy smoke, leave the building and call the fire brigade (112) / Do not try to put out a fire that is spreading / Do not use the device or the room again until it has been checked | Fire brigade (112), then a licensed electrician"
+  },
+  {
+    "id": "CASE-021",
+    "title": "Office chair sinks down",
+    "run": 1,
+    "expected": [
+      "ask",
+      "answer"
+    ],
+    "seconds": 76.8,
+    "path": "ask > ask > error",
+    "verdict": "error",
+    "actual": "error",
+    "stage": "AI",
+    "labels": [],
+    "stepCount": 0,
+    "text": "{\"type\":\"notice\",\"notice\":{\"reason\":\"output-rejected\",\"text\":\"We could not produce a reliable answer for this. Please add a few more details and try again.\",\"missing\":[]}}"
+  },
+  {
+    "id": "CASE-022",
+    "title": "Replacement part for blinds, no details",
+    "run": 1,
+    "expected": [
+      "ask"
+    ],
+    "seconds": 72,
+    "path": "ask > ask > error",
+    "verdict": "error",
+    "actual": "error",
+    "stage": "AI",
+    "labels": [],
+    "stepCount": 0,
+    "text": "{\"type\":\"notice\",\"notice\":{\"reason\":\"output-rejected\",\"text\":\"We could not produce a reliable answer for this. Please add a few more details and try again.\",\"missing\":[]}}"
+  }
+]
