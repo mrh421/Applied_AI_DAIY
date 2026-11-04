@@ -84,6 +84,11 @@ describe("non-text tokens (NON-TEXT-CONTRAST, FOCUS-VISIBLE)", () => {
 });
 
 describe("sizes (READABLE-TEXT)", () => {
+  // TST-089 · level: unit · module: MOD-ui-kit
+  // guards: READABLE-TEXT; FOCUS-VISIBLE
+  // given: the style sheet of the app
+  // input: the sheet is read
+  // expect: the focus ring width is declared as 2 px and the corner radius in rem
   it("states the focus ring width of 2 px and sizes in rem", () => {
     expect(css).toMatch(/--ring-width:\s*2px/);
     expect(css).toMatch(/--radius:\s*[\d.]+rem/);

@@ -6,6 +6,11 @@ import { describe, expect, it } from "vitest";
 import { dimensionsMatch, matchesRequirements } from "./spec-match";
 
 describe("dimensionsMatch (PRODUCT-MATCHING-BY-SPEC)", () => {
+  // TST-078 · level: unit · module: MOD-catalogue
+  // guards: PRODUCT-MATCHING-BY-SPEC
+  // given: a required length of 100 mm
+  // input: candidates of 101.9, 98 and 102.5 mm are compared
+  // expect: the first two match and 102.5 mm does not
   it("accepts ±2 percent for values of 50 mm and more", () => {
     expect(dimensionsMatch({ length: 100 }, { length: 101.9 })).toBe(true);
     expect(dimensionsMatch({ length: 100 }, { length: 98 })).toBe(true);

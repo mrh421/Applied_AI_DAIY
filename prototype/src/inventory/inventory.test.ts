@@ -50,6 +50,11 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
     expect(listMaterials()[0]).toMatchObject({ name: "Wire", location: "Basement shelf" });
   });
 
+  // TST-055 · level: unit · module: MOD-inventory
+  // guards: ERROR-IDENTIFICATION
+  // given: a material with a blank name and no amount or unit
+  // input: the material is saved
+  // expect: the save fails, the errors name the fields amount, name and unit with a message each, and nothing is stored
   it("names each missing field (ERROR-IDENTIFICATION)", () => {
     const r = saveMaterial({ name: "  ", amount: null, unit: null });
     expect(r.ok).toBe(false);
@@ -87,6 +92,11 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
     expect(listMaterials()).toEqual([]);
   });
 
+  // TST-056 · level: unit · module: MOD-inventory
+  // guards: INVENTORY-ON-DEVICE; MATERIAL-INVENTORY
+  // given: an empty inventory
+  // input: a material Screws is saved
+  // expect: it is kept in the device's own storage under the key of the materials collection and listed
   it("persists across reload (INVENTORY-ON-DEVICE)", () => {
     mustSave("Screws", 20);
     expect(localStorage.getItem("daiy.v1.materials")).not.toBeNull();
@@ -95,6 +105,11 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
 });
 
 describe("MOD-inventory tools (TOOL-INVENTORY)", () => {
+  // TST-074 · level: unit · module: MOD-inventory
+  // guards: TOOL-INVENTORY
+  // given: an empty tool list
+  // input: a tool Hammer is saved, renamed to Claw hammer and removed
+  // expect: the list holds each state in turn and is empty at the end
   it("saves, changes and removes a tool", () => {
     const r = saveTool("Hammer");
     if (!r.ok) throw new Error("save failed");
@@ -112,6 +127,11 @@ describe("MOD-inventory tools (TOOL-INVENTORY)", () => {
 });
 
 describe("MOD-inventory deduct (DEDUCT-CONSUMED)", () => {
+  // TST-057 · level: unit · module: MOD-inventory
+  // guards: DEDUCT-CONSUMED
+  // given: an inventory with 20 screws and 5 metres of wire
+  // input: 8 screws are deducted
+  // expect: 12 screws remain, only the screws are reported as changed, and the wire stays at 5
   it("lowers the held quantity and returns the changed items", () => {
     const a = mustSave("Screws", 20);
     const b = mustSave("Wire", 5, "m");
@@ -134,6 +154,11 @@ describe("MOD-inventory deduct (DEDUCT-CONSUMED)", () => {
 });
 
 describe("MOD-inventory snapshot (INPUT-USES-INVENTORY)", () => {
+  // TST-075 · level: unit · module: MOD-inventory
+  // guards: INPUT-USES-INVENTORY
+  // given: an inventory with 20 screws in a box and a hammer
+  // input: the inventory snapshot for the AI is taken
+  // expect: it holds the material name with its quantity and the tool name, and nothing else such as the location
   it("carries names and quantities, and tool names", () => {
     mustSave("Screws", 20, "piece", "box");
     saveTool("Hammer");

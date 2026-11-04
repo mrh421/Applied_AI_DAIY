@@ -42,6 +42,11 @@ describe("labels and names (CLEAR-LABELS)", () => {
     expect(screen.getByRole("button", { name: "Go" })).toBeDisabled();
   });
 
+  // TST-086 · level: component · module: MOD-ui-kit
+  // guards: TARGET-SIZE
+  // given: a text button and an icon button of the UI kit
+  // input: both are rendered
+  // expect: each carries the classes for a minimum height and width of 24 CSS pixels (the real size is measured in the browser tests)
   it("gives buttons a target of at least 24 by 24 CSS pixels (TARGET-SIZE)", () => {
     render(
       <>
@@ -132,6 +137,11 @@ describe("errors (ERROR-IDENTIFICATION)", () => {
 });
 
 describe("status messages (STATUS-MESSAGES)", () => {
+  // TST-087 · level: component · module: MOD-ui-kit
+  // guards: STATUS-MESSAGES
+  // given: a focused button and the announcer of the UI kit
+  // input: a status message Saved is announced
+  // expect: it appears in a polite live region and the focus stays on the button
   it("writes to a polite live region without moving focus", () => {
     render(
       <>
@@ -179,6 +189,11 @@ describe("Collapsible (BASICS-EXPANDABLE, KEYBOARD-OPERABLE)", () => {
 });
 
 describe("StatusBadge (NOT-COLOR-ALONE)", () => {
+  // TST-088 · level: component · module: MOD-ui-kit
+  // guards: NOT-COLOR-ALONE
+  // given: a warning badge with an icon and the text Check locally
+  // input: the badge is rendered
+  // expect: the text is visible, so the meaning does not depend on colour
   it("always shows its text", () => {
     render(<StatusBadge tone="warning" icon="TriangleAlert" text="Check locally" />);
     expect(screen.getByText("Check locally")).toBeVisible();
@@ -250,6 +265,11 @@ describe("Dialog", () => {
 });
 
 describe("Page (GO-BACK, REFLOW)", () => {
+  // TST-072 · level: component · module: MOD-ui-kit
+  // guards: GO-BACK
+  // given: a page with a title and a back action
+  // input: the page is shown and the back button is pressed
+  // expect: the title is the level 1 heading and the back action is called once
   it("shows the title as a heading and a working back action", async () => {
     const onBack = vi.fn();
     render(

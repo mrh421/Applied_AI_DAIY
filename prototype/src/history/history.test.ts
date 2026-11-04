@@ -84,6 +84,11 @@ describe("MOD-history records (PROJECT-HISTORY)", () => {
     expect(getCase("zzz")).toBeUndefined();
   });
 
+  // TST-052 · level: unit · module: MOD-history
+  // guards: PROJECT-HISTORY; STEP-CHECK-OFF; DEDUCT-CONSUMED
+  // given: a saved case with two checked steps, a note and one used material that names its inventory item
+  // input: the case is read back from the history
+  // expect: the checked steps, the note and the used material with its inventory item are all there
   it("persists check-off states, notes and materials used (STEP-CHECK-OFF, DEDUCT-CONSUMED)", () => {
     saveCase(
       record("a", "2026-01-01T00:00:00Z", {
@@ -131,6 +136,11 @@ describe("MOD-history records (PROJECT-HISTORY)", () => {
 describe("MOD-history photos (DEVICE-STORAGE-CONSENT)", () => {
   const blob = () => new Blob(["x"], { type: "image/jpeg" });
 
+  // TST-053 · level: unit · module: MOD-history
+  // guards: DEVICE-STORAGE-CONSENT
+  // given: no consent to keep case photos
+  // input: a photo of a case is saved
+  // expect: the save reports false and no photo can be read back
   it("does not save a photo without consent", async () => {
     expect(await savePhoto("a", blob())).toBe(false);
     expect(await getPhoto("a")).toBeUndefined();
@@ -154,6 +164,11 @@ describe("MOD-history photos (DEVICE-STORAGE-CONSENT)", () => {
     await vi.waitFor(async () => expect(await getPhotos("a", 3)).toHaveLength(0));
   });
 
+  // TST-054 · level: unit · module: MOD-history
+  // guards: CONSENT-WITHDRAWAL
+  // given: consent to keep case photos and a saved photo
+  // input: the consent is withdrawn
+  // expect: the photo can no longer be read
   it("loses the photo when the consent is withdrawn", async () => {
     giveConsent("keep-case-photos");
     await savePhoto("a", blob());

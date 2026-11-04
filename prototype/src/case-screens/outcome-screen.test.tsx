@@ -110,6 +110,11 @@ async function startWith(outcome: CaseOutcome) {
 }
 
 describe("OutcomeScreen guidance", () => {
+  // TST-080 · level: component · module: MOD-case-screens
+  // guards: PROBLEM-SUMMARY; INSTRUCTION-STRUCTURE
+  // given: a case whose outcome is a guide with summary, assumptions, cause, tools, materials, duration and a warning
+  // input: the outcome screen is opened
+  // expect: the summary, the assumptions, the cause, a tool, a material, the duration and the warning are all shown
   it("shows the summary, the assumptions and all parts of the guide (PROBLEM-SUMMARY, INSTRUCTION-STRUCTURE)", async () => {
     const id = await startWith(guidance);
     render(<OutcomeScreen caseId={id} />);
@@ -155,6 +160,11 @@ describe("OutcomeScreen guidance", () => {
     expect(screen.getByTestId("cost-summary")).toHaveTextContent("some prices are unknown");
   });
 
+  // TST-081 · level: component · module: MOD-case-screens
+  // guards: NUMBERED-STEPS
+  // given: a case whose outcome is a guide
+  // input: the outcome screen is opened
+  // expect: the steps stand in an ordered list, in their order
   it("numbers the steps (NUMBERED-STEPS)", async () => {
     const id = await startWith(guidance);
     render(<OutcomeScreen caseId={id} />);
@@ -165,12 +175,22 @@ describe("OutcomeScreen guidance", () => {
     expect(items[1]).toHaveTextContent("Unscrew the handle.");
   });
 
+  // TST-082 · level: component · module: MOD-case-screens
+  // guards: ILLUSTRATIVE-IMAGES; TEXT-ALTERNATIVES
+  // given: a guide whose step names an illustration
+  // input: the outcome screen is opened
+  // expect: an image is shown whose accessible name describes it (a stop valve on a pipe)
   it("shows an illustration with its text alternative (ILLUSTRATIVE-IMAGES, TEXT-ALTERNATIVES)", async () => {
     const id = await startWith(guidance);
     render(<OutcomeScreen caseId={id} />);
     expect(screen.getByRole("img", { name: /stop valve on a pipe/i })).toBeInTheDocument();
   });
 
+  // TST-083 · level: component · module: MOD-case-screens
+  // guards: BASICS-EXPANDABLE
+  // given: a person at the skill level beginner
+  // input: the outcome screen is opened
+  // expect: the explanation of the basics is shown open, and it was requested for the level beginner
   it("opens the basics for a beginner (BASICS-EXPANDABLE)", async () => {
     const id = await startWith(guidance);
     render(<OutcomeScreen caseId={id} />);
@@ -180,6 +200,11 @@ describe("OutcomeScreen guidance", () => {
     expect(pipe.explainSteps.mock.calls[0]![0].data).toMatchObject({ level: "beginner" });
   });
 
+  // TST-084 · level: component · module: MOD-case-screens
+  // guards: BASICS-EXPANDABLE
+  // given: a person whose plumbing level is experienced
+  // input: the outcome screen is opened and the basics are expanded
+  // expect: the basics are hidden at first and shown after expanding
   it("collapses the basics for an experienced user and lets them expand (BASICS-EXPANDABLE)", async () => {
     setLevel("plumbing", "experienced");
     const id = await startWith(guidance);
@@ -200,6 +225,11 @@ describe("OutcomeScreen guidance", () => {
 });
 
 describe("OutcomeScreen escalation and notice", () => {
+  // TST-065 · level: component · module: MOD-case-screens
+  // guards: ESCALATION-REASON; HAZARD-PROFESSIONAL; NO-GUIDE-FOR-HAZARDS
+  // given: a case whose outcome is a critical escalation for gas with an action and a professional
+  // input: the outcome screen is opened
+  // expect: risk, reason, action and professional are shown, no list of steps appears, and no explanation of steps is requested
   it("shows risk, reason, actions and professional and no steps (ESCALATION-REASON, HAZARD-PROFESSIONAL)", async () => {
     const id = await startWith({
       type: "escalation",
@@ -221,6 +251,11 @@ describe("OutcomeScreen escalation and notice", () => {
     expect(pipe.explainSteps).not.toHaveBeenCalled();
   });
 
+  // TST-066 · level: component · module: MOD-case-screens
+  // guards: UNDERSTANDABLE-ERROR-NOTICE
+  // given: an assessment that fails with a notice that the person seems to be offline
+  // input: the person types a description and presses Find my repair
+  // expect: the notice text is shown on the input screen and the case does not move on
   it("shows the notice of a failed assessment on the case input and does not move on (UNDERSTANDABLE-ERROR-NOTICE)", async () => {
     pipe.assessCase.mockResolvedValueOnce({
       type: "notice",

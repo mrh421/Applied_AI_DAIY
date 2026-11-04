@@ -90,6 +90,11 @@ describe("OutcomeScreen packages", () => {
     expect(screen.getByText(/standard one/)).toBeInTheDocument();
   });
 
+  // TST-063 · level: component · module: MOD-case-screens
+  // guards: PACKAGE-LABEL; PACKAGE-REASON
+  // given: an outcome with four packages labelled DIY, DIY preparation for a professional, professional only and not recommended
+  // input: the outcome screen is opened
+  // expect: each package shows its label as text and the reason given for it
   it("shows each label as text with its reason (PACKAGE-LABEL, PACKAGE-REASON)", async () => {
     render(<OutcomeScreen caseId={await openOutcome()} />);
     for (const [id, text] of [
@@ -109,6 +114,11 @@ describe("OutcomeScreen packages", () => {
     expect(screen.getByText(/Is the pipe copper\?/)).toBeInTheDocument();
   });
 
+  // TST-064 · level: component · module: MOD-case-screens
+  // guards: HANDOVER-BRIEF
+  // given: an outcome with a professional-only package and a DIY package, the browser without a share function
+  // input: the outcome screen is opened and the copy button of the professional-only package is pressed
+  // expect: the brief of that package is shown and copied to the clipboard, and the DIY package shows no brief
   it("gives a professional-only package a brief to copy (HANDOVER-BRIEF)", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
@@ -132,6 +142,11 @@ describe("OutcomeScreen packages", () => {
     expect(share).toHaveBeenCalledWith({ text: "Brief for c" });
   });
 
+  // TST-085 · level: component · module: MOD-case-screens
+  // guards: AGREE-WITH-PROFESSIONAL-BEFOREHAND
+  // given: an outcome with a DIY preparation package for a professional
+  // input: the outcome screen is opened
+  // expect: the advice to agree the preparation with the electrician first is shown
   it("advises to agree a preparation package with the professional first (AGREE-WITH-PROFESSIONAL-BEFOREHAND)", async () => {
     render(<OutcomeScreen caseId={await openOutcome()} />);
     expect(screen.getByText(/Agree the prep with your electrician first/)).toBeInTheDocument();

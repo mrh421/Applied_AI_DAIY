@@ -68,6 +68,11 @@ describe("checkAssessmentDraft", () => {
       expect(failures.every((f) => f.check === "format")).toBe(true);
     });
 
+    // TST-039 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-FORMAT-CHECK
+    // given: an AI draft whose summary is the number 3 instead of text
+    // input: the draft goes through the output check
+    // expect: the draft fails the format check and the failure names the path summary
     it("names the path of the field in error", () => {
       const failures = failuresOf(
         checkAssessmentDraft({ ...answerDraft, summary: 3 }, { round: 0 }),
@@ -148,11 +153,21 @@ describe("checkAssessmentDraft", () => {
       expect(failures).toContainEqual(expect.objectContaining({ check: "completeness", path }));
     });
 
+    // TST-041 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-COMPLETENESS-CHECK
+    // given: an AI draft whose package label is uncertain and that names the deciding information
+    // input: the draft goes through the output check
+    // expect: the draft is accepted
     it("accepts an uncertain label with deciding information", () => {
       const draft = withPackage({ labelUncertain: true, decidingInformation: ["Wall material"] });
       expect(checkAssessmentDraft(draft, { round: 0 }).ok).toBe(true);
     });
 
+    // TST-040 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-COMPLETENESS-CHECK
+    // given: an AI draft whose package has an empty title and an empty reason
+    // input: the draft goes through the output check
+    // expect: two completeness failures are reported, one for each empty field
     it("reports every failure, not only the first", () => {
       const draft = withPackage({ title: "", reason: "" });
       expect(failuresOf(checkAssessmentDraft(draft, { round: 0 })).length).toBe(2);
@@ -160,6 +175,11 @@ describe("checkAssessmentDraft", () => {
   });
 
   describe("prohibited paths (OUTPUT-PROHIBITED-PATH-CHECK)", () => {
+    // TST-042 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-PROHIBITED-PATH-CHECK
+    // given: an AI draft that asks questions although the case is at round 2
+    // input: the draft goes through the output check at round 2
+    // expect: the draft fails with a prohibited-path failure
     it("catches questions at round 2", () => {
       const failures = failuresOf(checkAssessmentDraft(questionsDraft, { round: 2 }));
       expect(failures).toContainEqual(expect.objectContaining({ check: "prohibited-path" }));
@@ -175,6 +195,11 @@ describe("checkAssessmentDraft", () => {
       },
     );
 
+    // TST-044 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-PROHIBITED-PATH-CHECK
+    // given: an AI draft whose first step names an image id that the illustration index does not hold
+    // input: the draft goes through the output check
+    // expect: the draft fails with a prohibited-path failure naming the path of that image id
     it("catches an image id that the catalogue does not know", () => {
       const steps = [{ ...diyPackage.guide!.steps[0], imageIds: ["no-such-image"] }];
       const failures = failuresOf(checkAssessmentDraft(withGuide({ steps }), { round: 0 }));
@@ -186,6 +211,11 @@ describe("checkAssessmentDraft", () => {
       );
     });
 
+    // TST-043 · level: unit · module: MOD-output-check
+    // guards: OUTPUT-PROHIBITED-PATH-CHECK
+    // given: an AI draft whose package reason says that experienced users can skip the warnings
+    // input: the draft goes through the output check
+    // expect: the draft fails with a prohibited-path failure naming the path of the reason
     it("catches a prohibited claim and names its path", () => {
       const draft = withPackage({ reason: "Experienced users can skip the warnings." });
       const failures = failuresOf(checkAssessmentDraft(draft, { round: 0 }));

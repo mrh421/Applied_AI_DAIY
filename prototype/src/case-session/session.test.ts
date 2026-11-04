@@ -149,6 +149,11 @@ describe("start and answer", () => {
 });
 
 describe("open store (GO-BACK) and history", () => {
+  // TST-073 · level: unit · module: MOD-case-session
+  // guards: GO-BACK
+  // given: a started case with a description and one photo
+  // input: the screen is left (unmounted) and the case is opened again by its id
+  // expect: the description and the photo are still there
   it("keeps the session with its photo across unmount and remount", async () => {
     pipe.assessCase.mockResolvedValue(guidance);
     const first = renderHook(() => useCaseSession());

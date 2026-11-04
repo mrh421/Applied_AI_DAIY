@@ -49,6 +49,11 @@ describe("rule 1: escalation (NO-GUIDE-AT-HIGH-RISK)", () => {
     const o = enforceSafety(draft({ outOfScope: "chimney" }), ctx());
     expect(o.type === "escalation" && o.escalation.hazards).toContain("chimney");
   });
+  // TST-029 · level: unit · module: MOD-safety-enforcement
+  // guards: NO-GUIDE-AT-HIGH-RISK
+  // given: an AI draft of risk critical that names the hazard gas
+  // input: the draft goes through the safety enforcement
+  // expect: the outcome is an escalation of risk critical, not a guide
   it("keeps the hazards the draft names", () => {
     const o = enforceSafety(draft({ risk: "critical", hazards: ["gas"] }), ctx());
     expect(o.type === "escalation" && o.escalation.risk).toBe("critical");
@@ -96,6 +101,11 @@ describe("rule 2: unclear risk (UNCLEAR-CASES-CONSERVATIVE)", () => {
     text: "How old is the tap?",
     termExplanations: [],
   };
+  // TST-030 · level: unit · module: MOD-safety-enforcement
+  // guards: UNCLEAR-CASES-CONSERVATIVE
+  // given: an AI draft whose risk is uncertain and that holds one question, at round 0
+  // input: the draft goes through the safety enforcement
+  // expect: the outcome is the question of the draft for round 1, and no guide
   it("returns the draft's questions before round 2", () => {
     const o = enforceSafety(
       draft({ riskUncertain: true, questions: [q], missing: ["age"] }),
@@ -106,6 +116,11 @@ describe("rule 2: unclear risk (UNCLEAR-CASES-CONSERVATIVE)", () => {
   it("escalates before round 2 when there are no questions", () => {
     expect(enforceSafety(draft({ riskUncertain: true }), ctx(1)).type).toBe("escalation");
   });
+  // TST-031 · level: unit · module: MOD-safety-enforcement
+  // guards: UNCLEAR-CASES-CONSERVATIVE
+  // given: an AI draft whose risk is still uncertain at round 2, with a further question
+  // input: the draft goes through the safety enforcement
+  // expect: the outcome is an escalation; no third round of questions is asked
   it("escalates at round 2 even with questions", () => {
     expect(enforceSafety(draft({ riskUncertain: true, questions: [q] }), ctx(2)).type).toBe(
       "escalation",
@@ -133,6 +148,11 @@ describe("rule 3: device model (MODEL-BEFORE-PARTS)", () => {
       ...extra,
     });
 
+  // TST-032 · level: unit · module: MOD-safety-enforcement
+  // guards: MODEL-BEFORE-PARTS
+  // given: a draft for a device whose model is not known and that names a replacement part, at round 0
+  // input: the draft goes through the safety enforcement
+  // expect: the questions for model and variant come first, and the replacement part appears nowhere in the outcome
   it("asks model and variant first and names no part before round 2", () => {
     const o = enforceSafety(
       deviceDraft({
@@ -153,6 +173,11 @@ describe("rule 3: device model (MODEL-BEFORE-PARTS)", () => {
   it("asks even when the draft is an answer", () => {
     expect(enforceSafety(deviceDraft(), ctx(1))).toMatchObject({ type: "questions", round: 2 });
   });
+  // TST-033 · level: unit · module: MOD-safety-enforcement
+  // guards: MODEL-BEFORE-PARTS
+  // given: a draft for a device whose model is still unknown at round 2, with a replacement part and an ordinary material
+  // input: the draft goes through the safety enforcement
+  // expect: only the ordinary material stays, and the assumption that the model is unknown is added
   it("removes replacement parts and adds the assumption at round 2", () => {
     const o = guidance(enforceSafety(deviceDraft(), ctx(2)));
     const mats = o.options[0]!.packages[0]!.guide!.materials.map((m) => m.name);
@@ -247,6 +272,11 @@ describe("rules 6 to 8: labels and guide removal", () => {
   const mains = {
     flags: { opensMainsHousing: true, carriesPerson: false, waterRelated: false },
   };
+  // TST-034 · level: unit · module: MOD-safety-enforcement
+  // guards: NO-OPENING-MAINS-HOUSINGS
+  // given: a work package flagged as opening a mains housing
+  // input: the draft goes through the safety enforcement
+  // expect: the package is labelled professional-only and holds no guide
   it("labels a flagged mains housing professional-only, without guide (NO-OPENING-MAINS-HOUSINGS)", () => {
     const p = firstPkg(enforceSafety(draft(withPkgs(pkg(mains))), ctx()));
     expect(p.label).toBe("professional-only");
@@ -303,6 +333,11 @@ describe("rule 10: fixed safety steps", () => {
       guide: g,
     });
 
+  // TST-035 · level: unit · module: MOD-safety-enforcement
+  // guards: WATER-SHUT-OFF-FIRST
+  // given: a guide for work flagged as water-related whose steps do not start with a shut-off
+  // input: the draft goes through the safety enforcement
+  // expect: the fixed shut-off step is the first step, marked as a fixed safety step, and the steps are numbered 1 to 3
   it("starts a water guide with the shut-off step and renumbers", () => {
     const o = enforceSafety(draft(withPkgs(water())), ctx());
     expect(texts(o)[0]).toBe(FIXED_TEXTS.shutOffWater);
@@ -317,6 +352,11 @@ describe("rule 10: fixed safety steps", () => {
   it("adds no shut-off step to a dry guide", () => {
     expect(texts(enforceSafety(draft(), ctx()))).not.toContain(FIXED_TEXTS.shutOffWater);
   });
+  // TST-036 · level: unit · module: MOD-safety-enforcement
+  // guards: UNPLUG-BEFORE-OPENING
+  // given: a guide with three steps of which the second opens the device
+  // input: the draft goes through the safety enforcement
+  // expect: the fixed unplug step stands directly before the opening step, and the steps are numbered 1 to 4
   it("puts the unplug step before the first opening step", () => {
     const g = guide([
       step(1, "Clean it."),
@@ -340,6 +380,11 @@ describe("rule 10: fixed safety steps", () => {
     const o = enforceSafety(draft(withPkgs(water(g))), ctx());
     expect(texts(o)).toEqual([FIXED_TEXTS.shutOffWater, FIXED_TEXTS.unplug, "Open it."]);
   });
+  // TST-037 · level: unit · module: MOD-safety-enforcement
+  // guards: NO-BREAKER-ONLY-ISOLATION
+  // given: a guide with a step that switches off a circuit and one warning of its own
+  // input: the draft goes through the safety enforcement
+  // expect: the warnings are the own warning followed by the fixed lock-out warning
   it("adds the lock-out warning when a step switches off a circuit (NO-BREAKER-ONLY-ISOLATION)", () => {
     const g = guide([step(1, "Switch off the circuit.", { switchesOffCircuit: true })], {
       warnings: ["Be careful."],
@@ -359,6 +404,11 @@ describe("rule 10: fixed safety steps", () => {
 });
 
 describe("rule 11: safety-critical status (NO-PRINTED-SAFETY-PARTS)", () => {
+  // TST-038 · level: unit · module: MOD-safety-enforcement
+  // guards: NO-PRINTED-SAFETY-PARTS
+  // given: a guide with two materials, one marked safety-critical as unclear and one as no
+  // input: the draft goes through the safety enforcement
+  // expect: the status of the unclear one becomes yes and the other stays no
   it("turns unclear into yes", () => {
     const m = {
       id: "m",

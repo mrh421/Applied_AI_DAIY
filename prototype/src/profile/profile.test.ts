@@ -29,10 +29,20 @@ describe("MOD-profile", () => {
     expect(getProfile()).toEqual({ levels: { plumbing: "experienced" } });
   });
 
+  // TST-049 · level: unit · module: MOD-profile
+  // guards: DEFAULT-BEGINNER
+  // given: a profile in which no skill level is set for plumbing
+  // input: the level for plumbing is asked
+  // expect: the level is beginner
   it("gives beginner for an unset area (DEFAULT-BEGINNER)", () => {
     expect(levelFor("plumbing")).toBe("beginner");
   });
 
+  // TST-050 · level: unit · module: MOD-profile
+  // guards: SKILL-PROFILE
+  // given: an empty profile
+  // input: a level is set for plumbing and for garden, and the plumbing level is changed
+  // expect: each area keeps its own level, the change is kept, and an area never set still reads beginner
   it("sets and changes a level per area (SKILL-PROFILE)", () => {
     setLevel("plumbing", "experienced");
     setLevel("garden", "some-experience");
@@ -45,6 +55,11 @@ describe("MOD-profile", () => {
     expect(levelFor("woodwork")).toBe("beginner");
   });
 
+  // TST-051 · level: unit · module: MOD-profile
+  // guards: DATA-RECTIFICATION
+  // given: a profile with the level experienced for plumbing
+  // input: that level is cleared
+  // expect: the profile holds no level and plumbing reads beginner again
   it("clears a level, which falls back to beginner (DATA-RECTIFICATION)", () => {
     setLevel("plumbing", "experienced");
     clearLevel("plumbing");

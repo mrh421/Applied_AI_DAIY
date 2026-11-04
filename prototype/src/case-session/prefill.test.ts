@@ -20,6 +20,11 @@ const a = (topic: string, text: string, notSure = false): Answer => ({
 });
 
 describe("prefillQuestions (REDUNDANT-ENTRY)", () => {
+  // TST-071 · level: unit · module: MOD-case-session
+  // guards: REDUNDANT-ENTRY
+  // given: two new questions of which one asks the device model that an earlier answer already gave
+  // input: the questions are prepared with the earlier answers
+  // expect: the model question is prefilled with the earlier answer and the other one is not
   it("sets prefill of a question whose topic an earlier answer covers", () => {
     const out = prefillQuestions(
       [q("q2", "device.model"), q("q3", "tap.age")],

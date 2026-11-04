@@ -94,6 +94,11 @@ beforeEach(async () => {
 afterEach(cleanup);
 
 describe("ExecutionScreen", () => {
+  // TST-067 · level: component · module: MOD-case-screens
+  // guards: STEP-CHECK-OFF
+  // given: a case with a DIY package whose steps are not yet checked
+  // input: step 1 is checked, the screen is left and opened again, and step 1 is unchecked
+  // expect: the current step moves to 2, the check survives the reopening, and unchecking is stored too
   it("marks the current step and persists a check-off (STEP-CHECK-OFF)", async () => {
     seed(guidance([diyPackage]));
     const view = render(<ExecutionScreen caseId="c1" packageId="p1" />);
@@ -108,6 +113,11 @@ describe("ExecutionScreen", () => {
     expect(getCase("c1")?.checked).toEqual({ p1: [] });
   });
 
+  // TST-068 · level: component · module: MOD-case-screens
+  // guards: STEP-RE-EXPLAIN; FOLLOW-UP-DURING-EXECUTION
+  // given: a case with a DIY package and an answer service that answers a question
+  // input: the person asks which way to turn in step 1
+  // expect: the answer is shown, and the question is sent with the current step 1 and the question text
   it("shows the answer to a question in the context of the step", async () => {
     seed(guidance([diyPackage]));
     pipe.answerStepQuestion.mockResolvedValue({ type: "answer", text: "Turn it anticlockwise." });
