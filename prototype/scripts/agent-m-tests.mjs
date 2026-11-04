@@ -27,8 +27,15 @@ const whole = (name) => {
 
 function run(program, args, env = {}) {
   return new Promise((done) => {
-    const child = spawn(program, args, { cwd: APP, stdio: "inherit", env: { ...process.env, ...env } });
-    child.on("error", (error) => { console.error(`${program}: ${error.message}`); done(127); });
+    const child = spawn(program, args, {
+      cwd: APP,
+      stdio: "inherit",
+      env: { ...process.env, ...env },
+    });
+    child.on("error", (error) => {
+      console.error(`${program}: ${error.message}`);
+      done(127);
+    });
     child.on("close", (status, signal) => done(status ?? (signal ? 1 : 0)));
   });
 }
@@ -36,7 +43,13 @@ function run(program, args, env = {}) {
 const STRING = /(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|`((?:[^`\\]|\\.)*)`)/;
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 // A title as a pattern of the case names it gives: `%s`, `%d`, `%o` of it.each and `${…}` stand for any text.
-const patternOf = (title) => new RegExp(`^${title.split(/%[sdifjoOp#]|\$\{[^}]*\}/).map(escape).join("[\\s\\S]*")}$`);
+const patternOf = (title) =>
+  new RegExp(
+    `^${title
+      .split(/%[sdifjoOp#]|\$\{[^}]*\}/)
+      .map(escape)
+      .join("[\\s\\S]*")}$`,
+  );
 
 // The declarations of a file (`// TST-<nnn> · …`, the title on the first code line after the comment lines).
 function declarations(file) {
@@ -54,7 +67,11 @@ function declarations(file) {
   return found;
 }
 
-const decode = (text) => text.replace(/&(lt|gt|amp|quot|apos);/g, (_, n) => ({ lt: "<", gt: ">", amp: "&", quot: '"', apos: "'" })[n]);
+const decode = (text) =>
+  text.replace(
+    /&(lt|gt|amp|quot|apos);/g,
+    (_, n) => ({ lt: "<", gt: ">", amp: "&", quot: '"', apos: "'" })[n],
+  );
 const encode = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
 // The report's cases named by the declarations of their file: the case's classname or file names the file; the title is the
@@ -62,11 +79,18 @@ const encode = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").repla
 function named(xml, files) {
   const byFile = new Map(files.map((f) => [f, declarations(f)]));
   return xml.replace(/<testcase\b[^>]*>/g, (tag) => {
-    const attr = (k) => { const m = new RegExp(`\\s${k}="([^"]*)"`).exec(tag); return m ? decode(m[1]) : ""; };
+    const attr = (k) => {
+      const m = new RegExp(`\\s${k}="([^"]*)"`).exec(tag);
+      return m ? decode(m[1]) : "";
+    };
     const name = attr("name");
     if (/^TST-\d+/.test(name)) return tag;
-    const owner = files.find((f) => [attr("classname"), attr("file")].some((c) => c && (c.endsWith(f.replace(/^\.\//, "")) || f.endsWith(c.replace(/^\.\//, "")))))
-      ?? (files.length === 1 ? files[0] : null);
+    const owner =
+      files.find((f) =>
+        [attr("classname"), attr("file")].some(
+          (c) => c && (c.endsWith(f.replace(/^\.\//, "")) || f.endsWith(c.replace(/^\.\//, ""))),
+        ),
+      ) ?? (files.length === 1 ? files[0] : null);
     if (!owner) return tag;
     const parts = name.split(/ [›>] /);
     const candidates = [name, ...parts.map((_, i) => parts.slice(i).join(" > "))];
@@ -94,11 +118,16 @@ async function main() {
   const shard = whole("AGENT_M_SHARD");
   if (shard > shards) throw new Error(`AGENT_M_SHARD ${shard} is beyond AGENT_M_SHARDS ${shards}`);
 
-  const given = process.argv.slice(2).map((f) => (f.startsWith(PREFIX) ? f.slice(PREFIX.length) : f)).sort();
+  const given = process.argv
+    .slice(2)
+    .map((f) => (f.startsWith(PREFIX) ? f.slice(PREFIX.length) : f))
+    .sort();
   const mine = given.filter((_, i) => i % shards === shard - 1);
   const system = mine.filter((f) => f.startsWith(SYSTEM));
   const unit = mine.filter((f) => !f.startsWith(SYSTEM));
-  console.log(`shard ${shard} of ${shards}: ${mine.length} file(s), ${unit.length} in Vitest and ${system.length} in Playwright`);
+  console.log(
+    `shard ${shard} of ${shards}: ${mine.length} file(s), ${unit.length} in Vitest and ${system.length} in Playwright`,
+  );
 
   const scratch = mkdtempSync(join(tmpdir(), "agent-m-report-"));
   try {
@@ -107,29 +136,50 @@ async function main() {
     let vitestStatus = 0;
     let playwrightStatus = 0;
     if (unit.length) {
-      vitestStatus = await run(process.execPath, ["node_modules/vitest/vitest.mjs", "run", "--reporter=default", "--reporter=junit",
-        `--outputFile.junit=${vitestReport}`, ...unit]);
+      vitestStatus = await run(process.execPath, [
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=default",
+        "--reporter=junit",
+        `--outputFile.junit=${vitestReport}`,
+        ...unit,
+      ]);
     }
     if (system.length) {
       playwrightStatus = await run(process.execPath, ["node_modules/vite/bin/vite.js", "build"]);
       if (playwrightStatus === 0) {
-        playwrightStatus = await run(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "--reporter=list,junit", ...system],
-          { PLAYWRIGHT_JUNIT_OUTPUT_FILE: playwrightReport, CI: "true" });
+        playwrightStatus = await run(
+          process.execPath,
+          ["node_modules/@playwright/test/cli.js", "test", "--reporter=list,junit", ...system],
+          { PLAYWRIGHT_JUNIT_OUTPUT_FILE: playwrightReport, CI: "true" },
+        );
       }
     }
     const content = [
       unit.length ? named(contentOf(vitestReport, "the Vitest run", vitestStatus), unit) : "",
-      system.length ? named(contentOf(playwrightReport, "the Playwright run", playwrightStatus), system) : "",
-    ].filter(Boolean).join("\n");
+      system.length
+        ? named(contentOf(playwrightReport, "the Playwright run", playwrightStatus), system)
+        : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
     mkdirSync(dirname(report), { recursive: true });
-    writeFileSync(report, `<?xml version="1.0" encoding="utf-8"?>\n<testsuites>\n${content}\n</testsuites>\n`);
+    writeFileSync(
+      report,
+      `<?xml version="1.0" encoding="utf-8"?>\n<testsuites>\n${content}\n</testsuites>\n`,
+    );
     return vitestStatus === 0 && playwrightStatus === 0 ? 0 : 1;
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
 }
 
-main().then((status) => { process.exitCode = status; }, (error) => {
-  console.error(`agent-m-tests: ${error.message}`);
-  process.exitCode = 2;
-});
+main().then(
+  (status) => {
+    process.exitCode = status;
+  },
+  (error) => {
+    console.error(`agent-m-tests: ${error.message}`);
+    process.exitCode = 2;
+  },
+);
