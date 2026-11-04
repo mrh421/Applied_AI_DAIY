@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-hazard-precheck
+
 import { describe, expect, it } from "vitest";
 
 import type { HazardKind } from "../case-model";

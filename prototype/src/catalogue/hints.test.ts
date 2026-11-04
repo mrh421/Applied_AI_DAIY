@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-catalogue
+
 import { describe, expect, it } from "vitest";
 
 import type { MaterialNeed } from "../case-model";

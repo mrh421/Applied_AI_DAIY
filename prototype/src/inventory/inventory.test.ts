@@ -1,3 +1,6 @@
+// Level: component
+// Module: MOD-inventory
+
 import "fake-indexeddb/auto";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";

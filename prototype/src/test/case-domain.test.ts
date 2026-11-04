@@ -1,3 +1,5 @@
+// Level: unit
+
 import { describe, expect, it } from "vitest";
 
 import type { AssessmentDraft, CaseOutcome } from "../case-model";

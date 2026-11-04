@@ -1,3 +1,6 @@
+// Level: component
+// Module: MOD-app-shell
+
 import "fake-indexeddb/auto";
 import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";

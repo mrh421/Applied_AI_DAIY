@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-case-model
+
 import { describe, expect, it } from "vitest";
 
 import { LABEL_STRICTNESS, rankOptions, stricterLabel } from "./index";

@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-catalogue
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const checkLink = vi.fn();

@@ -1,3 +1,6 @@
+// Level: component
+// Module: MOD-case-screens
+
 import "fake-indexeddb/auto";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

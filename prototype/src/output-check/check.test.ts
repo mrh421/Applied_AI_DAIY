@@ -1,3 +1,6 @@
+// Level: unit
+// Module: MOD-output-check
+
 import { describe, expect, it } from "vitest";
 
 import type { AssessmentDraft, WorkPackage } from "../case-model";
