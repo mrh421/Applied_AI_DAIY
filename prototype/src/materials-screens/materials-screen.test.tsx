@@ -121,6 +121,11 @@ describe("materials list", () => {
 });
 
 describe("saving owned items (OFFER-SAVE-OWNED-ITEMS)", () => {
+  // TST-076 · level: component · module: MOD-materials-screens
+  // guards: OFFER-SAVE-OWNED-ITEMS
+  // given: a materials list with a gasket and a missing spanner
+  // input: the person marks both as owned and presses Save to inventory
+  // expect: no offer is shown before marking, and afterwards the gasket is in the inventory with its quantity and the spanner is among the tools
   it("offers to save the items marked as owned, and saves them", async () => {
     render(<MaterialsScreen caseId="c1" />);
     expect(screen.queryByRole("button", { name: "Save to inventory" })).not.toBeInTheDocument();

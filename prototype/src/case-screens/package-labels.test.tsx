@@ -142,6 +142,11 @@ describe("OutcomeScreen packages", () => {
     expect(share).toHaveBeenCalledWith({ text: "Brief for c" });
   });
 
+  // TST-085 · level: component · module: MOD-case-screens
+  // guards: AGREE-WITH-PROFESSIONAL-BEFOREHAND
+  // given: an outcome with a DIY preparation package for a professional
+  // input: the outcome screen is opened
+  // expect: the advice to agree the preparation with the electrician first is shown
   it("advises to agree a preparation package with the professional first (AGREE-WITH-PROFESSIONAL-BEFOREHAND)", async () => {
     render(<OutcomeScreen caseId={await openOutcome()} />);
     expect(screen.getByText(/Agree the prep with your electrician first/)).toBeInTheDocument();

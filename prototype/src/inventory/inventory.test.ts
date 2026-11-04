@@ -105,6 +105,11 @@ describe("MOD-inventory materials (MATERIAL-INVENTORY)", () => {
 });
 
 describe("MOD-inventory tools (TOOL-INVENTORY)", () => {
+  // TST-074 · level: unit · module: MOD-inventory
+  // guards: TOOL-INVENTORY
+  // given: an empty tool list
+  // input: a tool Hammer is saved, renamed to Claw hammer and removed
+  // expect: the list holds each state in turn and is empty at the end
   it("saves, changes and removes a tool", () => {
     const r = saveTool("Hammer");
     if (!r.ok) throw new Error("save failed");
@@ -149,6 +154,11 @@ describe("MOD-inventory deduct (DEDUCT-CONSUMED)", () => {
 });
 
 describe("MOD-inventory snapshot (INPUT-USES-INVENTORY)", () => {
+  // TST-075 · level: unit · module: MOD-inventory
+  // guards: INPUT-USES-INVENTORY
+  // given: an inventory with 20 screws in a box and a hammer
+  // input: the inventory snapshot for the AI is taken
+  // expect: it holds the material name with its quantity and the tool name, and nothing else such as the location
   it("carries names and quantities, and tool names", () => {
     mustSave("Screws", 20, "piece", "box");
     saveTool("Hammer");

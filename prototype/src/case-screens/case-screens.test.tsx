@@ -55,6 +55,11 @@ beforeEach(async () => {
 afterEach(cleanup);
 
 describe("CaseInputScreen", () => {
+  // TST-069 · level: component · module: MOD-case-screens
+  // guards: AI-INTERACTION-DISCLOSED
+  // given: the case input screen, before anything is sent
+  // input: the screen is opened
+  // expect: a notice that an AI system is used and a privacy notice are shown, and the AI has not been called
   it("shows the AI notice and the privacy notice before any request (AI-INTERACTION-DISCLOSED)", () => {
     render(<CaseInputScreen />);
     expect(screen.getByText(/AI system/i)).toBeInTheDocument();
@@ -251,6 +256,11 @@ describe("QuestionsScreen", () => {
     expect(screen.getByLabelText("How old is the tap?")).toHaveValue("About 10 years");
   });
 
+  // TST-070 · level: component · module: MOD-case-screens
+  // guards: REDUNDANT-ENTRY
+  // given: a case with two open questions, the second one already answered with 'About 10 years'
+  // input: the first question is marked not sure and Continue is pressed
+  // expect: the request carries the first answer as not sure and the second one as the text already there, without typing it again
   it("sends confirmed, changed and not-sure answers (REDUNDANT-ENTRY)", async () => {
     const id = await startWithQuestions();
     pipe.assessCase.mockResolvedValueOnce({

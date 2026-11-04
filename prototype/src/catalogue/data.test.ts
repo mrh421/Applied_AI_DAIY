@@ -45,6 +45,11 @@ it("matches the ModelEntry schema", () => {
   expect(models.length).toBeGreaterThan(0);
 });
 
+// TST-079 · level: unit · module: MOD-catalogue
+// guards: VERIFIED-DATA-SOURCE
+// given: data of the certainties verified, unverified and AI estimate
+// input: they are checked against the datum schema
+// expect: a verified datum without a source or with an empty source is rejected, and one with a source, an unverified one and an AI estimate are accepted
 it("requires a source for every verified datum (VERIFIED-DATA-SOURCE)", () => {
   const s = datumSchema(z.string());
   expect(s.safeParse({ certainty: "verified", value: "x" }).success).toBe(false);

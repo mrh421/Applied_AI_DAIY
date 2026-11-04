@@ -64,6 +64,11 @@ beforeEach(async () => {
 const card = (title: string) => screen.getByRole("article", { name: title });
 
 describe("offers", () => {
+  // TST-077 · level: component · module: MOD-materials-screens
+  // guards: SAMPLE-PRODUCT-DATA
+  // given: the offers screen of a missing item
+  // input: the screen is opened
+  // expect: a note says that the catalogue holds sample data
   it("says the catalogue is sample data (SAMPLE-PRODUCT-DATA)", () => {
     render(<OffersScreen caseId="c1" itemId="m-washer" />);
     expect(screen.getByRole("note")).toHaveTextContent(/sample data/i);
