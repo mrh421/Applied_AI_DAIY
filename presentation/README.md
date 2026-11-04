@@ -2,6 +2,8 @@
 
 [`DAIY_pre-presentation_v5.pptx`](DAIY_pre-presentation_v5.pptx) is the team deck. The repository is the source of truth; the deck follows it.
 
+[`DAIY_pre-presentation_v7.pptx`](DAIY_pre-presentation_v7.pptx) is the current deck: the team's own state of 2026-11-04 (43 slides), built on v6. The single-slide files `DAIY_slides-23-24_before-after.pptx`, `DAIY_slide-25_use-case.pptx`, `DAIY_slide-26_architecture.pptx` and `DAIY_slide-27_implementation.pptx` are earlier extracts of v6.
+
 [`DAIY_pre-presentation_v6.pptx`](DAIY_pre-presentation_v6.pptx) is v5 plus a before/after pair for *143 requirements from 17 sources* (slides 23 and 24, Fig. 8.2 families with counts, two example requirements). The numbers are explained in [`fig-8-2-mapping.md`](fig-8-2-mapping.md). v5 is untouched.
 
 v5 is the team's v4 plus Agent M tab slides in the Realization section (edited by the team in PowerPoint). Each has an action title, the Agent M tab bar with one tab selected (Requirements, Use cases, Architecture, Implementation, Tests, Releases) and an empty area for content; the talking points are in the speaker notes. Slides after the Realization divider moved back by five. The checklist below was written for v4 and its slide numbers have not been re-checked.
