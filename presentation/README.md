@@ -2,7 +2,7 @@
 
 [`DAIY_pre-presentation_v5.pptx`](DAIY_pre-presentation_v5.pptx) is the team deck. The repository is the source of truth; the deck follows it.
 
-v5 is the team's v4 plus Agent M tab slides in the Realization section (slides 23–27, edited by the team in PowerPoint). Each has an action title, the Agent M tab bar with one tab selected (Requirements, Use cases, Architecture, Implementation, Tests, Releases) and an empty area for content; the talking points are in the speaker notes. Slides after the Realization divider moved back by five. The checklist below was written for v4 and its slide numbers have not been re-checked.
+v5 is the team's v4 plus Agent M tab slides in the Realization section (edited by the team in PowerPoint). Each has an action title, the Agent M tab bar with one tab selected (Requirements, Use cases, Architecture, Implementation, Tests, Releases) and an empty area for content; the talking points are in the speaker notes. Slides after the Realization divider moved back by five. The checklist below was written for v4 and its slide numbers have not been re-checked.
 
 ## Slides that no longer match the repository (checked 2026-10-24)
 
