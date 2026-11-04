@@ -37,7 +37,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -79,7 +79,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,7 +87,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -121,7 +121,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -129,7 +129,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -163,7 +163,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -171,7 +171,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -205,7 +205,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -213,7 +213,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -247,7 +247,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -255,7 +255,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -289,7 +289,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -297,7 +297,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -331,7 +331,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -339,7 +339,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -373,7 +373,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -381,7 +381,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -415,7 +415,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -423,7 +423,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -457,7 +457,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -465,7 +465,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -499,7 +499,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -507,7 +507,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -541,7 +541,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -549,7 +549,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -583,7 +583,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -591,7 +591,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -625,7 +625,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -633,7 +633,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -667,7 +667,7 @@ jobs:
       AGENT_M_SHARDS: '1'
       AGENT_M_COMMAND: 'node prototype/scripts/agent-m-tests.mjs'
       AGENT_M_SECRETS: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -675,7 +675,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -701,7 +701,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AGENT_M_TOKEN: ${{ secrets.AGENT_M_TOKEN }}
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -709,7 +709,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -738,7 +738,7 @@ jobs:
     env:
       AGENT_M_TOKEN: ${{ secrets.AGENT_M_TOKEN }}
       AGENT_M_EXPECTED: ''
-      AGENT_M_INSTANCE_COMMIT: 'd56dceec28fe26058ac8a336c5cd30e23794b234'
+      AGENT_M_INSTANCE_COMMIT: 'ecf7d07ac6158b150cf10143a2a88e24766ea134'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -746,7 +746,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mrh421/agent-m
-          ref: d56dceec28fe26058ac8a336c5cd30e23794b234
+          ref: ecf7d07ac6158b150cf10143a2a88e24766ea134
           path: .agent-m
           persist-credentials: false
       - uses: actions/setup-node@v4
