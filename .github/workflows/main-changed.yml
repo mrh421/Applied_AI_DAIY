@@ -51,6 +51,10 @@ jobs:
           done
           # The test results of the Tests card: the branch the instance reads them from, where the repository holds it.
           git fetch origin +test-results:test-results || true
+      # The overview reads the model the declaration names (docs/process.md, model_version) as a commit of the product's own repository, where it does
+      # not exist: it lives in the history of the instance. Fetching that history into the product's repository lets the commit be read.
+      - name: Make the instance's history readable in the product's repository
+        run: git fetch --no-tags ./instance HEAD
       - name: Store the records of this commit
         run: |
           for attempt in 1 2 3; do
