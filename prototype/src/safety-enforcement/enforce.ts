@@ -43,6 +43,18 @@ const CONTEXT_KINDS: readonly HazardKind[] = [
   "load-bearing-structure",
 ];
 
+/** A step that tells the person to switch the power off names the distribution board as the place to do it, not as the work. */
+const SWITCHES_OFF =
+  /\b(switch|turn|shut)\b.{0,30}\boff\b|\b(de-?energi[sz]e|isolate)\b|\b(aus|ab)schalt|spannungsfrei|stromlos/i;
+
+/** The hazard kinds of one text of what the person does themselves: the context kinds and a switch-off at the board are no hazard. */
+function ownKinds(text: string): HazardKind[] {
+  const kinds = detectHazards(text).filter((k) => !CONTEXT_KINDS.includes(k));
+  return SWITCHES_OFF.test(text) && !opensHousing(text)
+    ? kinds.filter((k) => k !== "distribution-board")
+    : kinds;
+}
+
 /** A package the person would do themselves: its text is checked for every hazard kind but the context kinds. */
 function isSelfDone(p: WorkPackage): boolean {
   return p.label === "diy" || p.label === "diy-preparation";
@@ -63,9 +75,7 @@ function hazardsInOutput(draft: AssessmentDraft): HazardKind[] {
     ...packages
       .filter(isSelfDone)
       .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])]),
-  ]
-    .flatMap(detectHazards)
-    .filter((k) => !CONTEXT_KINDS.includes(k));
+  ].flatMap(ownKinds);
   const other = packages
     .filter((p) => !isSelfDone(p))
     .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])])

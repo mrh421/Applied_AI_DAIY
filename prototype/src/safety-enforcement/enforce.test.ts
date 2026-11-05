@@ -130,6 +130,18 @@ describe("rule 1b: hazards in the output text", () => {
     });
     expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("guidance");
   });
+  it("lets a DIY step switch the power off at the fuse box (ITM-276)", () => {
+    const diy = pkg({
+      guide: guide([
+        step(1, "Switch off the power to the bathroom at the fuse box before you drill."),
+      ]),
+    });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("guidance");
+  });
+  it("still escalates a DIY step that works at the distribution board (ITM-276)", () => {
+    const diy = pkg({ guide: guide([step(1, "Replace the fuse in the distribution board.")]) });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("escalation");
+  });
   it("still checks every kind in a package the person does themselves (ITM-276)", () => {
     const diy = pkg({
       id: "p2",
