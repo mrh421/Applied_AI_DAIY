@@ -84,10 +84,42 @@ describe("rule 1b: hazards in the output text", () => {
       enforceSafety(draft(withPkgs(pkg({ reason: "I smell gas near it." }))), ctx()).type,
     ).toBe("escalation");
   });
-  it("escalates on a hazard in the summary", () => {
+  it("lets the summary describe the professional part of the project (ITM-276)", () => {
+    const summary = "Replace the tap; the water near the electrics needs an electrician.";
+    expect(enforceSafety(draft({ summary }), ctx()).type).toBe("guidance");
+  });
+  it("escalates on an acute danger in the summary (ITM-276)", () => {
     expect(enforceSafety(draft({ summary: "There is a gas leak." }), ctx()).type).toBe(
       "escalation",
     );
+  });
+  it("lets a professional-only package name its hazard kind (ITM-276)", () => {
+    const pro = pkg({
+      id: "p2",
+      title: "Install the wallbox on the fixed installation",
+      label: "professional-only",
+      reason: "Work at the distribution board and the grid connection.",
+      guide: undefined,
+    });
+    const o = enforceSafety(draft(withPkgs(pkg(), pro)), ctx());
+    expect(guidance(o).options[0]!.packages).toHaveLength(2);
+  });
+  it("escalates the whole case on an emergency named by a professional-only package (ITM-276)", () => {
+    const pro = pkg({
+      id: "p2",
+      label: "professional-only",
+      reason: "I smell gas near the boiler.",
+      guide: undefined,
+    });
+    expect(enforceSafety(draft(withPkgs(pkg(), pro)), ctx()).type).toBe("escalation");
+  });
+  it("still checks every kind in a package the person does themselves (ITM-276)", () => {
+    const diy = pkg({
+      id: "p2",
+      label: "diy-preparation",
+      reason: "Check the distribution board.",
+    });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("escalation");
   });
   it("passes a harmless draft", () => {
     expect(enforceSafety(draft(), ctx()).type).toBe("guidance");
