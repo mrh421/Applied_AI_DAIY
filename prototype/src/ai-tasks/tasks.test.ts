@@ -149,6 +149,9 @@ describe("draftAssessment", () => {
     expect(s).toMatch(/immediate hazard.*always sets the risk of the case to critical/);
     expect(s).toMatch(/diy or diy-preparation has a guide/);
     expect(s).toMatch(/language of the person's description/);
+    expect(s).toMatch(
+      /riskUncertain only when you cannot judge the risk of the work the person would do themselves/,
+    );
   });
 
   it("forbids questions at round 2 and not before", async () => {
