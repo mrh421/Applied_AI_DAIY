@@ -26,13 +26,55 @@ function allPackages(options: SolutionOption[]): WorkPackage[] {
   return options.flatMap((o) => o.packages);
 }
 
-function outputTexts(draft: AssessmentDraft): string[] {
+/** Hazards that make the whole case an emergency, wherever the text names them (ITM-276). */
+const EMERGENCY_KINDS: readonly HazardKind[] = [
+  "gas",
+  "carbon-monoxide",
+  "fire-or-smoke",
+  "overheating-electrics",
+  "water-near-electrics",
+  "water-leak-in-wall",
+  "structural-damage",
+];
+
+const isEmergency = (kind: HazardKind) => EMERGENCY_KINDS.includes(kind);
+
+/** The summary describes the whole project; only an acute danger in it escalates the case. */
+const ACUTE_KINDS: readonly HazardKind[] = [
+  "gas",
+  "carbon-monoxide",
+  "fire-or-smoke",
+  "overheating-electrics",
+];
+
+/** A package the person would do themselves: its text is checked for every hazard kind. */
+function isSelfDone(p: WorkPackage): boolean {
+  return p.label === "diy" || p.label === "diy-preparation";
+}
+
+/**
+ * Rule 1b (ITM-276): hazards in the output text.
+ * - The photo description and the packages the person does themselves are checked for every kind.
+ * - Packages for a professional or not recommended are checked for emergencies only: naming the
+ *   hazard is the reason the work goes to a professional, not a reason to drop the whole case.
+ * - The summary describes the whole project, including the professional part: only an acute
+ *   danger in it (gas, carbon monoxide, fire or smoke, overheating electrics) escalates.
+ */
+function hazardsInOutput(draft: AssessmentDraft): HazardKind[] {
   const packages = allPackages(draft.options);
-  return [
-    draft.summary,
+  const own = [
     ...(draft.photoDescription ? [draft.photoDescription] : []),
-    ...packages.flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])]),
-  ];
+    ...packages
+      .filter(isSelfDone)
+      .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])]),
+  ].flatMap(detectHazards);
+  const other = packages
+    .filter((p) => !isSelfDone(p))
+    .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])])
+    .flatMap(detectHazards)
+    .filter(isEmergency);
+  const acuteInSummary = detectHazards(draft.summary).filter((k) => ACUTE_KINDS.includes(k));
+  return unique([...own, ...other, ...acuteInSummary]);
 }
 
 /** A value is missing when no answer has the topic, or the answer says "not sure". */
@@ -131,7 +173,7 @@ export function enforceSafety(input: AssessmentDraft, ctx: EnforceContext): Case
   }
 
   // 1b. Hazards in the output text
-  const found = unique(outputTexts(draft).flatMap(detectHazards));
+  const found = hazardsInOutput(draft);
   if (found.length > 0) {
     return { type: "escalation", escalation: escalationFor(found, "output", language) };
   }
