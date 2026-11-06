@@ -26,39 +26,47 @@ function allPackages(options: SolutionOption[]): WorkPackage[] {
   return options.flatMap((o) => o.packages);
 }
 
-/** Hazards that make the whole case an emergency, wherever the text names them (ITM-276). */
-const EMERGENCY_KINDS: readonly HazardKind[] = [
-  "gas",
-  "carbon-monoxide",
-  "fire-or-smoke",
-  "overheating-electrics",
-  "water-near-electrics",
-  "water-leak-in-wall",
-  "structural-damage",
+/**
+ * An acute danger that is present: the only kinds a professional-only package or the summary may not name (ITM-276). Everything else (water near
+ * electrics, a fixed installation, overheating as a risk of wrong work) is what a handover reason says about work that goes to a professional.
+ * A real emergency of the situation reaches the case through the pre-check of the person's words and the description of the photo.
+ */
+const ACUTE_KINDS: readonly HazardKind[] = ["gas", "carbon-monoxide", "fire-or-smoke"];
+
+/**
+ * Kinds that a guide of a DIY package may mention as a clearance or a context ("keep 5 cm from the chimney", "check the load-bearing wall before drilling")
+ * without being a job on them. Work on a chimney or a bearing wall is labelled professional by the prompt, the labels and the flags of rules 6 to 8.
+ */
+const CONTEXT_KINDS: readonly HazardKind[] = [
+  "chimney",
+  "energy-renovation",
+  "load-bearing-structure",
 ];
 
-const isEmergency = (kind: HazardKind) => EMERGENCY_KINDS.includes(kind);
+/** A step that tells the person to switch the power off names the distribution board as the place to do it, not as the work. */
+const SWITCHES_OFF =
+  /\b(switch|turn|shut)\b.{0,30}\boff\b|\b(de-?energi[sz]e|isolate)\b|\b(aus|ab)schalt|spannungsfrei|stromlos/i;
 
-/** The summary describes the whole project; only an acute danger in it escalates the case. */
-const ACUTE_KINDS: readonly HazardKind[] = [
-  "gas",
-  "carbon-monoxide",
-  "fire-or-smoke",
-  "overheating-electrics",
-];
+/** The hazard kinds of one text of what the person does themselves: the context kinds and a switch-off at the board are no hazard. */
+function ownKinds(text: string): HazardKind[] {
+  const kinds = detectHazards(text).filter((k) => !CONTEXT_KINDS.includes(k));
+  return SWITCHES_OFF.test(text) && !opensHousing(text)
+    ? kinds.filter((k) => k !== "distribution-board")
+    : kinds;
+}
 
-/** A package the person would do themselves: its text is checked for every hazard kind. */
+/** A package the person would do themselves: its text is checked for every hazard kind but the context kinds. */
 function isSelfDone(p: WorkPackage): boolean {
   return p.label === "diy" || p.label === "diy-preparation";
 }
 
 /**
  * Rule 1b (ITM-276): hazards in the output text.
- * - The photo description and the packages the person does themselves are checked for every kind.
- * - Packages for a professional or not recommended are checked for emergencies only: naming the
+ * - The photo description and the packages the person does themselves are checked for every kind but the context kinds.
+ * - Packages for a professional or not recommended are checked for acute dangers only: naming the
  *   hazard is the reason the work goes to a professional, not a reason to drop the whole case.
  * - The summary describes the whole project, including the professional part: only an acute
- *   danger in it (gas, carbon monoxide, fire or smoke, overheating electrics) escalates.
+ *   danger in it (gas, carbon monoxide, fire or smoke) escalates.
  */
 function hazardsInOutput(draft: AssessmentDraft): HazardKind[] {
   const packages = allPackages(draft.options);
@@ -67,12 +75,12 @@ function hazardsInOutput(draft: AssessmentDraft): HazardKind[] {
     ...packages
       .filter(isSelfDone)
       .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])]),
-  ].flatMap(detectHazards);
+  ].flatMap(ownKinds);
   const other = packages
     .filter((p) => !isSelfDone(p))
     .flatMap((p) => [p.title, p.reason, ...(p.guide?.steps.map((s) => s.text) ?? [])])
     .flatMap(detectHazards)
-    .filter(isEmergency);
+    .filter((k) => ACUTE_KINDS.includes(k));
   const acuteInSummary = detectHazards(draft.summary).filter((k) => ACUTE_KINDS.includes(k));
   return unique([...own, ...other, ...acuteInSummary]);
 }

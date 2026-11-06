@@ -21,6 +21,7 @@ function instructions(round: CaseRequest["round"]): string {
     "- Split a project with several tasks into work packages. Give each package one label, a short reason and a handover brief for a professional.",
     "- Set outOfScope and a risk of high or critical for the whole case only when the whole case cannot be split. When one task of a project is reserved to a professional, keep outOfScope null, leave the risk of the case at what the other tasks carry, and give that task its own package labelled professional-only with its handover brief; the other packages keep their guides. An immediate hazard (a gas smell, smoke, scorched or wet live electrics, structural damage) always sets the risk of the case to critical.",
     "- Every package labelled diy or diy-preparation has a guide. If you cannot write the guide of a package, label it professional-only.",
+    "- Set riskUncertain only when you cannot judge the risk of the work the person would do themselves. A task you give to a professional does not make the risk uncertain: once the packages are split and labelled, riskUncertain is false.",
     "- Write the summary, the questions and the guides in the language of the person's description.",
     "- If a label is uncertain, choose the stricter label, set labelUncertain and state the deciding information that would change it.",
     "- Reference illustrations only by ids from the illustration index.",

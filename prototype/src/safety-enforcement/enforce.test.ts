@@ -93,6 +93,17 @@ describe("rule 1b: hazards in the output text", () => {
       "escalation",
     );
   });
+  it("lets a professional-only package name water near electrics or an overheating cable as the reason (ITM-276)", () => {
+    const pro = pkg({
+      id: "p2",
+      title: "Install a new socket next to the mirror",
+      label: "professional-only",
+      reason:
+        "A new socket in a wet room needs fixed wiring and protection from water. A wrong cable size can overheat.",
+      guide: undefined,
+    });
+    expect(enforceSafety(draft(withPkgs(pkg(), pro)), ctx()).type).toBe("guidance");
+  });
   it("lets a professional-only package name its hazard kind (ITM-276)", () => {
     const pro = pkg({
       id: "p2",
@@ -112,6 +123,24 @@ describe("rule 1b: hazards in the output text", () => {
       guide: undefined,
     });
     expect(enforceSafety(draft(withPkgs(pkg(), pro)), ctx()).type).toBe("escalation");
+  });
+  it("lets a DIY guide mention the chimney as a clearance (ITM-276)", () => {
+    const diy = pkg({
+      guide: guide([step(1, "Lay the insulation, keeping 5 cm away from the chimney.")]),
+    });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("guidance");
+  });
+  it("lets a DIY step switch the power off at the fuse box (ITM-276)", () => {
+    const diy = pkg({
+      guide: guide([
+        step(1, "Switch off the power to the bathroom at the fuse box before you drill."),
+      ]),
+    });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("guidance");
+  });
+  it("still escalates a DIY step that works at the distribution board (ITM-276)", () => {
+    const diy = pkg({ guide: guide([step(1, "Replace the fuse in the distribution board.")]) });
+    expect(enforceSafety(draft(withPkgs(diy)), ctx()).type).toBe("escalation");
   });
   it("still checks every kind in a package the person does themselves (ITM-276)", () => {
     const diy = pkg({
