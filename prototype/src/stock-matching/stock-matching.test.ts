@@ -39,6 +39,11 @@ const noTools: ToolItem[] = [];
 describe("matchStock quantities", () => {
   const g = [guide([need("Screws", { amount: 10, unit: "piece" })])];
 
+  // TST-113 · level: unit · module: MOD-stock-matching
+  // guards: MATERIALS-MATCHED-TO-INVENTORY
+  // given: a material list and an inventory that holds exactly the quantity
+  // input: the stock is matched
+  // expect: the material is marked available and names its inventory item
   it("is available when held equals the requirement", () => {
     const r = matchStock(g, {
       materials: [item("a", "Screws", { amount: 10, unit: "piece" })],
@@ -57,6 +62,11 @@ describe("matchStock quantities", () => {
     expect(r.materials[0]?.status).toEqual({ kind: "available" });
   });
 
+  // TST-114 · level: unit · module: MOD-stock-matching
+  // guards: INVENTORY-GROUNDING
+  // given: an inventory that holds less than the required quantity
+  // input: the stock is matched
+  // expect: the material is not marked available but partly available, with the missing quantity
   it("is partly available below the requirement, with the missing quantity", () => {
     const r = matchStock(g, {
       materials: [item("a", "Screws", { amount: 4, unit: "piece" })],

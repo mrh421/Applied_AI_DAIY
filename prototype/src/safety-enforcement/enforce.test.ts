@@ -277,6 +277,11 @@ describe("rule 4: person-carrying furniture", () => {
   const topics = (o: CaseOutcome) =>
     o.type === "questions" ? o.questions.map((q) => q.topic) : [];
 
+  // TST-106 · level: unit · module: MOD-safety-enforcement
+  // guards: PERSON-FURNITURE-LOAD-QUESTION; PERSON-FURNITURE-DIMENSION-QUESTION
+  // given: a package of furniture that carries a person, with no load and no dimensions answered
+  // input: the draft is enforced at round 0
+  // expect: the questions ask for the load and for the dimensions
   it("asks load and dimensions when neither is answered", () => {
     const o = enforceSafety(draft(withPkgs(chair())), ctx(0));
     expect(topics(o)).toEqual([FIXED_TOPICS.furnitureLoad, FIXED_TOPICS.furnitureDimensions]);
@@ -300,6 +305,11 @@ describe("rule 4: person-carrying furniture", () => {
     );
     expect(firstPkg(o).label).toBe("diy");
   });
+  // TST-107 · level: unit · module: MOD-safety-enforcement
+  // guards: PERSON-FURNITURE-CONSERVATIVE; NAME-DECIDING-INFORMATION
+  // given: a package of furniture that carries a person, with load and dimensions still 'not sure' at round 2
+  // input: the draft is enforced
+  // expect: the label is not-recommended, the deciding information names two items, and the guide is dropped
   it("sets not-recommended with deciding information at round 2 and drops the guide", () => {
     const p = firstPkg(
       enforceSafety(
@@ -351,6 +361,11 @@ describe("rules 6 to 8: labels and guide removal", () => {
     const p = pkg({ label: "not-recommended", ...mains });
     expect(firstPkg(enforceSafety(draft(withPkgs(p)), ctx())).label).toBe("not-recommended");
   });
+  // TST-108 · level: unit · module: MOD-safety-enforcement
+  // guards: STRICTER-LABEL-IF-UNCERTAIN
+  // given: a package whose label is uncertain and has an alternative label professional-only
+  // input: the draft is enforced
+  // expect: the stricter label professional-only is taken and the guide is dropped
   it("takes the alternative label when uncertain", () => {
     const p = firstPkg(
       enforceSafety(

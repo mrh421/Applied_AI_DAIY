@@ -85,6 +85,11 @@ describe("start and answer", () => {
     expect(result.current.session?.record.hadPhoto).toBe(true);
   });
 
+  // TST-115 · level: unit · module: MOD-case-session
+  // guards: FOLLOW-UP-QUESTIONS
+  // given: an assessment that asks questions in rounds 1 and 2
+  // input: the person answers each round, one answer with 'not sure'
+  // expect: the third call returns guidance and no third round of questions appears
   it("advances the round from the questions outcome; no third round", async () => {
     pipe.assessCase
       .mockResolvedValueOnce(questions(1))
