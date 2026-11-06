@@ -136,6 +136,34 @@ describe("draftAssessment", () => {
     expect(s).toMatch(/vase/);
   });
 
+  // TST-097 · level: unit · module: MOD-ai-tasks
+  // guards: PACKAGE-LABEL; PRECHECK-SPARES-PROJECT-PACKAGES; OUTPUT-COMPLETENESS-CHECK
+  // given: the instructions of an assessment
+  // input: the instructions are read
+  // expect: they tell the AI to split a project instead of marking the whole case out of scope, never to call an immediate hazard anything but critical, to give every DIY package a guide, and to answer in the language of the description
+  it("tells the AI to split a project, to give every DIY package a guide and to keep the language", async () => {
+    await draftAssessment(caseReq());
+    const s = lastCall().system;
+    expect(s).toMatch(/outOfScope.*only when the whole case cannot be split/);
+    expect(s).toMatch(/professional-only with its handover brief/);
+    expect(s).toMatch(/immediate hazard.*always sets the risk of the case to critical/);
+    expect(s).toMatch(/diy or diy-preparation has a guide/);
+    expect(s).toMatch(/language of the person's description/);
+    expect(s).toMatch(
+      /riskUncertain only when you cannot judge the risk of the work the person would do themselves/,
+    );
+  });
+
+  it("names the failures of a rejected draft in the request and only then (ITM-274)", async () => {
+    await draftAssessment(caseReq());
+    expect(textOf(lastCall())).not.toContain("rejected by the output check");
+    await draftAssessment(caseReq(), [
+      { path: "options[0].packages[0].guide", message: "missing" },
+    ]);
+    expect(textOf(lastCall())).toContain("rejected by the output check");
+    expect(textOf(lastCall())).toContain("options[0].packages[0].guide: missing");
+  });
+
   it("forbids questions at round 2 and not before", async () => {
     await draftAssessment(caseReq({ round: 2 }));
     const r2 = `${lastCall().system}\n${textOf(lastCall())}`;

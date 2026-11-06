@@ -83,6 +83,40 @@ describe("assessCase", () => {
     expect(notice(await runAssess(caseRequest)).reason).toBe("output-rejected");
   });
 
+  // TST-098 · level: unit · module: MOD-case-pipeline
+  // guards: OUTPUT-COMPLETENESS-CHECK; UNDERSTANDABLE-ERROR-NOTICE
+  // given: an AI double whose first draft is incomplete and whose second draft is complete
+  // input: an assessment is run
+  // expect: the AI is called twice, the second request names the failure, and the second draft is used
+  it("asks again once with the failures named and uses a second draft that passes (ITM-274)", async () => {
+    ai.draftAssessment.mockResolvedValueOnce({ ...answerDraft, summary: "" });
+    ai.draftAssessment.mockResolvedValueOnce(answerDraft);
+    const o = await runAssess(caseRequest);
+    expect(o.type).toBe("guidance");
+    expect(ai.draftAssessment).toHaveBeenCalledTimes(2);
+    const failures = ai.draftAssessment.mock.calls[1]![1] as { path: string; message: string }[];
+    expect(failures.length).toBeGreaterThan(0);
+    expect(failures.some((f) => f.path.includes("summary"))).toBe(true);
+  });
+
+  it("ends with the notice after two rejections and no more than two calls (ITM-274)", async () => {
+    ai.draftAssessment.mockResolvedValue({ ...answerDraft, summary: "" });
+    expect(notice(await runAssess(caseRequest)).reason).toBe("output-rejected");
+    expect(ai.draftAssessment).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not ask again for a draft of high risk, which goes to the enforcement (ITM-274)", async () => {
+    ai.draftAssessment.mockResolvedValue({ ...answerDraft, risk: "high", summary: "" });
+    expect((await runAssess(caseRequest)).type).toBe("escalation");
+    expect(ai.draftAssessment).toHaveBeenCalledTimes(1);
+  });
+
+  it("gives a technical error when the second call fails (ITM-274)", async () => {
+    ai.draftAssessment.mockResolvedValueOnce({ ...answerDraft, summary: "" });
+    ai.draftAssessment.mockRejectedValueOnce(new AiError("timeout", "x"));
+    expect(notice(await runAssess(caseRequest)).reason).toBe("technical-error");
+  });
+
   it("gives output-rejected for a prohibited path: questions at round 2", async () => {
     ai.draftAssessment.mockResolvedValue(questionsDraft);
     expect(notice(await runAssess({ ...caseRequest, round: 2 })).reason).toBe("output-rejected");

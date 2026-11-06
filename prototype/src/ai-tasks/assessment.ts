@@ -19,6 +19,10 @@ function instructions(round: CaseRequest["round"]): string {
     "- For each material, set estimatedPrice to a rough price range in euro for the whole quantity named, as a typical retail price in Germany, for example {min: 12, max: 25}. Set it to null when you cannot tell. Never name a shop or a product link. It is an estimate, not an offer.",
     "- Set the risk, the hazards, the flags and the kinds of the schema honestly. Use the inventory to prefer what the person already owns.",
     "- Split a project with several tasks into work packages. Give each package one label, a short reason and a handover brief for a professional.",
+    "- Set outOfScope and a risk of high or critical for the whole case only when the whole case cannot be split. When one task of a project is reserved to a professional, keep outOfScope null, leave the risk of the case at what the other tasks carry, and give that task its own package labelled professional-only with its handover brief; the other packages keep their guides. An immediate hazard (a gas smell, smoke, scorched or wet live electrics, structural damage) always sets the risk of the case to critical.",
+    "- Every package labelled diy or diy-preparation has a guide. If you cannot write the guide of a package, label it professional-only.",
+    "- Set riskUncertain only when you cannot judge the risk of the work the person would do themselves. A task you give to a professional does not make the risk uncertain: once the packages are split and labelled, riskUncertain is false.",
+    "- Write the summary, the questions and the guides in the language of the person's description.",
     "- If a label is uncertain, choose the stricter label, set labelUncertain and state the deciding information that would change it.",
     "- Reference illustrations only by ids from the illustration index.",
     ...(round === 2 ? [ROUND_2_RULE] : []),
@@ -30,7 +34,10 @@ function lines(items: string[]): string {
   return items.length ? items.join("\n") : "(none)";
 }
 
-function render(req: CaseRequest): string {
+/** What the output check found wrong with an earlier draft of the same request (ITM-274). */
+export type RejectedFailure = { path: string; message: string };
+
+function render(req: CaseRequest, rejected: RejectedFailure[] = []): string {
   const answers = req.answers.map((a) => `- [${a.topic}] ${a.notSure ? "(not sure)" : a.text}`);
   const materials = req.inventory.materials.map(
     (m) => `- ${m.name}: ${m.quantity.amount} ${m.quantity.unit}`,
@@ -44,12 +51,20 @@ function render(req: CaseRequest): string {
     `Inventory, materials:\n${lines(materials)}`,
     `Inventory, tools:\n${lines(tools)}`,
     `Illustration index:\n${lines(images)}`,
+    ...(rejected.length
+      ? [
+          `Your previous answer to this request was rejected by the output check. Answer the same request again and fix these points:\n${lines(rejected.map((f) => `- ${f.path || "(draft)"}: ${f.message}`))}`,
+        ]
+      : []),
   ].join("\n\n");
 }
 
 /** Sends the case, never a skill profile (ARC-011), and returns the unvalidated draft. */
-export function draftAssessment(req: CaseRequest): Promise<unknown> {
-  const content: AiContent[] = [{ type: "text", text: render(req) }];
+export function draftAssessment(
+  req: CaseRequest,
+  rejected: RejectedFailure[] = [],
+): Promise<unknown> {
+  const content: AiContent[] = [{ type: "text", text: render(req, rejected) }];
   for (const photo of req.photos ?? []) content.push({ type: "image", ...photo });
   return generateJson({
     system: instructions(req.round),
