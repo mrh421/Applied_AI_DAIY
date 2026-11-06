@@ -1,8 +1,16 @@
 # Presentation
 
-[`DAIY_pre-presentation_v5.pptx`](DAIY_pre-presentation_v5.pptx) is the team deck. The repository is the source of truth; the deck follows it.
+[`DAIY_presentation_v6.pptx`](DAIY_presentation_v6.pptx) is the current team deck. The repository is the source of truth; the deck follows it. [`DAIY_pre-presentation_v5.pptx`](DAIY_pre-presentation_v5.pptx) is kept for reference.
 
-v5 is the team's v4 plus Agent M tab slides in the Realization section (edited by the team in PowerPoint). Each has an action title, the Agent M tab bar with one tab selected (Requirements, Use cases, Architecture, Implementation, Tests, Releases) and an empty area for content; the talking points are in the speaker notes. Slides after the Realization divider moved back by five. The checklist below was written for v4 and its slide numbers have not been re-checked.
+v6 (2026-11-06) is the team's deck of 6 Nov, aligned with the repository:
+
+- Concept flow redrawn from the Mermaid diagram in `README.md`; MoSCoW from `docs/Requirements_EN.md` v0.4 with the status of release v2026.1.0.
+- Agent M slides: 12 sprints (sprint 12 added), tests and release filled from the test records, `docs/backlog/sprints/daiy/12.md` and `CHANGELOG.md`.
+- The scrum-loop slide shows a real case (CO alarm → HAZARD-SAFETY-MEASURES → sprint 2); the performance slide shows the evaluation of 5 Nov.
+- Outro: method, conscious decisions (with chapters of *Vibe Coding*), the project in numbers, tool journey, what went wrong, lessons learned, closing.
+- Consistent title positions, presenter names on every divider, placeholders and highlights removed. The two lecture-note slides on architecture decisions stay hidden at the end.
+
+The checklist below was written for v4 and is kept for history.
 
 ## Slides that no longer match the repository (checked 2026-10-24)
 
