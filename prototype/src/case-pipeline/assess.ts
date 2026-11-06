@@ -26,32 +26,57 @@ async function pipe(input: unknown): Promise<{ outcome: CaseOutcome; failures: s
     return { outcome: { type: "notice", notice: technicalErrorNotice(e) }, failures: [] };
   }
 
-  const checked = checkAssessmentDraft(raw, { round: req.round });
   const language = detectLanguage([req.description, ...req.answers.map((a) => a.text)]);
   const ctx = { round: req.round, answers: req.answers, language };
-  let draft;
-  if (checked.ok) {
-    draft = checked.value;
-  } else {
-    const failures = checked.failures.map((f) => f.check);
-    // A draft of high risk that passed the format goes to enforcement, so the user gets the
-    // escalation and not only a notice to retry.
-    const readable = failures.includes("format") ? null : schemas.assessmentDraft.safeParse(raw);
-    if (readable?.success && (readable.data.risk === "high" || readable.data.risk === "critical")) {
-      return { outcome: enforceSafety(readable.data, ctx), failures };
+
+  // A draft of high risk that passed the format goes to enforcement, so the user gets the
+  // escalation and not only a notice to retry.
+  const highRisk = (rawDraft: unknown, failures: string[]): CaseOutcome | null => {
+    const readable = failures.includes("format")
+      ? null
+      : schemas.assessmentDraft.safeParse(rawDraft);
+    return readable?.success && (readable.data.risk === "high" || readable.data.risk === "critical")
+      ? enforceSafety(readable.data, ctx)
+      : null;
+  };
+
+  let checked = checkAssessmentDraft(raw, { round: req.round });
+  const failures: string[] = [];
+  if (!checked.ok) {
+    const first = checked.failures;
+    failures.push(...first.map((f) => f.check));
+    const escalated = highRisk(raw, failures);
+    if (escalated) return { outcome: escalated, failures };
+    // ITM-274: the draft is asked for once more, with the failures named. A hazard is not asked for again.
+    failures.push("retry");
+    try {
+      raw = await draftAssessment(
+        req,
+        first.map(({ path, message }) => ({ path, message })),
+      );
+    } catch (e) {
+      return { outcome: { type: "notice", notice: technicalErrorNotice(e) }, failures };
     }
-    return { outcome: { type: "notice", notice: OUTPUT_REJECTED_NOTICE }, failures };
+    checked = checkAssessmentDraft(raw, { round: req.round });
+    if (!checked.ok) {
+      const second = checked.failures.map((f) => f.check);
+      failures.push(...second);
+      const escalated2 = highRisk(raw, second);
+      if (escalated2) return { outcome: escalated2, failures };
+      return { outcome: { type: "notice", notice: OUTPUT_REJECTED_NOTICE }, failures };
+    }
   }
+  const draft = checked.value;
 
   const outcome = enforceSafety(draft, ctx);
-  if (outcome.type !== "guidance") return { outcome, failures: [] };
+  if (outcome.type !== "guidance") return { outcome, failures };
   return {
     outcome: {
       ...outcome,
       options: uniqueIds(rankOptions(outcome.options)),
       notices: noticesFor(draft.notices),
     },
-    failures: [],
+    failures,
   };
 }
 

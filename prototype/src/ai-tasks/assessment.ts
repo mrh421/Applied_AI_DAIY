@@ -34,7 +34,10 @@ function lines(items: string[]): string {
   return items.length ? items.join("\n") : "(none)";
 }
 
-function render(req: CaseRequest): string {
+/** What the output check found wrong with an earlier draft of the same request (ITM-274). */
+export type RejectedFailure = { path: string; message: string };
+
+function render(req: CaseRequest, rejected: RejectedFailure[] = []): string {
   const answers = req.answers.map((a) => `- [${a.topic}] ${a.notSure ? "(not sure)" : a.text}`);
   const materials = req.inventory.materials.map(
     (m) => `- ${m.name}: ${m.quantity.amount} ${m.quantity.unit}`,
@@ -48,12 +51,20 @@ function render(req: CaseRequest): string {
     `Inventory, materials:\n${lines(materials)}`,
     `Inventory, tools:\n${lines(tools)}`,
     `Illustration index:\n${lines(images)}`,
+    ...(rejected.length
+      ? [
+          `Your previous answer to this request was rejected by the output check. Answer the same request again and fix these points:\n${lines(rejected.map((f) => `- ${f.path || "(draft)"}: ${f.message}`))}`,
+        ]
+      : []),
   ].join("\n\n");
 }
 
 /** Sends the case, never a skill profile (ARC-011), and returns the unvalidated draft. */
-export function draftAssessment(req: CaseRequest): Promise<unknown> {
-  const content: AiContent[] = [{ type: "text", text: render(req) }];
+export function draftAssessment(
+  req: CaseRequest,
+  rejected: RejectedFailure[] = [],
+): Promise<unknown> {
+  const content: AiContent[] = [{ type: "text", text: render(req, rejected) }];
   for (const photo of req.photos ?? []) content.push({ type: "image", ...photo });
   return generateJson({
     system: instructions(req.round),

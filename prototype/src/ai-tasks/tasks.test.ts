@@ -154,6 +154,16 @@ describe("draftAssessment", () => {
     );
   });
 
+  it("names the failures of a rejected draft in the request and only then (ITM-274)", async () => {
+    await draftAssessment(caseReq());
+    expect(textOf(lastCall())).not.toContain("rejected by the output check");
+    await draftAssessment(caseReq(), [
+      { path: "options[0].packages[0].guide", message: "missing" },
+    ]);
+    expect(textOf(lastCall())).toContain("rejected by the output check");
+    expect(textOf(lastCall())).toContain("options[0].packages[0].guide: missing");
+  });
+
   it("forbids questions at round 2 and not before", async () => {
     await draftAssessment(caseReq({ round: 2 }));
     const r2 = `${lastCall().system}\n${textOf(lastCall())}`;
