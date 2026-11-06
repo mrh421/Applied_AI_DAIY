@@ -8,7 +8,7 @@ v6 (2026-11-06) is the team's deck of 6 Nov, aligned with the repository:
 - Agent M slides: 12 sprints (sprint 12 added), tests and release filled from the test records, `docs/backlog/sprints/daiy/12.md` and `CHANGELOG.md`.
 - The scrum-loop slide shows a real case (CO alarm → HAZARD-SAFETY-MEASURES → sprint 2); the performance slide shows the evaluation of 5 Nov.
 - Outro: method, conscious decisions (with chapters of *Vibe Coding*), the project in numbers, tool journey, what went wrong, lessons learned, closing.
-- Consistent title positions, presenter names on every divider, placeholders and highlights removed. The two lecture-note slides on architecture decisions stay hidden at the end.
+- Consistent title positions, placeholders and highlights removed; presenter labels and roles left as the team set them. The two lecture-note slides on architecture decisions stay hidden at the end.
 
 The checklist below was written for v4 and is kept for history.
 
