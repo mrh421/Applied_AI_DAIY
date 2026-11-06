@@ -11,5 +11,5 @@ setup: npm install -g bun && cd prototype && bun install --frozen-lockfile && no
 | component | — | — | ✓ | ✓ | ✓ | — |
 | system | — | — | ✓ | ✓ | ✓ | — |
 | paid | — | — | ✓ | ✓ | ✓ | — |
-| release | — | — | — | ✓ | ✓ | — |
-| user | — | — | — | ✓ | ✓ | — |
+| release | — | — | — | ✓ | ✓ | hosted |
+| user | — | — | — | ✓ | ✓ | hosted |
