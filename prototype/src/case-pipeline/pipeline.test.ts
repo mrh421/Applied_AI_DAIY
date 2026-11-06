@@ -49,6 +49,11 @@ describe("assessCase", () => {
     expect(calls()).toBe(0);
   });
 
+  // TST-101 · level: unit · module: MOD-case-pipeline
+  // guards: RISK-CHECK-FIRST
+  // given: a case whose description names a gas smell
+  // input: an assessment is run
+  // expect: the outcome is an escalation and the AI was not called
   it("escalates a hazard in the description with zero AI calls", async () => {
     const o = await runAssess({ ...caseRequest, description: "I smell gas in the kitchen." });
     expect(o.type).toBe("escalation");
@@ -73,6 +78,11 @@ describe("assessCase", () => {
     expect(o).toMatchObject({ type: "questions", round: 1 });
   });
 
+  // TST-102 · level: unit · module: MOD-case-pipeline
+  // guards: NO-UNVALIDATED-OUTPUT
+  // given: an AI double that returns a malformed draft
+  // input: an assessment is run
+  // expect: the person gets the output-rejected notice and not the draft
   it("gives output-rejected for a malformed draft", async () => {
     ai.draftAssessment.mockResolvedValue({ kind: "answer" });
     expect(notice(await runAssess(caseRequest)).reason).toBe("output-rejected");
@@ -193,6 +203,11 @@ describe("assessCase", () => {
     }
   });
 
+  // TST-103 · level: unit · module: MOD-case-pipeline
+  // guards: CHECK-LOCALLY
+  // given: a draft that names a location-dependent rule
+  // input: an assessment is run
+  // expect: the guidance carries the notice with the mark check-locally
   it("carries 'check locally' for a fence case (location-dependent rule)", async () => {
     ai.draftAssessment.mockResolvedValue({
       ...answerDraft,
@@ -204,6 +219,11 @@ describe("assessCase", () => {
     expect(o.notices[0]!.marks).toContain("check-locally");
   });
 
+  // TST-104 · level: unit · module: MOD-case-pipeline
+  // guards: TENANT-NOTICE
+  // given: a draft that names a rented property
+  // input: an assessment is run
+  // expect: the guidance carries a notice that mentions the landlord
   it("carries the tenant notice for a rented property", async () => {
     ai.draftAssessment.mockResolvedValue({
       ...answerDraft,
@@ -264,6 +284,11 @@ describe("answerStepQuestion", () => {
     expect(calls()).toBe(0);
   });
 
+  // TST-105 · level: unit · module: MOD-case-pipeline
+  // guards: STEP-QUESTION-HAZARD-CHECK
+  // given: a question about a step that names a gas smell
+  // input: the question is run
+  // expect: the outcome is an escalation from the pre-check and the AI was not called
   it("escalates a hazard in the question with zero AI calls", async () => {
     const o = await runStepQuestion({ ...stepQuestionRequest, question: "I smell gas now." });
     expect(o).toMatchObject({ type: "escalation", escalation: { origin: "precheck" } });

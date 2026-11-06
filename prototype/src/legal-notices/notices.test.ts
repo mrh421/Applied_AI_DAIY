@@ -36,12 +36,22 @@ describe("noticesFor", () => {
     expect(n.text).not.toBe(CATALOGUE[kind].applies);
   });
 
+  // TST-109 · level: unit · module: MOD-legal-notices
+  // guards: CHECK-LOCALLY; PLANTING-BOUNDARY-DISTANCE
+  // given: the notice kinds location-dependent rule and planting near a boundary
+  // input: the notices are made
+  // expect: both carry the mark check-locally
   it("marks location-dependent rules and planting with check-locally", () => {
     for (const kind of ["location-dependent-rule", "planting-near-boundary"] as const) {
       expect(noticesFor([{ kind, certainty: "applies" }])[0]!.marks).toEqual(["check-locally"]);
     }
   });
 
+  // TST-110 · level: unit · module: MOD-legal-notices
+  // guards: WARRANTY-FUNDING-CHECK
+  // given: the notice kind warranty or funding
+  // input: the notice is made
+  // expect: it carries the mark check with manufacturer or funding body
   it("marks warranty-or-funding for the manufacturer or funding body", () => {
     expect(noticesFor([{ kind: "warranty-or-funding", certainty: "applies" }])[0]!.marks).toEqual([
       "check-with-manufacturer-or-funding-body",
@@ -90,6 +100,11 @@ describe("noticesFor", () => {
     ]);
   });
 
+  // TST-111 · level: unit · module: MOD-legal-notices
+  // guards: PERMIT-FREE-NOT-RULE-FREE
+  // given: the texts of all notice kinds
+  // input: the texts are read
+  // expect: none says that a project is free of rules, and the permit-free notice names the other requirements
   it("never states that a permit-free project is free of rules", () => {
     const texts = KINDS.flatMap((k) => [CATALOGUE[k].applies, CATALOGUE[k].possible]);
     for (const t of texts) {
@@ -104,6 +119,11 @@ describe("noticesFor", () => {
     }
   });
 
+  // TST-112 · level: unit · module: MOD-legal-notices
+  // guards: CHIMNEY-SWEEP-NOTICE-INSTALLATION; CHIMNEY-SWEEP-NOTICE-DECOMMISSIONING; FIRING-INSTALLATION-INSPECTION-NOTICE
+  // given: the notice kinds heating or flue change, heating or flue decommission and firing installation
+  // input: the texts are read
+  // expect: each names the chimney sweep
   it("names the chimney sweep for the three heating kinds", () => {
     for (const kind of [
       "heating-or-flue-change",

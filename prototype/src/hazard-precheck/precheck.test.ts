@@ -77,7 +77,7 @@ describe("escalationFor", () => {
   });
 
   // TST-005 · level: unit · module: MOD-hazard-precheck
-  // guards: EMERGENCY-RISK-CRITICAL; OUT-OF-SCOPE-ESCALATION
+  // guards: EMERGENCY-RISK-CRITICAL; OUT-OF-SCOPE-ESCALATION; OUT-OF-SCOPE-RISK-HIGH
   // given: kinds of work outside the app's scope that are no emergency
   // input: the kinds
   // expect: the escalation has the risk high
@@ -150,7 +150,7 @@ describe("escalationFor", () => {
   });
 
   // TST-011 · level: unit · module: MOD-hazard-precheck
-  // guards: HAZARD-SAFETY-MEASURES
+  // guards: HAZARD-SAFETY-MEASURES; EMERGENCY-ACTIONS-FIRST
   // given: the kinds distribution-board and fire-or-smoke together
   // input: the kinds
   // expect: the first action is the emergency call, the first professional is the fire brigade and the distribution board advice comes last
@@ -185,7 +185,7 @@ describe("escalationFor", () => {
   });
 
   // TST-014 · level: unit · module: MOD-hazard-precheck
-  // guards: HAZARD-PROFESSIONAL; OUT-OF-SCOPE-ESCALATION
+  // guards: HAZARD-PROFESSIONAL; OUT-OF-SCOPE-ESCALATION; NO-ENERGY-RENOVATION-PLANNING
   // given: the kind energy-renovation
   // input: the kind
   // expect: the professional is an energy specialist and the reason names the energy renovation
